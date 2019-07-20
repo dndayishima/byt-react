@@ -2,32 +2,19 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import {
-    Button,
-    FormControlLabel,
-    IconButton,
-    Snackbar,
-    Switch,
-    TextField
+  Button,
+  IconButton,
+  Snackbar,
+  TextField
 } from "@material-ui/core";
 
 import CloseIcon from "@material-ui/icons/Close";
 
 import _ from "lodash";
 
-const styles = {
-  grid: {
-    container: {
-      marginTop: "10px"
-    }
-  },
-  input: {
-    marginLeft: "5%",
-    marginRight: "5%"
-  },
-  button: {
-    marginBottom: "15px",
-  }
-};
+import { dictionnary } from "../Langs/langs";
+
+import { getJWTPayload } from "../Helpers/Helpers";
 
 export default class Connexion extends React.Component {
   static propTypes = {
@@ -36,59 +23,52 @@ export default class Connexion extends React.Component {
     onError: PropTypes.func
   }
 
-  static defaultProps = {};
+  static defaultProps = {
+    lang: "fr"
+  };
 
   state = {
-    username: "",
+    login: "",
     password: "",
-    vendeur: false,
     error: false,
     errorMessage: "",
-    utilisateur: {},
     openSnackBar: false
   };
 
-  changeUsername = e => {
-    this.setState({
-      username: e.target.value
-    });
-  };
-
-  changePassword = e => {
-    this.setState({
-      password: e.target.value
-    });
-  };
-
-  changeVendeur = () => {
-    this.setState({
-      vendeur: !this.state.vendeur
-    });
+  handleChangeInput = (event, name) => {
+    let state = this.state;
+    _.set(state, name, event.target.value);
+    this.setState({...state});
   };
 
   valideForm = () => {
-    return !(_.isEmpty(this.state.username) || _.isEmpty(this.state.password));
+    return (!_.isEmpty(this.state.login) && !_.isEmpty(this.state.password));
   };
 
   connexion = () => {
     if (!this.valideForm()) {
+      let lang = _.toUpper(this.props.lang);
+      let errorMessage = _.get(dictionnary, lang + ".errorMessageLogin");
       this.setState({
         error: true,
-        errorMessage: "Renseigner l'identifiant et le mot de passe",
+        errorMessage: _.upperFirst(errorMessage),
         openSnackBar: true
       });
       return;
     }
 
     this.props.client.User.login(
-      this.state.username, // from state
-      this.state.password, // from state
+      this.state.login,
+      this.state.password,
       result => {
+        console.log(result);
+        getJWTPayload(result.data.jwt);
         if (this.props.onSuccess) {
           this.props.onSuccess(result);
         }
       },
       error => {
+        console.log(error);
         if (this.props.onError) {
           this.props.onError(error);
         }
@@ -96,68 +76,57 @@ export default class Connexion extends React.Component {
     );
   };
 
-  onCloseSnackBar = () => {
-    this.setState({ openSnackBar: false });
-  }
-
   render() {
+    let lang = _.toUpper(this.props.lang);
+    let login = _.get(dictionnary, lang + ".login");
+    let password = _.get(dictionnary, lang + ".password");
+    let signIn = _.get(dictionnary, lang + ".signIn");
     return (
       <React.Fragment>
         <form
           noValidate={true}
           autoComplete="off"
         >
-          <div style={styles.input}>
+          <div>
             <TextField
               autoFocus={true}
               error={this.state.error}
               fullWidth={true}
-              label="Identifiant"
+              label={_.upperFirst(login)}
               margin="normal"
-              name="username"
-              onChange={(e) => this.changeUsername(e)}
+              name="login"
+              onChange={e => this.handleChangeInput(e, "login")}
               required={true}
-              value={this.state.username}
+              value={this.state.login}
               variant="outlined"
             />
           </div>
-          <div style={styles.input}>
+          <div>
             <TextField
               error={this.state.error}
               fullWidth={true}
-              label="Mot de passe"
+              label={_.upperFirst(password)}
               margin="normal"
               name="password"
-              onChange={(e) => this.changePassword(e)}
+              onChange={e => this.handleChangeInput(e, "password")}
               required={true}
               type="password"
               value={this.state.password}
               variant="outlined"
             />
           </div>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={this.state.vendeur}
-                color="primary"
-                onChange={(e, c) => this.changeVendeur()}
-              />
-            }
-            label="Vous êtes vendeur de tickets"
-            style={styles.input}
-          /> 
         </form>
         <div>
-          <div style={styles.input}>
+          <div>
             <Button
+              style={{ marginTop: "20px" }}
               color="primary"
               fullWidth={true}
               onClick={this.connexion}
               size="large"
-              style={styles.button}
               variant="contained"
             >
-              CONNEXION
+              {_.upperFirst(signIn)}
             </Button>
           </div>
         </div>
@@ -169,13 +138,13 @@ export default class Connexion extends React.Component {
           }}
           open={this.state.openSnackBar}
           autoHideDuration={2000}
-          onClose={this.onCloseSnackBar}
+          onClose={() => this.setState({ openSnackBar: false })}
           message={this.state.errorMessage}
           action={
             <IconButton
               key="close"
               aria-label="Close"
-              onClick={this.onCloseSnackBar}
+              onClick={() => this.setState({ openSnackBar: false })}
               color="inherit"
             >
               <CloseIcon />

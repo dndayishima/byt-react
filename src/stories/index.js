@@ -6,7 +6,7 @@ import { linkTo } from '@storybook/addon-links';
 
 import { Button, Welcome } from '@storybook/react/demo';
 
-import { Client, Connexion } from "../lib";
+import { Client, Connexion, Register } from "../lib";
 
 const client = new Client("http://localhost:8000", "");
 
@@ -28,4 +28,9 @@ storiesOf("User", module)
       client={client}
       onSuccess={action("succès de la connexion")}
       onError={action("Erreur de la connexion")}
-    />);
+    />)
+  .add("Register", () =>
+    <Register 
+      client={client}
+    />
+  );
