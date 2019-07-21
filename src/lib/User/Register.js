@@ -155,7 +155,7 @@ export default class Register extends React.Component {
     //console.log(this.state.birthday.getDate());
     return (
       <React.Fragment>
-        <form noValidate={true} autoComplete="off" style={{ marginLeft: "20px", marginRight: "20px" }}>
+        <form noValidate={true} autoComplete="off">
           <div style={styles.input}>
             <TextField
               autoFocus={true}
