@@ -140,6 +140,7 @@ export default class Connexion extends React.Component {
           autoHideDuration={2000}
           onClose={() => this.setState({ openSnackBar: false })}
           message={this.state.errorMessage}
+          variant="warning"
           action={
             <IconButton
               key="close"

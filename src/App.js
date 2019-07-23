@@ -73,6 +73,7 @@ export default class App extends React.Component {
                   <Register 
                     client={client}
                     lang={this.state.lang}
+                    onSuccess={() => this.setState({ page: "connexion" })}
                   />
                   <Button
                     fullWidth={true}

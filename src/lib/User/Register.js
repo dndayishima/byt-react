@@ -1,7 +1,22 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { Button, Divider, FormControlLabel, IconButton, Snackbar, Switch, TextField, Typography } from "@material-ui/core";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  Divider,
+  FormControlLabel,
+  IconButton,
+  Snackbar,
+  Switch,
+  TextField,
+  Typography
+} from "@material-ui/core";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
+
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -26,8 +41,7 @@ const styles = {
 export default class Register extends React.Component {
   static propTypes = {
     client: PropTypes.any.isRequired,
-    onSuccess: PropTypes.func,
-    onError: PropTypes.func
+    onSuccess: PropTypes.func
   };
   static defaultProps = {
     lang: "fr"
@@ -45,7 +59,8 @@ export default class Register extends React.Component {
     roles: ["USER"],
     error: false,
     errorMessage: "",
-    openSnackBar: false
+    openSnackBar: false,
+    dialogType: null // success en cas de succès et error dans le cas contraire
   };
 
   // l'index sera défini au moment où on voudra modifier 
@@ -130,10 +145,12 @@ export default class Register extends React.Component {
       result => {
         console.log("success");
         console.log(result);
+        this.setState({ dialogType: "success" });
       },
       error => {
         console.log("error");
         console.log(error);
+        this.setState({ dialogType: "error" });
       }
     )
   };
@@ -150,7 +167,7 @@ export default class Register extends React.Component {
     let confirmPassword = _.get(dictionnary, lang + ".confirmPassword");
     let seller = _.get(dictionnary, lang + ".seller");
     let createAccount = _.get(dictionnary, lang + ".createAccount");
-    
+    let register = _.get(dictionnary, lang + ".register");
     //console.log(_.isNull(this.state.birthday) ? "null" : moment(this.state.birthday).format("YYYY-MM-DD"));
     //console.log(this.state.birthday.getDate());
     return (
@@ -343,6 +360,49 @@ export default class Register extends React.Component {
             </IconButton>
           }
         />
+
+        {/* Dialogue, retour inscription (success ou error) */}
+        <Dialog open={!_.isNull(this.state.dialogType)}>
+          <MuiDialogTitle disableTypography={true}>
+            <Typography
+              variant="h4"
+              color={
+                this.state.dialogType === "success"
+                  ? "primary"
+                  : this.state.dialogType === "error"
+                    ? "error"
+                    : "inherit"
+              }
+            >
+              {_.upperFirst(register)}
+            </Typography>
+          </MuiDialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              blababla some text here hahaha ldnodenocj jauien eoufheonc jeounecjeznonz encjoznconcz njcoenvo
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              color={
+                this.state.dialogType === "success"
+                ? "primary"
+                : "default"
+              }
+              onClick={() => {
+                if (this.state.dialogType === "success") {
+                  if (this.props.onSuccess) {
+                    this.props.onSuccess();
+                  }
+                } else {
+                  this.setState({ dialogType: null });
+                }
+              }}
+            >
+              <strong>OK</strong>
+            </Button>
+          </DialogActions>
+        </Dialog>
       </React.Fragment>
     )
   }
