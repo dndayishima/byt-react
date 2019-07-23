@@ -41,6 +41,7 @@ const styles = {
 export default class Register extends React.Component {
   static propTypes = {
     client: PropTypes.any.isRequired,
+    lang: PropTypes.string,
     onSuccess: PropTypes.func
   };
   static defaultProps = {
@@ -145,12 +146,14 @@ export default class Register extends React.Component {
       result => {
         console.log("success");
         console.log(result);
-        this.setState({ dialogType: "success" });
+        this.setState({ dialogType: 1 });
       },
       error => {
         console.log("error");
         console.log(error);
-        this.setState({ dialogType: "error" });
+        this.setState({ 
+          dialogType: _.isUndefined(error) ? 3 : 2 // 3 = Réseau
+        });
       }
     )
   };
@@ -367,11 +370,9 @@ export default class Register extends React.Component {
             <Typography
               variant="h4"
               color={
-                this.state.dialogType === "success"
-                  ? "primary"
-                  : this.state.dialogType === "error"
-                    ? "error"
-                    : "inherit"
+                this.state.dialogType === 1
+                ? "primary"
+                : "error"
               }
             >
               {_.upperFirst(register)}
@@ -379,18 +380,21 @@ export default class Register extends React.Component {
           </MuiDialogTitle>
           <DialogContent>
             <DialogContentText>
-              blababla some text here hahaha ldnodenocj jauien eoufheonc jeounecjeznonz encjoznconcz njcoenvo
+              {this.state.dialogType === 1
+                ? _.upperFirst(_.get(dictionnary, lang + ".successRegister"))
+                : this.state.dialogType === 2
+                  ? _.upperFirst(_.get(dictionnary, lang + ".errorRegister2"))
+                  : this.state.dialogType === 3
+                    ? _.upperFirst(_.get(dictionnary, lang + ".errorRegister3"))
+                    : null
+              }
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button
-              color={
-                this.state.dialogType === "success"
-                ? "primary"
-                : "default"
-              }
+              color={this.state.dialogType === 1 ? "primary" : "default"}
               onClick={() => {
-                if (this.state.dialogType === "success") {
+                if (this.state.dialogType === 1) {
                   if (this.props.onSuccess) {
                     this.props.onSuccess();
                   }

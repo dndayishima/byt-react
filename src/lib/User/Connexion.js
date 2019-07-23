@@ -14,13 +14,13 @@ import _ from "lodash";
 
 import { dictionnary } from "../Langs/langs";
 
-import { getJWTPayload } from "../Helpers/Helpers";
+//import { getJWTPayload } from "../Helpers/Helpers";
 
 export default class Connexion extends React.Component {
   static propTypes = {
     client: PropTypes.any.isRequired,
-    onSuccess: PropTypes.func,
-    onError: PropTypes.func
+    lang: PropTypes.string,
+    onSuccess: PropTypes.func
   }
 
   static defaultProps = {
@@ -61,17 +61,22 @@ export default class Connexion extends React.Component {
       this.state.login,
       this.state.password,
       result => {
-        console.log(result);
-        getJWTPayload(result.data.jwt);
+        //console.log(result);
+        //getJWTPayload(result.data.jwt);
         if (this.props.onSuccess) {
-          this.props.onSuccess(result);
+          this.props.onSuccess(result.data.jwt);
         }
       },
       error => {
-        console.log(error);
-        if (this.props.onError) {
-          this.props.onError(error);
-        }
+        //console.log(error);
+        let lang = _.toUpper(this.props.lang);
+        this.setState({
+          error: true,
+          errorMessage: _.isUndefined(error)
+            ? _.upperFirst(_.get(dictionnary, lang + ".errorMessageLogin3"))
+            : _.upperFirst(_.get(dictionnary, lang + ".errorMessageLogin2")),
+          openSnackBar: true
+        });
       }
     );
   };

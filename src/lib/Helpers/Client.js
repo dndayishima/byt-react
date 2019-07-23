@@ -44,6 +44,52 @@ class Client {
         .catch(error => errors(error.response));
     }
   };
+
+  Event = {
+    create: (jwt, params, success, errors) => {
+      axios
+        .post(
+          this.api + "/event/create",
+          params,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response));
+    },
+    read: (jwt, id, success, errors) => {
+      axios
+        .get(
+          this.api + "/event/read/" + id,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response))
+    },
+    delete: (jwt, id, success, errors) => {
+      axios
+        .delete(
+          this.api + "/event/delete/" + id,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response));
+    },
+    update: (jwt, id, params, success, errors) => {
+      axios
+        .post(
+          this.api + "/event/update/" + id,
+          params,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response));
+    },
+    readAll: (jwt, params, success, errors) => { // TODO : corriger le readAll
+      axios
+        .get(
+          this.api + "/event/readAll",
+          params,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response));
+    }
+  }
 }
 
 export default Client;

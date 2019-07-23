@@ -1,5 +1,13 @@
 import Client from "./Helpers/Client";
-import { Connexion, Register } from "./User";
-import { SettingsView, Title } from "./Others";
+import { Connexion, Main, Register } from "./User";
+import { MenuDrawer, SettingsView, Title } from "./Others";
 
-export { Client, Connexion, Register, SettingsView, Title };
+export { 
+  Client,
+  Connexion, 
+  Main,
+  MenuDrawer, 
+  Register, 
+  SettingsView, 
+  Title 
+};

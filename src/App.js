@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Button, Paper } from "@material-ui/core";
 
-import { Client, Connexion, Register/*, SettingsView*/, Title } from "./lib";
+import { Client, Connexion, Main, Register, /*SettingsView,*/ Title } from "./lib";
 
 import { authUrl, apiUrl } from "./lib/Helpers/Settings";
 
@@ -54,6 +54,11 @@ export default class App extends React.Component {
                   <Connexion
                     client={client}
                     lang={this.state.lang}
+                    onSuccess={jwt => {
+                      localStorage.setItem("jwt", jwt);
+                      console.log(jwt);
+                      this.setState({ jwt: jwt });
+                    }}
                   />
                   <Button
                     fullWidth={true}
@@ -85,16 +90,11 @@ export default class App extends React.Component {
                   </Button>
                 </div>
               : null
-          : null
+          : <Main
+              client={client}
+              lang={this.state.lang}
+            />
         }
-        {/* <Connexion 
-          client={client}
-          lang="ki"
-        /> */}
-        {/*<Register 
-          client={client}
-          //lang="en"
-        />*/}
         {/* <div>
           <SettingsView
             lang={this.state.lang}
