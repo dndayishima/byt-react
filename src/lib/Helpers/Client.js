@@ -80,12 +80,11 @@ class Client {
         .then(result => success(result))
         .catch(error => errors(error.response));
     },
-    readAll: (jwt, params, success, errors) => { // TODO : corriger le readAll
+    readAll: (jwt, params, success, errors) => {
       axios
         .get(
           this.api + "/event/readAll",
-          params,
-          {headers: {"Authorization": `Bearer ${jwt}`} })
+          {params: params, headers: {"Authorization": `Bearer ${jwt}`} })
         .then(result => success(result))
         .catch(error => errors(error.response));
     }

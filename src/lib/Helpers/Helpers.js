@@ -1,9 +1,7 @@
-const getJWTPayload = jwt => {
-  //console.log(jwt);
+const getJWTPayload = jwt => { // gérer les cas d'erreurs
   let userBase64 = jwt.split(".")[1];
-  //console.log(atob(userBase64));
   let u = JSON.parse(atob(userBase64));
-  console.log(u);
+  return u;
 };
 
 export { getJWTPayload };

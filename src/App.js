@@ -56,7 +56,7 @@ export default class App extends React.Component {
                     lang={this.state.lang}
                     onSuccess={jwt => {
                       localStorage.setItem("jwt", jwt);
-                      console.log(jwt);
+                      //console.log(jwt);
                       this.setState({ jwt: jwt });
                     }}
                   />
@@ -92,10 +92,11 @@ export default class App extends React.Component {
               : null
           : <Main
               client={client}
+              jwt={this.state.jwt}
               lang={this.state.lang}
             />
         }
-        {/* <div>
+        {/*<div>
           <SettingsView
             lang={this.state.lang}
             onChangeLanguage={lang => {
@@ -103,7 +104,7 @@ export default class App extends React.Component {
               this.setState({ lang: _.get(localStorage, "lang", "fr") });
             }}
           />
-        </div> */}
+        </div>*/}
       </React.Fragment>
     );
   }
