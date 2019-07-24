@@ -2,13 +2,13 @@ import React from 'react';
 
 import { Button, Paper } from "@material-ui/core";
 
-import { Client, Connexion, Main, Register, /*SettingsView,*/ Title } from "./lib";
+import { Client, Connexion, Main, Register, Title } from "./lib";
 
 import { authUrl, apiUrl } from "./lib/Helpers/Settings";
 
 import _ from "lodash";
 
-import logo from "./byt-logo.jpeg";
+import logo from "./byt-logo.jpg";
 
 import { dictionnary } from "./lib/Langs/langs";
 
@@ -32,6 +32,11 @@ export default class App extends React.Component {
     jwt: _.get(localStorage, "jwt", ""),
     page: "connexion",
     lang: _.get(localStorage, "lang", "fr")
+  };
+
+  onChangeLanguage = lang => {
+    localStorage.setItem("lang", lang);
+    this.setState({ lang: lang });
   };
 
   render() {
@@ -94,17 +99,9 @@ export default class App extends React.Component {
               client={client}
               jwt={this.state.jwt}
               lang={this.state.lang}
+              onChangeLanguage={lang => this.onChangeLanguage(lang)}
             />
         }
-        {/*<div>
-          <SettingsView
-            lang={this.state.lang}
-            onChangeLanguage={lang => {
-              localStorage.setItem("lang", lang);
-              this.setState({ lang: _.get(localStorage, "lang", "fr") });
-            }}
-          />
-        </div>*/}
       </React.Fragment>
     );
   }

@@ -23,12 +23,13 @@ import _ from "lodash";
 
 import { dictionnary } from "../Langs/langs";
 
-import logo from "../../byt-logo.jpeg";
+import logo from "../../byt-logo.jpg";
 
 export default class MenuDrawer extends React.Component {
   static propTypes = {
     lang: PropTypes.string,
     onChangeSelection: PropTypes.func,
+    onClickItem: PropTypes.func,
     open: PropTypes.bool,
     roles: PropTypes.array
   };
@@ -54,7 +55,13 @@ export default class MenuDrawer extends React.Component {
         </div>
         <Divider />
         <List>
-          <ListItem button={true} onClick={() => {}}>
+          <ListItem
+            button={true}
+            onClick={() => {
+              if (this.props.onClickItem) {
+                this.props.onClickItem("events")
+              }
+            }}>
             <ListItemIcon>
               <Event />
             </ListItemIcon>
@@ -103,7 +110,14 @@ export default class MenuDrawer extends React.Component {
                     primary={_.upperFirst(_.get(dictionnary, lang + ".scan"))}
                   />
                 </ListItem>
-      
+              </React.Fragment>
+            : null
+          }
+
+          {
+            _.includes(this.props.roles, "TECH") ||
+            _.includes(this.props.roles, "ADMIN")
+            ? <React.Fragment>      
                 <ListItem button={true} onClick={() => {}}>
                   <ListItemIcon>
                     <Security />
@@ -116,7 +130,13 @@ export default class MenuDrawer extends React.Component {
             : null
           }
           
-          <ListItem button={true} onClick={() => {}}>
+          <ListItem 
+            button={true}
+            onClick={() => {
+              if (this.props.onClickItem) {
+                this.props.onClickItem("settings");
+              }
+            }}>
             <ListItemIcon>
               <Settings />
             </ListItemIcon>

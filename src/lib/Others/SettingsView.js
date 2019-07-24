@@ -1,10 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { FormControl, InputLabel, MenuItem, OutlinedInput, Select } from "@material-ui/core";
+import { FormControl, MenuItem, OutlinedInput, Select } from "@material-ui/core";
 
-import _ from "lodash";
-import { dictionnary } from "../Langs/langs";
+//import _ from "lodash";
+//import { dictionnary } from "../Langs/langs";
 
 export default class SettingsView extends React.Component {
   static propTypes = {
@@ -28,15 +28,12 @@ export default class SettingsView extends React.Component {
 
   
   render () {
-    let lang = _.toUpper(this.props.lang);
-    let language = _.get(dictionnary, lang + ".language");
+    //let lang = _.toUpper(this.props.lang);
+    //let language = _.get(dictionnary, lang + ".language");
 
     return (
       <React.Fragment>
         <FormControl variant="outlined" fullWidth={true}>
-          <InputLabel>
-            {_.upperFirst(language)}
-          </InputLabel>
           <Select
             value={this.state.lang}
             onChange={e => {

@@ -1,10 +1,11 @@
 import Client from "./Helpers/Client";
 import { Connexion, Main, Register } from "./User";
-import { MenuDrawer, ModalMessage, SettingsView, Title } from "./Others";
+import { Events, MenuDrawer, ModalMessage, SettingsView, Title } from "./Others";
 
 export { 
   Client,
   Connexion, 
+  Events,
   Main,
   MenuDrawer,
   ModalMessage, 

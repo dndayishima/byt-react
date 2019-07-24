@@ -9,26 +9,39 @@ import {
   Menu,
   MenuItem, 
   Toolbar,
-  Typography 
+  //Typography 
 } from "@material-ui/core";
 
 import MenuIcon from "@material-ui/icons/Menu";
 import { AccountCircle, Person, PowerSettingsNew } from "@material-ui/icons";
 
-import { ModalMessage } from "../../lib";
-
 import _ from "lodash";
 
-import { MenuDrawer } from "../../lib";
+import { Events, MenuDrawer, ModalMessage, SettingsView, Title } from "../../lib";
 import { dictionnary } from "../Langs/langs";
 import { getJWTPayload } from "../Helpers/Helpers";
 
+import minimized from "../../minimized_brand.png";
+
+const styles = {
+  container: {
+    paddingTop: "20px",
+    paddingLeft: "10px",
+    paddingRight: "10px",
+    margin: "0 auto",
+    maxWidth: "1200px",
+    display: "flex",
+    flexDirection: "column",
+    width: "Auto"
+  }
+};
 
 export default class Main extends React.Component {
   static propTypes = {
     client: PropTypes.any.isRequired,
     jwt: PropTypes.string,
-    lang: PropTypes.string
+    lang: PropTypes.string,
+    onChangeLanguage: PropTypes.func
   };
   static defaultProps = {
     lang: "fr"
@@ -39,7 +52,7 @@ export default class Main extends React.Component {
     errorType: null, // 1 : session expirée - 2 : connexion
     errorTitle: "",
     errorMessage: "",
-    page: "allEvents",
+    page: "events",
     openAccountMenu: false,
     openDrawerMenu: false,
     user: {},
@@ -113,9 +126,15 @@ export default class Main extends React.Component {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" style={{ flexGrow: 1 }}>
-              Buy Your Ticket
-            </Typography>
+            {/*<Typography variant="h4">
+              B
+            </Typography>*/}
+            <div style={{ marginTop: "4px", flexGrow: 1 }}>
+              <img src={minimized} height="33" width="auto" alt="logo"/>
+            </div>
+            {/*<Typography variant="h4" style={{ flexGrow: 1 }}>
+              T
+            </Typography>*/}
             <div style={{ marginRight: "1%" }}>
               <IconButton
                 edge="end"
@@ -131,9 +150,15 @@ export default class Main extends React.Component {
         
         {/* Barre de Menu qui s'ouvre à gauche */}
         {!_.isEmpty(this.state.user)
-          ? <MenuDrawer 
+          ? <MenuDrawer
+              lang={this.props.lang}
               open={this.state.openDrawerMenu}
               onClose={() => this.setState({ openDrawerMenu: false })}
+              onClickItem={item => 
+                this.setState({ 
+                  page: item, 
+                  openDrawerMenu: false
+              })}
               roles={this.state.user.roles}
             />
           : null
@@ -148,13 +173,36 @@ export default class Main extends React.Component {
           onAction={this.signOut}
         />
 
-        {/* Events List */}
-        {(this.state.page === "allEvents" && !_.isEmpty(this.state.eventsObj))
-          ? null // ici l'event list en lui passant en paramètres les events et les infos
-          : null
-        }
+        <div style={styles.container}>
+          {/* Events List */}
+          {(this.state.page === "events" /*&& !_.isEmpty(this.state.eventsObj)*/)
+            ? <div>
+                <Title 
+                  title={_.upperFirst(_.get(dictionnary, lang + ".events"))}
+                />
+                <Events />
+              </div>
+            : null
+          }
 
-        {/* Mettre ici autre chose */}
+          {/* Mettre ici autre chose */}
+          {this.state.page === "settings"
+            ? <div>
+                <Title 
+                  title={_.upperFirst(_.get(dictionnary, lang + ".settings"))}
+                />
+                <SettingsView
+                  lang={this.props.lang}
+                  onChangeLanguage={lang => {
+                    if (this.props.onChangeLanguage) {
+                      this.props.onChangeLanguage(lang);
+                    }
+                  }}
+                />
+              </div>
+            : null
+          }
+        </div>
       </React.Fragment>
     );
   }
