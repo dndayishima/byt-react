@@ -17,11 +17,12 @@ import { AccountCircle, Person, PowerSettingsNew } from "@material-ui/icons";
 
 import _ from "lodash";
 
-import { Events, MenuDrawer, ModalMessage, SettingsView, Title } from "../../lib";
+import { Events, MenuDrawer/*, ModalMessage*/, SettingsView, Title } from "../../lib";
 import { dictionnary } from "../Langs/langs";
 import { getJWTPayload } from "../Helpers/Helpers";
 
-import minimized from "../../minimized_brand.png";
+//import minimized from "../../minimized_brand.png";
+import bytWhite from "../../byt-white.png";
 
 const styles = {
   container: {
@@ -55,37 +56,11 @@ export default class Main extends React.Component {
     page: "events",
     openAccountMenu: false,
     openDrawerMenu: false,
-    user: {},
-    eventsObj: {} // events + informations of pagination
+    user: {}
   };
 
   componentDidMount() {
     this.setState({ user: getJWTPayload(this.props.jwt).data });
-    this.props.client.Event.readAll(
-      this.props.jwt,
-      {},
-      result => {
-        console.log(result);
-        this.setState({ eventsObj: result.data });
-      },
-      error => {
-        let lang = _.toUpper(this.props.lang);
-        if (_.isUndefined(error)) {
-          this.setState({
-            errorType: 2,
-            errorTitle: _.upperFirst(_.get(dictionnary, lang + ".authentication")),
-            errorMessage: _.upperFirst(_.get(dictionnary, lang + ".errorMessageNetwork"))
-          });
-        } else {
-          this.setState({
-            errorType: 1,
-            errorTitle: _.upperFirst(_.get(dictionnary, lang + ".authentication")),
-            errorMessage: _.upperFirst(_.get(dictionnary, lang + ".errorMessageAuthentication"))
-          });
-        }
-        //console.log(error);
-      }
-    )
   };
 
   signOut = () => {
@@ -94,7 +69,6 @@ export default class Main extends React.Component {
   };
 
   render() {
-    console.log(this.state.user);
     let lang = _.toUpper(this.props.lang);
     const menuAccount = (
       <Menu
@@ -126,15 +100,9 @@ export default class Main extends React.Component {
             >
               <MenuIcon />
             </IconButton>
-            {/*<Typography variant="h4">
-              B
-            </Typography>*/}
             <div style={{ marginTop: "4px", flexGrow: 1 }}>
-              <img src={minimized} height="33" width="auto" alt="logo"/>
+              <img src={bytWhite} height="33" width="auto" alt="logo"/>
             </div>
-            {/*<Typography variant="h4" style={{ flexGrow: 1 }}>
-              T
-            </Typography>*/}
             <div style={{ marginRight: "1%" }}>
               <IconButton
                 edge="end"
@@ -163,24 +131,21 @@ export default class Main extends React.Component {
             />
           : null
         }
-        
-        {/* Modal Session expired */}
-        <ModalMessage 
-          open={!_.isNull(this.state.errorType)}
-          title={this.state.errorTitle}
-          message={this.state.errorMessage}
-          type="error"
-          onAction={this.signOut}
-        />
 
         <div style={styles.container}>
           {/* Events List */}
-          {(this.state.page === "events" /*&& !_.isEmpty(this.state.eventsObj)*/)
+          {(this.state.page === "events" && !_.isEmpty(this.state.user))
             ? <div>
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".events"))}
                 />
-                <Events />
+                <Events
+                  client={this.props.client}
+                  jwt={this.props.jwt}
+                  user={this.state.user}
+                  lang={this.props.lang}
+                  onSignOut={this.signOut}
+                />
               </div>
             : null
           }

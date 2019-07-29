@@ -144,13 +144,13 @@ export default class Register extends React.Component {
     this.props.client.User.register(
       params,
       result => {
-        console.log("success");
-        console.log(result);
+        //console.log("success");
+        //console.log(result);
         this.setState({ dialogType: 1 });
       },
       error => {
-        console.log("error");
-        console.log(error);
+        //console.log("error");
+        //console.log(error);
         this.setState({ 
           dialogType: _.isUndefined(error) ? 3 : 2 // 3 = Réseau
         });

@@ -6,11 +6,13 @@ import * as serviceWorker from './serviceWorker';
 
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core";
 import teal from "@material-ui/core/colors/teal";
+import blueGrey from "@material-ui/core/colors/blueGrey";
 //import deepOrange from "@material-ui/core/colors/deepOrange";
 
 const theme = createMuiTheme({
   palette: {
     primary: teal,
+    secondary: blueGrey
     //error: deepOrange
   }
 });

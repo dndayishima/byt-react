@@ -4,4 +4,9 @@ const getJWTPayload = jwt => { // gérer les cas d'erreurs
   return u;
 };
 
-export { getJWTPayload };
+const imageHasPrefix = base64 => {
+  let regex = /^(data:image\/[a-z]+;base64,)/;
+  return (regex.test(base64));
+};
+
+export { getJWTPayload, imageHasPrefix };

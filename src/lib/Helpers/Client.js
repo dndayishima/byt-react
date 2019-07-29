@@ -80,11 +80,20 @@ class Client {
         .then(result => success(result))
         .catch(error => errors(error.response));
     },
-    readAll: (jwt, params, success, errors) => {
+    /*readAll: (jwt, params, success, errors) => {
       axios
         .get(
           this.api + "/event/readAll",
-          {params: params, headers: {"Authorization": `Bearer ${jwt}`} })
+          {data: params, headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response));
+    },*/
+    readAll: (jwt, params, success, errors) => {
+      axios
+        .post(
+          this.api + "/event/readAll",
+          params,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
         .then(result => success(result))
         .catch(error => errors(error.response));
     }
