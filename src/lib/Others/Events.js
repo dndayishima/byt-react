@@ -27,6 +27,7 @@ export default class Events extends React.Component {
     jwt: PropTypes.string,
     lang: PropTypes.string,
     onSignOut: PropTypes.func,
+    onSelection: PropTypes.func,
     user: PropTypes.object
   };
 
@@ -139,7 +140,11 @@ export default class Events extends React.Component {
             lang={this.props.lang}
             events={this.state.events}
             user={this.props.user}
-            onSelection={() => {}}
+            onSelection={event => {
+              if (this.props.onSelection) {
+                this.props.onSelection(event);
+              }
+            }}
             onEdit={event => this.setState({ edit: true, selectedEvent: event })}
           />
         </div>

@@ -97,6 +97,55 @@ class Client {
         .then(result => success(result))
         .catch(error => errors(error.response));
     }
+  };
+
+  Code = {
+    create: (jwt, params, success, errors) => {
+      axios
+        .post(
+          this.api + "/code/create",
+          params,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response));
+    }
+  };
+
+  Ticket = {
+    create: (jwt, params, success, errors) => {
+      axios
+        .post(
+          this.api + "/ticket/create",
+          params,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response));
+    },
+    read: (jwt, id, success, errors) => {
+      axios
+        .get(
+          this.api + "/ticket/read/" + id,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response))
+    },
+    readAll: (jwt, params, success, errors) => {
+      axios
+        .post(
+          this.api + "/ticket/readAll",
+          params,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response));
+    },
+    validation: (jwt, id, success, errors) => {
+      axios
+        .post(
+          this.api + "/ticket/validation/" + id,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response));
+    }
   }
 }
 

@@ -59,7 +59,7 @@ export default class MenuDrawer extends React.Component {
             button={true}
             onClick={() => {
               if (this.props.onClickItem) {
-                this.props.onClickItem("events")
+                this.props.onClickItem("events");
               }
             }}>
             <ListItemIcon>
@@ -84,7 +84,11 @@ export default class MenuDrawer extends React.Component {
             _.includes(this.props.roles, "TECH") ||
             _.includes(this.props.roles, "ADMIN")
             ? <React.Fragment>
-                <ListItem button={true} onClick={() => {}}>
+                <ListItem button={true} onClick={() => {
+                  /*if (this.props.onClickItem) {
+                    this.props.onClickItem("code");
+                  }*/
+                }}>
                   <ListItemIcon>
                     <Timeline />
                   </ListItemIcon>
@@ -93,7 +97,11 @@ export default class MenuDrawer extends React.Component {
                   />
                 </ListItem>
       
-                <ListItem button={true} onClick={() => {}}>
+                <ListItem button={true} onClick={() => {
+                  if (this.props.onClickItem) {
+                    this.props.onClickItem("code");
+                  }
+                }}>
                   <ListItemIcon>
                     <VpnKey />
                   </ListItemIcon>

@@ -17,7 +17,14 @@ import { AccountCircle, Person, PowerSettingsNew } from "@material-ui/icons";
 
 import _ from "lodash";
 
-import { Events, MenuDrawer/*, ModalMessage*/, SettingsView, Title } from "../../lib";
+import {
+  BuyTicket,
+  Code,
+  Events,
+  MenuDrawer,
+  SettingsView,
+  Title
+} from "../../lib";
 import { dictionnary } from "../Langs/langs";
 import { getJWTPayload } from "../Helpers/Helpers";
 
@@ -56,7 +63,8 @@ export default class Main extends React.Component {
     page: "events",
     openAccountMenu: false,
     openDrawerMenu: false,
-    user: {}
+    user: {},
+    selectedEvent: {}
   };
 
   componentDidMount() {
@@ -101,7 +109,13 @@ export default class Main extends React.Component {
               <MenuIcon />
             </IconButton>
             <div style={{ marginTop: "4px", flexGrow: 1 }}>
-              <img src={bytWhite} height="33" width="auto" alt="logo"/>
+              <img
+                src={bytWhite} 
+                height="33"
+                width="auto"
+                alt="logo"
+                onClick={() => this.setState({ page: "events" })}
+              />
             </div>
             <div style={{ marginRight: "1%" }}>
               <IconButton
@@ -122,11 +136,13 @@ export default class Main extends React.Component {
               lang={this.props.lang}
               open={this.state.openDrawerMenu}
               onClose={() => this.setState({ openDrawerMenu: false })}
-              onClickItem={item => 
+              onClickItem={item => {
                 this.setState({ 
                   page: item, 
-                  openDrawerMenu: false
-              })}
+                  openDrawerMenu: false,
+                  selectedEvent: {}
+                });
+              }}
               roles={this.state.user.roles}
             />
           : null
@@ -145,6 +161,44 @@ export default class Main extends React.Component {
                   user={this.state.user}
                   lang={this.props.lang}
                   onSignOut={this.signOut}
+                  onSelection={event => {
+                    this.setState({
+                      page: "buyticket",
+                      selectedEvent: event
+                    });
+                  }}
+                />
+              </div>
+            : null
+          }
+
+          {/* Code */}
+          {(this.state.page === "code" && !_.isEmpty(this.state.user))
+            ? <div>
+                <Title 
+                  title={_.upperFirst(_.get(dictionnary, lang + ".code"))}
+                />
+                <Code 
+                  client={this.props.client}
+                  jwt={this.props.jwt}
+                  lang={this.props.lang}
+                />
+              </div>
+            : null
+          }
+
+          {/* Achat d'un ticket */}
+          {this.state.page === "buyticket"
+            ? <div>
+                <Title 
+                  title={_.upperFirst(_.get(dictionnary, lang + ".buyTicket"))}
+                />
+                <BuyTicket
+                  client={this.props.client}
+                  jwt={this.props.jwt}
+                  lang={this.props.lang}
+                  event={this.state.selectedEvent}
+                  user={this.state.user}
                 />
               </div>
             : null

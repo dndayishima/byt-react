@@ -75,6 +75,7 @@ export default class EventEditor extends React.Component {
     price: _.get(this.props.event, "price", 0),
     tags: _.get(this.props.event, "tags", []),
     venue: _.get(this.props.event, "venue", ""),
+    codesMarchands: _.get(this.props.event, "codesMarchands", []),
     modalPhoto: false,
     openSnackBar: false,
     errorMessage: "",
@@ -146,6 +147,8 @@ export default class EventEditor extends React.Component {
           params.price = this.state.price;
           params.tags = _.filter(this.state.tags, tag => tag !== "");
           params.venue = this.state.venue;
+          params.codesMarchands = 
+            _.filter(this.state.codesMarchands, cm => !_.isEmpty(cm.operator) && !_.isEmpty(cm.numero));
 
           if (imageHasPrefix(this.state.photo)) {
             params.photo = this.state.photo;
@@ -197,6 +200,8 @@ export default class EventEditor extends React.Component {
     params.tags = _.filter(this.state.tags, tag => tag !== "");
     params.venue = this.state.venue;
     params.photo = this.state.photo;
+    params.codesMarchands = 
+      _.filter(this.state.codesMarchands, cm => !_.isEmpty(cm.operator) && !_.isEmpty(cm.numero));
 
     this.props.client.Event.create(
       this.props.jwt,
@@ -398,6 +403,62 @@ export default class EventEditor extends React.Component {
                     let tags = this.state.tags;
                     tags.push("");
                     this.setState({ tags: tags });
+                  }}
+                >
+                  <AddIcon />
+                </IconButton>
+              </Typography>
+            </span>
+          </div>
+
+          {/* Codes marchands */}
+          {_.map(this.state.codesMarchands, (cm, index) =>
+            <Grid container={true} justify="space-between" key={index}>
+              <TextField
+                label={_.upperFirst(_.get(dictionnary, lang + ".operator"))}
+                style={styles.input}
+                variant="outlined"
+                value={cm.operator}
+                onChange={e => {
+                  let codes = this.state.codesMarchands;
+                  codes[index].operator = e.target.value;
+                  this.setState({ codesMarchands: codes });
+                }} 
+              />
+              <TextField
+                label={_.upperFirst(_.get(dictionnary, lang + ".numero"))}
+                style={styles.input}
+                variant="outlined"
+                value={cm.numero}
+                onChange={e => {
+                  let codes = this.state.codesMarchands;
+                  codes[index].numero = e.target.value;
+                  this.setState({ codesMarchands: codes });
+                }}
+              />
+              <IconButton
+                style={{ marginLeft: "8px" }}
+                onClick={() => {
+                  let codes = this.state.codesMarchands;
+                  codes.splice(index, 1);
+                  this.setState({ codesMarchands: codes });
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Grid>
+          )}
+
+          <div style={styles.input}>
+            <span style={{ textAlign: "center" }}>
+              <Typography variant="body1" gutterBottom={true}>
+                {_.upperFirst(_.get(dictionnary, lang + ".codeMarchand"))}
+                <IconButton
+                  style={{ marginLeft: "8px" }}
+                  onClick={() => {
+                    let codes = this.state.codesMarchands;
+                    codes.push({ operator: "", numero: "" });
+                    this.setState({ codesMarchands: codes });
                   }}
                 >
                   <AddIcon />

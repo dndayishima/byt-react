@@ -49,7 +49,11 @@ export default class EventsList extends React.Component {
                     event={event}
                     lang={this.props.lang}
                     user={this.props.user}
-                    onSelection={() => {}}
+                    onSelection={event => {
+                      if (this.props.onSelection) {
+                        this.props.onSelection(event);
+                      }
+                    }}
                     onEdit={event => {
                       if (this.props.onEdit) {
                         this.props.onEdit(event);
@@ -176,7 +180,7 @@ class Event extends React.Component {
                     }
                   } else {
                     if (this.props.onSelection) {
-                      this.props.onSelection();
+                      this.props.onSelection(event);
                     }
                   }
                 }}
