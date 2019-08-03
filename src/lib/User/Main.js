@@ -18,12 +18,15 @@ import { AccountCircle, Person, PowerSettingsNew } from "@material-ui/icons";
 import _ from "lodash";
 
 import {
+  Administration,
   BuyTicket,
   Code,
   Events,
   MenuDrawer,
   SettingsView,
-  Title
+  Scanner,
+  Title,
+  TicketsList
 } from "../../lib";
 import { dictionnary } from "../Langs/langs";
 import { getJWTPayload } from "../Helpers/Helpers";
@@ -84,7 +87,9 @@ export default class Main extends React.Component {
         open={this.state.openAccountMenu}
         onClose={() => this.setState({ anchorEl: null, openAccountMenu: false })}
       >
-        <MenuItem>
+        <MenuItem
+          onClick={() => alert("Not available")}
+        >
           <ListItemIcon><Person /></ListItemIcon>
           <ListItemText
             primary={_.upperFirst(_.get(dictionnary, lang + ".profile"))}
@@ -172,6 +177,23 @@ export default class Main extends React.Component {
             : null
           }
 
+          {/* Tickets */}
+          {(this.state.page === "tickets" && !_.isEmpty(this.state.user))
+            ? <div>
+                <Title 
+                  title={_.upperFirst(_.get(dictionnary, lang + ".tickets"))}
+                />
+                <TicketsList 
+                  client={this.props.client}
+                  user={this.state.user}
+                  jwt={this.props.jwt}
+                  lang={this.props.lang}
+                  onError={() => this.setState({ page: "events" })}
+                />
+              </div>
+            : null
+          }
+
           {/* Code */}
           {(this.state.page === "code" && !_.isEmpty(this.state.user))
             ? <div>
@@ -198,6 +220,37 @@ export default class Main extends React.Component {
                   jwt={this.props.jwt}
                   lang={this.props.lang}
                   event={this.state.selectedEvent}
+                  user={this.state.user}
+                />
+              </div>
+            : null
+          }
+
+          {/* Scan de tickets */}
+          {this.state.page === "scan" && !_.isEmpty(this.state.user)
+            ? <div>
+                <Title 
+                  title={_.upperFirst(_.get(dictionnary, lang + ".scan"))}
+                />
+                <Scanner
+                  client={this.props.client}
+                  jwt={this.props.jwt}
+                  lang={this.props.lang}
+                  user={this.state.user}
+                />
+              </div>
+            : null
+          }
+
+          {/* administration */}
+          {this.state.page === "administration"
+            ? <div>
+                <Title 
+                  title={_.upperFirst(_.get(dictionnary, lang + ".administration"))}
+                />
+                <Administration 
+                  lang={this.props.lang}
+                  client={this.props.client}
                   user={this.state.user}
                 />
               </div>

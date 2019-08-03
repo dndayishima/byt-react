@@ -38,6 +38,13 @@ export default class MenuDrawer extends React.Component {
     open: false,
     roles: []
   };
+
+  onClick = item => {
+    if (this.props.onClickItem) {
+      this.props.onClickItem(item);
+    }
+  };
+
   render () {
     let lang = _.toUpper(this.props.lang);
     return (
@@ -57,11 +64,8 @@ export default class MenuDrawer extends React.Component {
         <List>
           <ListItem
             button={true}
-            onClick={() => {
-              if (this.props.onClickItem) {
-                this.props.onClickItem("events");
-              }
-            }}>
+            onClick={() => this.onClick("events")}
+          >
             <ListItemIcon>
               <Event />
             </ListItemIcon>
@@ -70,7 +74,10 @@ export default class MenuDrawer extends React.Component {
             />
           </ListItem>
 
-          <ListItem button={true} onClick={() => {}}>
+          <ListItem
+            button={true}
+            onClick={() => this.onClick("tickets")}
+          >
             <ListItemIcon>
               <Attachment />
             </ListItemIcon>
@@ -84,11 +91,12 @@ export default class MenuDrawer extends React.Component {
             _.includes(this.props.roles, "TECH") ||
             _.includes(this.props.roles, "ADMIN")
             ? <React.Fragment>
-                <ListItem button={true} onClick={() => {
-                  /*if (this.props.onClickItem) {
-                    this.props.onClickItem("code");
-                  }*/
-                }}>
+                <ListItem
+                  button={true}
+                  onClick={() => {
+                    alert("Not available");
+                  }}
+                >
                   <ListItemIcon>
                     <Timeline />
                   </ListItemIcon>
@@ -97,20 +105,10 @@ export default class MenuDrawer extends React.Component {
                   />
                 </ListItem>
       
-                <ListItem button={true} onClick={() => {
-                  if (this.props.onClickItem) {
-                    this.props.onClickItem("code");
-                  }
-                }}>
-                  <ListItemIcon>
-                    <VpnKey />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={_.upperFirst(_.get(dictionnary, lang + ".code"))}
-                  />
-                </ListItem>
-      
-                <ListItem button={true} onClick={() => {}}>
+                <ListItem
+                  button={true}
+                  onClick={() => this.onClick("scan")}
+                >
                   <ListItemIcon>
                     <CenterFocusWeak />
                   </ListItemIcon>
@@ -125,26 +123,39 @@ export default class MenuDrawer extends React.Component {
           {
             _.includes(this.props.roles, "TECH") ||
             _.includes(this.props.roles, "ADMIN")
-            ? <React.Fragment>      
-                <ListItem button={true} onClick={() => {}}>
-                  <ListItemIcon>
-                    <Security />
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary={_.upperFirst(_.get(dictionnary, lang + ".administration"))}
-                  />
-                </ListItem>
-              </React.Fragment>
+            ? <ListItem 
+                button={true}
+                onClick={() => this.onClick("code")}
+              >
+                <ListItemIcon>
+                  <VpnKey />
+                </ListItemIcon>
+                <ListItemText
+                  primary={_.upperFirst(_.get(dictionnary, lang + ".code"))}
+                />
+              </ListItem> 
+            : null
+          }
+
+          {_.includes(this.props.roles, "ADMIN")
+            ? <ListItem
+                button={true}
+                onClick={() => this.onClick("administration")}
+              >
+                <ListItemIcon>
+                  <Security />
+                </ListItemIcon>
+                <ListItemText 
+                  primary={_.upperFirst(_.get(dictionnary, lang + ".administration"))}
+                />
+              </ListItem>
             : null
           }
           
           <ListItem 
             button={true}
-            onClick={() => {
-              if (this.props.onClickItem) {
-                this.props.onClickItem("settings");
-              }
-            }}>
+            onClick={() => this.onClick("settings")}
+          >
             <ListItemIcon>
               <Settings />
             </ListItemIcon>

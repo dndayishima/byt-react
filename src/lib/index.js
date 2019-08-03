@@ -5,16 +5,20 @@ import {
   Register 
 } from "./User";
 import {
+  Administration,
   BuyTicket,
   Code, 
   Events, 
   MenuDrawer, 
   ModalMessage, 
   SettingsView, 
-  Title 
+  Scanner,
+  Title,
+  TicketsList
 } from "./Others";
 
 export {
+  Administration,
   BuyTicket,
   Client,
   Code,
@@ -24,6 +28,8 @@ export {
   MenuDrawer,
   ModalMessage, 
   Register, 
-  SettingsView, 
-  Title 
+  SettingsView,
+  Scanner,
+  Title,
+  TicketsList
 };

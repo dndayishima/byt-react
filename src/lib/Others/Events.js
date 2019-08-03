@@ -13,6 +13,7 @@ import {
 import AddIcon from "@material-ui/icons/Add";
 
 import _ from "lodash";
+import moment from "moment";
 
 import EventsList from "./EventsList";
 
@@ -69,9 +70,18 @@ export default class Events extends React.Component {
       params,
       result => {
         //console.log(result);
+        let res = result.data.data.sort((e1, e2) => {
+          if (moment(e1.date).isBefore(moment(e2.date))) {
+            return -1;
+          } else if (moment(e1.date).isAfter(moment(e2.date))) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
         this.setState({
           informations: result.data.informations,
-          events: result.data.data,
+          events: res,
           loading: false
         });
       },

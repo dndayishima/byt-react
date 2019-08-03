@@ -27,7 +27,7 @@ class Client {
     },
     readAll: (params, success, errors) => {
       axios
-        .get(this.auth + "/user/readAll", params)
+        .post(this.auth + "/user/readAll", params)
         .then(result => success(result))
         .catch(error => errors(error.response));
     },
@@ -140,7 +140,7 @@ class Client {
     },
     validation: (jwt, id, success, errors) => {
       axios
-        .post(
+        .get(
           this.api + "/ticket/validation/" + id,
           {headers: {"Authorization": `Bearer ${jwt}`} })
         .then(result => success(result))

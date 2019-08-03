@@ -123,8 +123,18 @@ export default class BuyTicket extends React.Component {
 
         {this.state.selectedMode === "manual"
           ? <div style={{ marginTop: "30px", marginBottom: "30px" }}>
-              <Typography variant="subtitle1">
-                Effectuez le paiement suivant les informations données ci-dessous et utilisez le code que vous recevrez pour obtenir un ticket.
+              <Typography variant="subtitle1" gutterBottom={true}>
+                {_.upperFirst(_.get(dictionnary, lang + ".buyTicketDescriptionMessage"))}
+              </Typography>
+              <Typography color="textSecondary">
+                <strong>
+                  {_.upperFirst(_.get(dictionnary, lang + ".price"))}
+                  &nbsp;:&nbsp;
+                  {this.props.lang === "en"
+                    ? Number(this.props.event.price).toLocaleString("en-EN")
+                    : Number(this.props.event.price).toLocaleString("fr-FR")
+                  }
+                </strong>
               </Typography>
               {_.map(this.props.event.codesMarchands, (cm, index) => 
                 <div key={index} style={{marginTop: "20px" }}>
