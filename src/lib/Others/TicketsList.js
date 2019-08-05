@@ -339,7 +339,7 @@ class TicketView extends React.Component {
           <DialogContent>
             <Badge
               color="error"
-              badgeContent={_.upperFirst(dictionnary, lang + ".ticketUsed")}
+              badgeContent={_.upperFirst(_.get(dictionnary, lang + ".ticketUsed"))}
               invisible={this.props.ticket.valide}
               style={{ marginRight: "7px" }}
             >

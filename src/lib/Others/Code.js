@@ -151,11 +151,13 @@ export default class Code extends React.Component {
                       </span>
                       <br />
                       <span>
-                        {_.upperFirst(_.get(dictionnary, lang + ".code"))} : 
+                        {_.upperFirst(_.get(dictionnary, lang + ".code"))}
+                        &nbsp;:&nbsp; 
                         <strong>{this.state.code}</strong>
                       </span> <br />
                       <span>
-                        {_.upperFirst(_.get(dictionnary, lang + ".price"))} :
+                        {_.upperFirst(_.get(dictionnary, lang + ".price"))}
+                        &nbsp;&nbsp;
                         <strong>{this.state.price}</strong>
                       </span>
                     </span>
