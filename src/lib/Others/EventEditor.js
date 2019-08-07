@@ -466,7 +466,7 @@ export default class EventEditor extends React.Component {
               </Typography>
             </span>
           </div>
-
+          
           {/* Boutons */}
           <div style={{ display: "flex", marginTop: "15px", marginBottom: "15px", justifyContent: "center" }}>
             <Button

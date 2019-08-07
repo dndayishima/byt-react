@@ -128,10 +128,8 @@ export default class Administration extends React.Component {
             variant="contained"
             color="primary"
             onClick={() => {
-              if (!_.isEmpty(this.state.lastname) || !_.isEmpty(this.state.firstname)) {
-                this.setState({ loading: true });
-                this.search();
-              }
+              this.setState({ loading: true });
+              this.search();
             }}
           >
             {_.get(dictionnary, lang + ".search")}
