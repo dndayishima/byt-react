@@ -29,7 +29,6 @@ import {
   TicketsList
 } from "../../lib";
 import { dictionnary } from "../Langs/langs";
-import { getJWTPayload } from "../Helpers/Helpers";
 
 //import minimized from "../../minimized_brand.png";
 import bytWhite from "../../byt-white.png";
@@ -52,7 +51,8 @@ export default class Main extends React.Component {
     client: PropTypes.any.isRequired,
     jwt: PropTypes.string,
     lang: PropTypes.string,
-    onChangeLanguage: PropTypes.func
+    onChangeLanguage: PropTypes.func,
+    user: PropTypes.object
   };
   static defaultProps = {
     lang: "fr"
@@ -66,16 +66,13 @@ export default class Main extends React.Component {
     page: "events",
     openAccountMenu: false,
     openDrawerMenu: false,
-    user: {},
     selectedEvent: {}
-  };
-
-  componentDidMount() {
-    this.setState({ user: getJWTPayload(this.props.jwt).data });
   };
 
   signOut = () => {
     localStorage.setItem("jwt", "");
+    localStorage.setItem("userCode", "");
+    // ici il faudra gérer le changement d'URL si besoin
     window.location.reload();
   };
 
@@ -136,7 +133,7 @@ export default class Main extends React.Component {
         {menuAccount}
         
         {/* Barre de Menu qui s'ouvre à gauche */}
-        {!_.isEmpty(this.state.user)
+        {!_.isEmpty(this.props.user)
           ? <MenuDrawer
               lang={this.props.lang}
               open={this.state.openDrawerMenu}
@@ -148,14 +145,14 @@ export default class Main extends React.Component {
                   selectedEvent: {}
                 });
               }}
-              roles={this.state.user.roles}
+              roles={this.props.user.roles}
             />
           : null
         }
 
         <div style={styles.container}>
           {/* Events List */}
-          {(this.state.page === "events" && !_.isEmpty(this.state.user))
+          {(this.state.page === "events" && !_.isEmpty(this.props.user))
             ? <div>
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".events"))}
@@ -163,7 +160,7 @@ export default class Main extends React.Component {
                 <Events
                   client={this.props.client}
                   jwt={this.props.jwt}
-                  user={this.state.user}
+                  user={this.props.user}
                   lang={this.props.lang}
                   onSignOut={this.signOut}
                   onSelection={event => {
@@ -183,13 +180,13 @@ export default class Main extends React.Component {
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".tickets"))}
                 />
-                <TicketsList 
+                {/*<TicketsList 
                   client={this.props.client}
                   user={this.state.user}
                   jwt={this.props.jwt}
                   lang={this.props.lang}
                   onError={() => this.setState({ page: "events" })}
-                />
+                />*/}
               </div>
             : null
           }
@@ -215,13 +212,13 @@ export default class Main extends React.Component {
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".buyTicket"))}
                 />
-                <BuyTicket
+                {/*<BuyTicket
                   client={this.props.client}
                   jwt={this.props.jwt}
                   lang={this.props.lang}
                   event={this.state.selectedEvent}
                   user={this.state.user}
-                />
+                />*/}
               </div>
             : null
           }

@@ -25,6 +25,12 @@ class Client {
         .then(result => success(result))
         .catch(error => errors(error.response));
     },
+    readByCode: (code, success, errors) => {
+      axios
+        .get(this.auth + "/user/readByCode/" + code)
+        .then(result => success(result))
+        .catch(error => errors(error.response))
+    },
     readAll: (params, success, errors) => {
       axios
         .post(this.auth + "/user/readAll", params)
@@ -80,22 +86,16 @@ class Client {
         .then(result => success(result))
         .catch(error => errors(error.response));
     },
-    /*readAll: (jwt, params, success, errors) => {
-      axios
-        .get(
-          this.api + "/event/readAll",
-          {data: params, headers: {"Authorization": `Bearer ${jwt}`} })
-        .then(result => success(result))
-        .catch(error => errors(error.response));
-    },*/
+    // POST parce que XHR sur lequel axios se base ne permet pas d'envoyer des données
+    // dans le corps d'une requête GET
     readAll: (jwt, params, success, errors) => {
       axios
         .post(
           this.api + "/event/readAll",
           params,
           {headers: {"Authorization": `Bearer ${jwt}`} })
-        .then(result => success(result))
-        .catch(error => errors(error.response));
+        .then(result => success(result.data))
+        .catch(error => errors(error.response))
     }
   };
 

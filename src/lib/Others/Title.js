@@ -17,7 +17,7 @@ export default class Title extends React.Component {
               <Typography 
                 color="primary"
                 //style={{ color: "red" }}
-                variant="h3"
+                variant="h4"
               >
                 {this.props.title}
               </Typography>

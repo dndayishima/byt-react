@@ -30,8 +30,29 @@ const styles = {
 export default class App extends React.Component {
   state = {
     jwt: _.get(localStorage, "jwt", ""),
+    user: null,
     page: "connexion",
     lang: _.get(localStorage, "lang", "fr")
+  };
+
+  componentDidMount() {
+    this.reloadUser();
+  };
+
+  reloadUser = () => {
+    let userCode = _.get(localStorage, "userCode", "");
+    if (_.isEmpty(userCode)) {
+      return;
+    }
+    client.User.readByCode(
+      userCode,
+      result => {
+        this.setState({ user: result.data.user });
+      },
+      error => {
+        this.setState({ user: null });
+      }
+    );
   };
 
   onChangeLanguage = lang => {
@@ -59,10 +80,10 @@ export default class App extends React.Component {
                   <Connexion
                     client={client}
                     lang={this.state.lang}
-                    onSuccess={jwt => {
-                      localStorage.setItem("jwt", jwt);
-                      //console.log(jwt);
-                      this.setState({ jwt: jwt });
+                    onSuccess={data => {
+                      localStorage.setItem("jwt", data.jwt);
+                      localStorage.setItem("userCode", data.user.code);
+                      this.setState({ jwt: data.jwt, user: data.user });
                     }}
                   />
                   <Button
@@ -98,6 +119,7 @@ export default class App extends React.Component {
           : <Main
               client={client}
               jwt={this.state.jwt}
+              user={this.state.user}
               lang={this.state.lang}
               onChangeLanguage={lang => this.onChangeLanguage(lang)}
             />

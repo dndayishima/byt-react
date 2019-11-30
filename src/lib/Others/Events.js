@@ -40,7 +40,6 @@ export default class Events extends React.Component {
     edit: false, // new
     selectedEvent: {}, // new
     events: [],
-    informations: {},
     errorType: null, // 1 : session expirée - 2 : connexion
     errorTitle: "",
     errorMessage: "",
@@ -56,7 +55,7 @@ export default class Events extends React.Component {
   onSwitch = value => {
     let params = this.state.reloadParams;
     if (value === "myevents") {
-      _.set(params, "seller", this.props.user.login);
+      _.set(params, "seller", this.props.user.code);
     } else {
       _.unset(params, "seller");
     }
@@ -69,8 +68,7 @@ export default class Events extends React.Component {
       this.props.jwt,
       params,
       result => {
-        //console.log(result);
-        let res = result.data.data.sort((e1, e2) => {
+        let res = result.results.content.sort((e1, e2) => {
           if (moment(e1.date).isBefore(moment(e2.date))) {
             return -1;
           } else if (moment(e1.date).isAfter(moment(e2.date))) {
@@ -80,7 +78,6 @@ export default class Events extends React.Component {
           }
         });
         this.setState({
-          informations: result.data.informations,
           events: res,
           loading: false
         });

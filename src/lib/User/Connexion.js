@@ -14,8 +14,6 @@ import _ from "lodash";
 
 import { dictionnary } from "../Langs/langs";
 
-//import { getJWTPayload } from "../Helpers/Helpers";
-
 export default class Connexion extends React.Component {
   static propTypes = {
     client: PropTypes.any.isRequired,
@@ -61,14 +59,11 @@ export default class Connexion extends React.Component {
       this.state.login,
       this.state.password,
       result => {
-        //console.log(result);
-        //getJWTPayload(result.data.jwt);
         if (this.props.onSuccess) {
-          this.props.onSuccess(result.data.jwt);
+          this.props.onSuccess(result.data);
         }
       },
       error => {
-        //console.log(error);
         let lang = _.toUpper(this.props.lang);
         this.setState({
           error: true,
