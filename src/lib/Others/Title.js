@@ -13,13 +13,13 @@ export default class Title extends React.Component {
       <React.Fragment>
         {_.isEmpty(this.props.title)
           ? null
-          : <div style={{ marginBottom: "20px" }}> 
+          : <div style={{ marginBottom: "15px" }}> 
               <Typography 
                 color="primary"
                 //style={{ color: "red" }}
                 variant="h4"
               >
-                {this.props.title}
+                <strong>{this.props.title}</strong>
               </Typography>
             </div>
         }

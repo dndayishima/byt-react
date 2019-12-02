@@ -3,6 +3,9 @@ import PropTypes from "prop-types";
 
 import {
   Button,
+  Card,
+  CardContent,
+  Container,
   Dialog,
   DialogActions,
   DialogContent,
@@ -10,7 +13,8 @@ import {
   IconButton,
   Snackbar,
   TextField,
-  Typography
+  Typography,
+  Divider
 } from "@material-ui/core";
 
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
@@ -34,19 +38,13 @@ import frLocale from "date-fns/locale/fr";
 import enLocale from "date-fns/locale/en-US";
 
 import { ModalMessage } from "../../lib";
+import PriceViewer from "./PriceViewer";
 
 import emptyImage from "../../empty-image.png";
 
 import { dictionnary } from "../Langs/langs";
 
-import { imageHasPrefix } from "../Helpers/Helpers";
-
-const styles = {
-  input: {
-    marginTop: "10px",
-    marginBottom: "10px"
-  }
-};
+import { getValueOfOptionalString, imageHasPrefix } from "../Helpers/Helpers";
 
 export default class EventEditor extends React.Component {
   static propTypes = {
@@ -72,10 +70,9 @@ export default class EventEditor extends React.Component {
     description: _.get(this.props.event, "description", ""),
     name: _.get(this.props.event, "name", ""),
     photo: _.get(this.props.event, "photo", ""),
-    price: _.get(this.props.event, "price", 0),
+    prices: _.get(this.props.event, "prices", []),
     tags: _.get(this.props.event, "tags", []),
-    venue: _.get(this.props.event, "venue", ""),
-    codesMarchands: _.get(this.props.event, "codesMarchands", []),
+    venue: _.get(this.props.event, "venue", {}),
     modalPhoto: false,
     openSnackBar: false,
     errorMessage: "",
@@ -97,17 +94,11 @@ export default class EventEditor extends React.Component {
     }
   };
 
-  handleChangePrice = price => {
-    this.setState({
-      price: _.isEmpty(price) ? 0 : Number(price)
-    });
-  };
-
   checkValidity = () => {
     return (
       !_.isEmpty(this.state.name) &&
-      !_.isNull(this.state.date) &&
-      (this.state.price > 0)
+      !_.isNull(this.state.date) /*&&
+      (this.state.price > 0)*/ // les prix seront vérifiés à part
     );
   };
 
@@ -137,26 +128,22 @@ export default class EventEditor extends React.Component {
       this.props.jwt,
       this.props.event.id,
       result => {
-        //console.log(result);
-        let event = result.data;
+        let event = result.data.event;
         if (event.lockRevision === this.props.event.lockRevision) {
           let params = {};
+          params.id = event.id;
           params.name = this.state.name;
           params.date = this.state.date.format("YYYY-MM-DDTHH:mm:ss");
-          params.description = this.state.description;
-          params.price = this.state.price;
-          params.tags = _.filter(this.state.tags, tag => tag !== "");
-          params.venue = this.state.venue;
-          params.codesMarchands = 
-            _.filter(this.state.codesMarchands, cm => !_.isEmpty(cm.operator) && !_.isEmpty(cm.numero));
+          params.description = _.isEmpty(this.state.description) ? null : this.state.description;
+          params.prices = this.state.prices;
 
-          if (imageHasPrefix(this.state.photo)) {
-            params.photo = this.state.photo;
-          }
+          let t = _.filter(this.state.tags, tag => tag !== "");
+          params.tags = _.isEmpty(t) ? null : t;
+          params.venue = this.state.venue; // à gérer
+          params.photo = _.isEmpty(this.state.photo) ? null : this.state.photo;
 
           this.props.client.Event.update(
             this.props.jwt,
-            this.props.event.id,
             params,
             result => {
               // success
@@ -166,7 +153,6 @@ export default class EventEditor extends React.Component {
             },
             error => {
               // error
-              //console.log(error);
               this.handleError(error);
             }
           );
@@ -187,7 +173,7 @@ export default class EventEditor extends React.Component {
     );
   };
 
-  save = () => {
+  /*save = () => {
     if (!this.checkValidity()) {
       this.invalidForm();
       return;
@@ -217,7 +203,7 @@ export default class EventEditor extends React.Component {
         this.handleError(error);
       }
     );
-  };
+  };*/
 
   invalidForm = () => {
     let lang = _.toUpper(this.props.lang);
@@ -226,181 +212,252 @@ export default class EventEditor extends React.Component {
       errorMessage: _.upperFirst(_.get(dictionnary, lang + ".invalidForm"))
     })
   };
-  
 
   render() {
     let lang = _.toUpper(this.props.lang);
-    //console.log(this.state.date._d);
     return (
       <React.Fragment>
-        <div style={{ 
-          margin: "0 auto",
-          maxWidth: "700px",
-          display: "flex",
-          flexDirection: "column",
-          width: "Auto"
-          }}
-        >
-
-          <div
-            style={{ 
-              marginTop: "15px",
-              marginBottom: "15px",
-              textAlign: "center"
-            }}
-          >            
-            <img
-              onClick={() => this.setState({ modalPhoto: true })}
-              src={
-                _.isEmpty(this.state.photo) 
-                  ? emptyImage
-                  : imageHasPrefix(this.state.photo)
-                    ? this.state.photo
-                    : "data:image/png;base64," + this.state.photo
-              } 
-              alt="Affiche" 
-              height="150" 
-              width="auto"
-            />
-          </div>
-
-          {!_.isEmpty(this.props.event)
-            ? <div style={styles.input}>
-                <TextField
-                  disabled={true}
-                  fullWidth={true}
-                  label={_.upperFirst(_.get(dictionnary, lang + ".eventCode"))}
-                  variant="outlined"
-                  value={this.props.event.code}
-                />
-              </div>
-            : null
-          }
-          
-          <div style={styles.input}>
-            <TextField
-              fullWidth={true}
-              label={_.upperFirst(_.get(dictionnary, lang + ".eventName"))}
-              required={true}
-              variant="outlined"
-              value={this.state.name}
-              onChange={e => this.handleChangeInput(e, "name")}
-            />
-          </div>
-
-          {/* Date + heure*/}
-          <MuiPickersUtilsProvider
-            utils={DateFnsUtils}
-            locale={this.props.lang === "en" ? enLocale : frLocale}
-          >
-            <Grid container={true} justify="space-between">
-              <KeyboardDatePicker 
-                autoOk={true}
-                inputVariant="outlined"
-                format={this.props.lang === "en" ? "MM/dd/yyyy" : "dd/MM/yyyy"}
-                label={_.upperFirst(_.get(dictionnary, lang + ".date"))}
-                required={true}
-                style={styles.input}
-                value={this.state.date.toDate()}
-                onChange={date => {
-                  let prev = this.state.date;
-                  if (!_.isNull(date) && !_.isNaN(date.getDay())) {
-                    let selectedDay = moment(date);
-                    selectedDay.hour(prev.get("hour"));
-                    selectedDay.minute(prev.get("minute"));
-                    this.setState({ date: selectedDay });
-                  }
-                }}
-              />
-              <KeyboardTimePicker 
-                inputVariant="outlined"
-                ampm={this.props.lang === "en"}
-                label={_.upperFirst(_.get(dictionnary, lang + ".time"))}
-                style={styles.input}
-                required={true}
-                value={this.state.date.toDate()}
-                onChange={date => {
-                  //console.log(date);
-                  let prev = this.state.date;
-                  if (!_.isNull(date) && !_.isNaN(date.getDay())) {
-                    let selectedTime = moment(date);
-                    selectedTime.year(prev.get("year"));
-                    selectedTime.month(prev.get("month"));
-                    selectedTime.date(prev.get("date"));
-                    this.setState({ date: selectedTime });
-                  }
-                }}
+        <Container maxWidth="md" style={{ marginBottom: "15px" }}>
+          <Grid container={true} spacing={2} justify="center">
+            <Grid item={true} xs={8}>
+              <img
+                onClick={() => this.setState({ modalPhoto: true })}
+                src={
+                  _.isEmpty(this.state.photo) 
+                    ? emptyImage
+                    : this.state.photo
+                } 
+                alt="Affiche" 
+                height="100%" 
+                width="100%"
               />
             </Grid>
-          </MuiPickersUtilsProvider>
-
-          <div style={styles.input}>
-            <TextField
-              fullWidth={true}
-              label={_.upperFirst(_.get(dictionnary, lang + ".price"))}
-              type="number"
-              required={true}
-              variant="outlined"
-              value={this.state.price}
-              onChange={e => this.handleChangePrice(e.target.value)}
-            />
-          </div>
-          <div style={styles.input}>
-            <TextField
-              fullWidth={true}
-              label={_.upperFirst(_.get(dictionnary, lang + ".description"))}
-              multiline={true}
-              rowsMax="6"
-              variant="outlined"
-              value={this.state.description}
-              onChange={e => this.handleChangeInput(e, "description")}
-            />
-          </div>
-
-          <div style={styles.input}>
-            <TextField
-              fullWidth={true}
-              label={_.upperFirst(_.get(dictionnary, lang + ".venue"))}
-              variant="outlined"
-              value={this.state.venue}
-              onChange={e => this.handleChangeInput(e, "venue")}
-            />
-          </div>
-
-          {/* Tags ici */}
-          {_.map(this.state.tags, (tag, index) =>
-            <div style={styles.input} key={index}>
-              <div style={{ display: "flex", flexGrow: 1 }}>
-                <TextField 
+            <Grid item={true} xs={12} md={6}>
+              <TextField
+                disabled={true}
+                fullWidth={true}
+                label={_.upperFirst(_.get(dictionnary, lang + ".eventCode"))}
+                variant="outlined"
+                value={_.isEmpty(this.props.event) ? "" : this.props.event.code}
+              />
+            </Grid>
+            <Grid item={true} xs={12} md={6}>
+              <TextField
+                fullWidth={true}
+                label={_.upperFirst(_.get(dictionnary, lang + ".eventName"))}
+                required={true}
+                variant="outlined"
+                value={this.state.name}
+                onChange={e => this.handleChangeInput(e, "name")}
+              />
+            </Grid>
+            
+            {/* Date + Heure */}
+            <MuiPickersUtilsProvider
+              utils={DateFnsUtils}
+              locale={this.props.lang === "en" ? enLocale : frLocale}
+            >
+              <Grid item={true} xs={12} md={6}>
+                <KeyboardDatePicker
                   fullWidth={true}
-                  label={_.upperFirst(_.get(dictionnary, lang + ".tag"))}
-                  name="tag"
-                  variant="outlined"
-                  value={tag}
-                  onChange={e => this.handleChangeInput(e, "tags", index)}
-                />
-                <IconButton
-                  style={{ marginLeft: "8px" }}
-                  onClick={() => {
-                    let tags = this.state.tags;
-                    tags.splice(index, 1);
-                    this.setState({ tags: tags });
+                  autoOk={true}
+                  inputVariant="outlined"
+                  format={this.props.lang === "en" ? "MM/dd/yyyy" : "dd/MM/yyyy"}
+                  label={_.upperFirst(_.get(dictionnary, lang + ".date"))}
+                  required={true}
+                  value={this.state.date.toDate()}
+                  onChange={date => {
+                    let prev = this.state.date;
+                    if (!_.isNull(date) && !_.isNaN(date.getDay())) {
+                      let selectedDay = moment(date);
+                      selectedDay.hour(prev.get("hour"));
+                      selectedDay.minute(prev.get("minute"));
+                      this.setState({ date: selectedDay });
+                    }
                   }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </div>
-            </div>
-          )}
+                />
+              </Grid>
+              <Grid item={true} xs={12} md={6}>
+                <KeyboardTimePicker
+                  fullWidth={true}
+                  inputVariant="outlined"
+                  ampm={this.props.lang === "en"}
+                  label={_.upperFirst(_.get(dictionnary, lang + ".time"))}
+                  required={true}
+                  value={this.state.date.toDate()}
+                  onChange={date => {
+                    let prev = this.state.date;
+                    if (!_.isNull(date) && !_.isNaN(date.getDay())) {
+                      let selectedTime = moment(date);
+                      selectedTime.year(prev.get("year"));
+                      selectedTime.month(prev.get("month"));
+                      selectedTime.date(prev.get("date"));
+                      this.setState({ date: selectedTime });
+                    }
+                  }}
+                />
+              </Grid>
+            </MuiPickersUtilsProvider>
 
-          <div style={styles.input}>
+            {/* Description */}
+            <Grid item={true} xs={12}>
+              <TextField
+                fullWidth={true}
+                label={_.upperFirst(_.get(dictionnary, lang + ".description"))}
+                multiline={true}
+                rowsMax="6"
+                variant="outlined"
+                value={_.isEmpty(this.state.description) ? "" : this.state.description}
+                onChange={e => this.handleChangeInput(e, "description")}
+              />
+            </Grid>
+          </Grid>
+
+          {/* Prix + Places */}
+          <Grid container={true} spacing={2}>
+            {_.map(this.state.prices, (price, index) => 
+              <Grid item={true} key={index} xs={12} md={4}>
+                <PriceViewer
+                  lang={this.props.lang}
+                  edition={true}
+                  price={price}
+                />
+              </Grid>
+            )}
+            <Grid item={true} xs={12} md={4} direction="column" justify="center" container={true}>
+              <Card style={{ height: "100%"}}>
+                <CardContent style={{ textAlign: "center" }}>
+                  <IconButton
+                    onClick={() => {
+                      //let tags = this.state.tags;
+                      //tags.push("");
+                      //this.setState({ tags: tags });
+                    }}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+
+          {/* Adresse - Venue */}
+          <Typography variant="h6" style={{ marginTop: "25px", marginBottom: "15px", textAlign: "center" }}>
+            <strong>{_.upperFirst(_.get(dictionnary, lang + ".venue"))}</strong>
+          </Typography>
+          <Grid container={true} spacing={2}>
+            <Grid item={true} xs={6}>
+              <TextField 
+                fullWidth={true}
+                label={_.upperFirst(_.get(dictionnary, lang + ".numero"))}
+                name="number"
+                variant="outlined"
+                value={
+                  !_.isNull(this.state.venue)
+                    ? getValueOfOptionalString(this.state.venue.number)
+                    : ""
+                }
+                onChange={e => {}}
+              />
+            </Grid>
+            <Grid item={true} xs={6}>
+              <TextField 
+                fullWidth={true}
+                label={_.upperFirst(_.get(dictionnary, lang + ".road"))}
+                name="road"
+                variant="outlined"
+                value={
+                  !_.isNull(this.state.venue)
+                    ? getValueOfOptionalString(this.state.venue.road)
+                    : ""
+                }
+                onChange={e => {}}
+              />
+            </Grid>
+            <Grid item={true} xs={6}>
+              <TextField 
+                fullWidth={true}
+                label={_.upperFirst(_.get(dictionnary, lang + ".city"))}
+                name="city"
+                variant="outlined"
+                value={
+                  !_.isNull(this.state.venue)
+                    ? getValueOfOptionalString(this.state.venue.city)
+                    : ""
+                }
+                onChange={e => {}}
+              />
+            </Grid>
+            <Grid item={true} xs={6}>
+              <TextField 
+                fullWidth={true}
+                label={_.upperFirst(_.get(dictionnary, lang + ".country"))}
+                name="country"
+                variant="outlined"
+                value={
+                  !_.isNull(this.state.venue)
+                    ? getValueOfOptionalString(this.state.venue.country)
+                    : ""
+                }
+                onChange={e => {}}
+              />
+            </Grid>
+            <Grid item={true} xs={12}>
+              <TextField 
+                fullWidth={true}
+                label={_.upperFirst(_.get(dictionnary, lang + ".details"))}
+                name="details"
+                variant="outlined"
+                value={
+                  !_.isNull(this.state.venue)
+                    ? getValueOfOptionalString(this.state.venue.details)
+                    : ""
+                }
+                onChange={e => {}}
+              />
+            </Grid>
+          </Grid>
+          
+          {/* Tags */}
+          <Typography variant="h6" style={{ marginTop: "25px", marginBottom: "15px", textAlign: "center" }}>
+            <strong>{_.upperFirst(_.get(dictionnary, lang + ".tag"))}</strong>
+          </Typography>
+          <Grid container={true} spacing={2}>
+            {_.map(this.state.tags, (tag, index) => 
+              <Grid item={true} xs={12} md={4} key={index}>
+                <div style={{ display: "flex", flexGrow: 1 }}>
+                  <TextField 
+                    fullWidth={true}
+                    label={_.upperFirst(_.get(dictionnary, lang + ".tag"))}
+                    name="tag"
+                    variant="outlined"
+                    value={tag}
+                    onChange={e => this.handleChangeInput(e, "tags", index)}
+                  />
+                  <IconButton
+                    style={{ marginLeft: "8px" }}
+                    onClick={() => {
+                      let tags = this.state.tags;
+                      tags.splice(index, 1);
+                      this.setState({ tags: tags });
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </div>
+              </Grid>  
+            )}
+          </Grid>
+
+          {/* Button add Tag */}
+          <Grid item={true} xs={12} style={{ marginTop: "10px" }}>
             <span style={{ textAlign: "center" }}>
               <Typography variant="body1" gutterBottom={true}>
                 {_.upperFirst(_.get(dictionnary, lang + ".tag"))}
                 <IconButton
                   style={{ marginLeft: "8px" }}
                   onClick={() => {
-                    let tags = this.state.tags;
+                    let tags = _.isNull(this.state.tags) ? [] : this.state.tags;
                     tags.push("");
                     this.setState({ tags: tags });
                   }}
@@ -409,110 +466,46 @@ export default class EventEditor extends React.Component {
                 </IconButton>
               </Typography>
             </span>
-          </div>
+          </Grid>
 
-          {/* Codes marchands */}
-          {_.map(this.state.codesMarchands, (cm, index) =>
-            <Grid container={true} justify="space-between" key={index}>
-              <TextField
-                label={_.upperFirst(_.get(dictionnary, lang + ".operator"))}
-                style={styles.input}
-                variant="outlined"
-                value={cm.operator}
-                onChange={e => {
-                  let codes = this.state.codesMarchands;
-                  codes[index].operator = e.target.value;
-                  this.setState({ codesMarchands: codes });
-                }} 
-              />
-              <TextField
-                label={_.upperFirst(_.get(dictionnary, lang + ".numero"))}
-                style={styles.input}
-                variant="outlined"
-                value={cm.numero}
-                onChange={e => {
-                  let codes = this.state.codesMarchands;
-                  codes[index].numero = e.target.value;
-                  this.setState({ codesMarchands: codes });
-                }}
-              />
-              <IconButton
-                style={{ marginLeft: "8px" }}
+          {/* Buttons Annuler - Enregistrer - Modifier */}
+          <Grid container={true} spacing={1}>
+            <Grid item={true} xs={12} md={6}>
+              <Button
+                variant="contained"
+                fullWidth={true}
+                size="large"
                 onClick={() => {
-                  let codes = this.state.codesMarchands;
-                  codes.splice(index, 1);
-                  this.setState({ codesMarchands: codes });
+                  if (this.props.onCancel) {
+                    this.props.onCancel();
+                  }
                 }}
               >
-                <DeleteIcon />
-              </IconButton>
+                {_.upperFirst(_.get(dictionnary, lang + ".cancel"))}
+              </Button>
             </Grid>
-          )}
-
-          <div style={styles.input}>
-            <span style={{ textAlign: "center" }}>
-              <Typography variant="body1" gutterBottom={true}>
-                {_.upperFirst(_.get(dictionnary, lang + ".codeMarchand"))}
-                <IconButton
-                  style={{ marginLeft: "8px" }}
-                  onClick={() => {
-                    let codes = this.state.codesMarchands;
-                    codes.push({ operator: "", numero: "" });
-                    this.setState({ codesMarchands: codes });
-                  }}
-                >
-                  <AddIcon />
-                </IconButton>
-              </Typography>
-            </span>
-          </div>
-          
-          {/* Boutons */}
-          <div style={{ display: "flex", marginTop: "15px", marginBottom: "15px", justifyContent: "center" }}>
-            <Button
-              variant="contained"
-              style={{ marginRight: "5px"}}
-              size="large"
-              onClick={() => {
-                if (this.props.onCancel) {
-                  this.props.onCancel();
+            <Grid item={true} xs={12} md={6}>
+              <Button 
+                variant="contained"
+                fullWidth={true}
+                color="primary"
+                size="large"
+                onClick={() => {
+                  if (_.isEmpty(this.props.event)) {
+                    //this.save();
+                  } else {
+                    this.update();
+                  }
+                }}
+              >
+                {_.isEmpty(this.props.event)
+                  ? _.upperFirst(_.get(dictionnary, lang + ".save"))
+                  : _.upperFirst(_.get(dictionnary, lang + ".modify"))
                 }
-              }}
-            >
-              {_.upperFirst(_.get(dictionnary, lang + ".cancel"))}
-            </Button>
-
-            {!_.isEmpty(this.props.event)
-              ? <Button
-                  variant="contained"
-                  style={{ marginRight: "5px", color: "white", backgroundColor: "red" }}
-                  size="large"
-                  onClick={() => console.log("delete")}
-                >
-                  {_.upperFirst(_.get(dictionnary, lang + ".delete"))}
-                </Button>
-              : null
-            }
-            
-            <Button 
-              variant="contained"
-              color="primary"
-              size="large"
-              onClick={() => {
-                if (_.isEmpty(this.props.event)) {
-                  this.save();
-                } else {
-                  this.update();
-                }
-              }}
-            >
-              {_.isEmpty(this.props.event)
-                ? _.upperFirst(_.get(dictionnary, lang + ".save"))
-                : _.upperFirst(_.get(dictionnary, lang + ".modify"))
-              }
-            </Button>
-          </div>
-        </div>
+              </Button>
+            </Grid>
+          </Grid>
+        </Container>
 
         {/* Modal de changement de la photo */}
         <ModalPhoto

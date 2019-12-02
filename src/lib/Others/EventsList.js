@@ -12,7 +12,8 @@ import {
   Fab,
   Grid,
   Paper,
-  Typography
+  Typography,
+  IconButton
 } from "@material-ui/core";
 
 import {
@@ -54,7 +55,7 @@ export default class EventsList extends React.Component {
               <img src={emptyIcon} alt="no events" height="80" width="auto" />
             </div>
           : <Container maxWidth="lg">
-              <Grid container spacing={1}>
+              <Grid container={true} spacing={1}>
                 {_.map(this.props.events, (event, i) => 
                   <Event
                     key={i}
@@ -110,13 +111,27 @@ class Event extends React.Component {
 
   render() {
     let event = this.props.event;
-    console.log(event);
+    //console.log(event);
     return (
       <Grid item xs={12} sm={6} md={4}>
         <Card>
           <CardHeader
             avatar={
               <Avatar aria-label="event" variant="square" src={avatarImage} />
+            }
+            action={
+              this.props.user.code === event.seller
+                ? <IconButton
+                    aria-label="edit"
+                    onClick={() => {
+                      if (this.props.onEdit) {
+                        this.props.onEdit(event);
+                      }
+                    }}
+                  >
+                    <Edit />
+                  </IconButton>
+                : null
             }
             title={event.name}
             subheader={this.dispayDate(event.date) + " - " + this.displayTime(event.date)}
@@ -126,7 +141,7 @@ class Event extends React.Component {
             image={_.isEmpty(event.photo) ? imageEmpty : event.photo}
             title={event.name}
           />
-          <CardContent style={{ paddingBottom: 10 }}>
+          <CardContent style={{ paddingBottom: 10, textAlign: "center" }}>
             {/*{!_.isEmpty(event.description)
               ? <Typography variant="body2" color="textSecondary" component="p">
                   {truncateString(event.description, 150)}
