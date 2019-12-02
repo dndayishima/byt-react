@@ -77,10 +77,10 @@ class Client {
         .then(result => success(result))
         .catch(error => errors(error.response));
     },
-    update: (jwt, id, params, success, errors) => {
+    update: (jwt, params, success, errors) => {
       axios
         .post(
-          this.api + "/event/update/" + id,
+          this.api + "/event/update",
           params,
           {headers: {"Authorization": `Bearer ${jwt}`} })
         .then(result => success(result))
