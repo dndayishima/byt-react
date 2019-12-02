@@ -1,3 +1,6 @@
+import _ from "lodash";
+import { currencies } from "./Settings";
+
 const getJWTPayload = jwt => { // gérer les cas d'erreurs
   let userBase64 = jwt.split(".")[1];
   let u = JSON.parse(atob(userBase64));
@@ -16,4 +19,41 @@ const truncateString = (str, num) => {
   return str.slice(0, num) + "..."
 };
 
-export { getJWTPayload, imageHasPrefix, truncateString };
+/*const getAllCurrencies = () => {
+  return currencies;
+};*/
+
+/*const currencyValidity = strCurrency => {
+  _.forEach(currencies, currency => {
+    if (currency.currency === strCurrency) {
+      return true;
+    }
+  });
+  return false;
+};*/
+
+const getCurrencySymbol = strCurrency => {
+  for (let i = 0; i < currencies.length; i++) {
+    if (currencies[i].currency === strCurrency) {
+      return currencies[i].symbol;
+    }
+  }
+  return "";
+};
+
+const getValueOfOptionalString = str => {
+  if (_.isNull(str) || _.isUndefined(str)) {
+    return "";
+  }
+  return str;
+};
+
+export {
+  getJWTPayload,
+  imageHasPrefix,
+  truncateString,
+  //getAllCurrencies,
+  getCurrencySymbol,
+  getValueOfOptionalString
+  //currencyValidity
+};

@@ -4,4 +4,10 @@
 const authUrl = "http://localhost:8080";
 const apiUrl = "http://localhost:8081";
 
-export { authUrl, apiUrl };
+// devises disponibles
+const currencies = [
+  { currency: "BIF", symbol: "BIF" },
+  { currency: "USD", symbol: "$"}
+];
+
+export { authUrl, apiUrl, currencies };
