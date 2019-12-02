@@ -34,7 +34,8 @@ export default class PriceViewer extends React.Component {
   static propTypes = {
     lang: PropTypes.string,
     edition: PropTypes.bool,
-    price: PropTypes.object
+    price: PropTypes.object,
+    onClickModification: PropTypes.func
   };
 
   static defaultProps = {
@@ -155,6 +156,11 @@ export default class PriceViewer extends React.Component {
                       fullWidth={true}
                       variant="contained"
                       color="primary"
+                      onClick={() => {
+                        if (this.props.onClickModification) {
+                          this.props.onClickModification(this.props.price);
+                        }
+                      }}
                     >
                       {_.upperFirst(_.get(dictionnary, lang + ".modify"))}
                     </Button>

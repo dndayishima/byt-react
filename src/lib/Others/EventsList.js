@@ -104,9 +104,9 @@ class Event extends React.Component {
 
   displayTime = date => {
     if (this.props.lang === "en") {
-      return moment(date).format("LT");
+      return moment.parseZone(date).format("LT");
     }
-    return moment(date).format("HH:mm");
+    return moment.parseZone(date).format("HH:mm"); // attention à ce qui est retourné ici
   };
 
   render() {
@@ -125,6 +125,7 @@ class Event extends React.Component {
                     aria-label="edit"
                     onClick={() => {
                       if (this.props.onEdit) {
+                        console.log(event);
                         this.props.onEdit(event);
                       }
                     }}

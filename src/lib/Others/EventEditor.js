@@ -13,8 +13,7 @@ import {
   IconButton,
   Snackbar,
   TextField,
-  Typography,
-  Divider
+  Typography
 } from "@material-ui/core";
 
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
@@ -39,6 +38,7 @@ import enLocale from "date-fns/locale/en-US";
 
 import { ModalMessage } from "../../lib";
 import PriceViewer from "./PriceViewer";
+import PriceEditor from "./PriceEditor";
 
 import emptyImage from "../../empty-image.png";
 
@@ -77,7 +77,8 @@ export default class EventEditor extends React.Component {
     openSnackBar: false,
     errorMessage: "",
     errorTitle: "",
-    errorType: null
+    errorType: null,
+    priceToEdit: {}
   };
 
   // l'index sera défini au moment où on voudra modifier
@@ -92,6 +93,12 @@ export default class EventEditor extends React.Component {
       _.set(state, name, event.target.value);
       this.setState({...state});
     }
+  };
+
+  handleChangeVenue = (event, name) => {
+    let venue = _.isNull(this.state.venue) ? {} : this.state.venue;
+    venue[name] = event.target.value;
+    this.setState({ venue: venue });
   };
 
   checkValidity = () => {
@@ -124,6 +131,18 @@ export default class EventEditor extends React.Component {
       this.invalidForm();
       return;
     }
+
+    // mettre les champs vides à NULL
+    let formatVenue = () => {
+      let venue = this.state.venue;
+      _.forEach(venue, (value, key) => {
+        if (_.isEmpty(value)) {
+          venue[key] = null;
+        }
+      });
+      return venue;
+    };
+
     this.props.client.Event.read(
       this.props.jwt,
       this.props.event.id,
@@ -139,7 +158,7 @@ export default class EventEditor extends React.Component {
 
           let t = _.filter(this.state.tags, tag => tag !== "");
           params.tags = _.isEmpty(t) ? null : t;
-          params.venue = this.state.venue; // à gérer
+          params.venue = formatVenue();
           params.photo = _.isEmpty(this.state.photo) ? null : this.state.photo;
 
           this.props.client.Event.update(
@@ -215,6 +234,18 @@ export default class EventEditor extends React.Component {
 
   render() {
     let lang = _.toUpper(this.props.lang);
+
+    // Rendu de l'édition d'un prix
+    if (!_.isEmpty(this.state.priceToEdit)) {
+      return (
+        <PriceEditor
+          lang={this.props.lang}
+          price={this.state.priceToEdit}
+        />
+      )
+    }
+
+    // rendu principal
     return (
       <React.Fragment>
         <Container maxWidth="md" style={{ marginBottom: "15px" }}>
@@ -316,15 +347,16 @@ export default class EventEditor extends React.Component {
           {/* Prix + Places */}
           <Grid container={true} spacing={2}>
             {_.map(this.state.prices, (price, index) => 
-              <Grid item={true} key={index} xs={12} md={4}>
+              <Grid item={true} key={index} xs={12} sm={6} md={4}>
                 <PriceViewer
                   lang={this.props.lang}
                   edition={true}
                   price={price}
+                  onClickModification={price => this.setState({ priceToEdit: price })}
                 />
               </Grid>
             )}
-            <Grid item={true} xs={12} md={4} direction="column" justify="center" container={true}>
+            <Grid item={true} xs={12} sm={6} md={4} direction="column" justify="center" container={true}>
               <Card style={{ height: "100%"}}>
                 <CardContent style={{ textAlign: "center" }}>
                   <IconButton
@@ -350,70 +382,65 @@ export default class EventEditor extends React.Component {
               <TextField 
                 fullWidth={true}
                 label={_.upperFirst(_.get(dictionnary, lang + ".numero"))}
-                name="number"
                 variant="outlined"
                 value={
                   !_.isNull(this.state.venue)
                     ? getValueOfOptionalString(this.state.venue.number)
                     : ""
                 }
-                onChange={e => {}}
+                onChange={e => this.handleChangeVenue(e, "number")}
               />
             </Grid>
             <Grid item={true} xs={6}>
               <TextField 
                 fullWidth={true}
                 label={_.upperFirst(_.get(dictionnary, lang + ".road"))}
-                name="road"
                 variant="outlined"
                 value={
                   !_.isNull(this.state.venue)
                     ? getValueOfOptionalString(this.state.venue.road)
                     : ""
                 }
-                onChange={e => {}}
+                onChange={e => this.handleChangeVenue(e, "road")}
               />
             </Grid>
             <Grid item={true} xs={6}>
               <TextField 
                 fullWidth={true}
                 label={_.upperFirst(_.get(dictionnary, lang + ".city"))}
-                name="city"
                 variant="outlined"
                 value={
                   !_.isNull(this.state.venue)
                     ? getValueOfOptionalString(this.state.venue.city)
                     : ""
                 }
-                onChange={e => {}}
+                onChange={e => this.handleChangeVenue(e, "city")}
               />
             </Grid>
             <Grid item={true} xs={6}>
               <TextField 
                 fullWidth={true}
                 label={_.upperFirst(_.get(dictionnary, lang + ".country"))}
-                name="country"
                 variant="outlined"
                 value={
                   !_.isNull(this.state.venue)
                     ? getValueOfOptionalString(this.state.venue.country)
                     : ""
                 }
-                onChange={e => {}}
+                onChange={e => this.handleChangeVenue(e, "country")}
               />
             </Grid>
             <Grid item={true} xs={12}>
               <TextField 
                 fullWidth={true}
                 label={_.upperFirst(_.get(dictionnary, lang + ".details"))}
-                name="details"
                 variant="outlined"
                 value={
                   !_.isNull(this.state.venue)
                     ? getValueOfOptionalString(this.state.venue.details)
                     : ""
                 }
-                onChange={e => {}}
+                onChange={e => this.handleChangeVenue(e, "details")}
               />
             </Grid>
           </Grid>
@@ -572,8 +599,10 @@ class ModalPhoto extends React.Component {
     photo: this.props.photo
   };
 
-  componentWillReceiveProps(next) {
-    this.setState({ photo: next.photo })
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.photo !== prevProps.photo) {
+      this.setState({ photo: this.props.photo });
+    }
   };
 
   getBase64Image = file => {
