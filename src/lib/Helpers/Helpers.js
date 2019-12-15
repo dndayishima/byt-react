@@ -19,9 +19,9 @@ const truncateString = (str, num) => {
   return str.slice(0, num) + "..."
 };
 
-/*const getAllCurrencies = () => {
+const getAllCurrencies = () => {
   return currencies;
-};*/
+};
 
 /*const currencyValidity = strCurrency => {
   _.forEach(currencies, currency => {
@@ -52,7 +52,7 @@ export {
   getJWTPayload,
   imageHasPrefix,
   truncateString,
-  //getAllCurrencies,
+  getAllCurrencies,
   getCurrencySymbol,
   getValueOfOptionalString
   //currencyValidity

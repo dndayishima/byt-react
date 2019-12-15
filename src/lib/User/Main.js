@@ -23,6 +23,7 @@ import {
   Code,
   Events,
   MenuDrawer,
+  Register,
   SettingsView,
   Scanner,
   Title,
@@ -78,6 +79,7 @@ export default class Main extends React.Component {
 
   render() {
     let lang = _.toUpper(this.props.lang);
+    console.log(this.props.user);
     const menuAccount = (
       <Menu
         anchorEl={this.state.anchorEl}
@@ -85,7 +87,13 @@ export default class Main extends React.Component {
         onClose={() => this.setState({ anchorEl: null, openAccountMenu: false })}
       >
         <MenuItem
-          onClick={() => alert("Not available")}
+          onClick={() => {
+            this.setState({
+              page: "profile",
+              anchorEl: null,
+              openAccountMenu: false
+            });
+          }}
         >
           <ListItemIcon><Person /></ListItemIcon>
           <ListItemText
@@ -251,6 +259,18 @@ export default class Main extends React.Component {
                   user={this.state.user}
                 />
               </div>
+            : null
+          }
+
+          {/* profile */}
+          {this.state.page === "profile"
+            ? <Register 
+                client={this.props.client}
+                lang={this.props.lang}
+                edition={true}
+                user={this.props.user}
+                onCancel={() => this.setState({ page: "events" })}
+              />
             : null
           }
 

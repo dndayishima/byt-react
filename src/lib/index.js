@@ -4,13 +4,15 @@ import {
   Main, 
   Register 
 } from "./User";
+
 import {
   Administration,
   BuyTicket,
   Code, 
   Events, 
   MenuDrawer, 
-  ModalMessage, 
+  ModalMessage,
+  ModalPhoto, 
   SettingsView, 
   Scanner,
   Title,
@@ -26,7 +28,8 @@ export {
   Events,
   Main,
   MenuDrawer,
-  ModalMessage, 
+  ModalMessage,
+  ModalPhoto, 
   Register, 
   SettingsView,
   Scanner,

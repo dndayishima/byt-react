@@ -6,19 +6,12 @@ import {
   Card,
   CardContent,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
   Grid,
   IconButton,
   Snackbar,
   TextField,
   Typography
 } from "@material-ui/core";
-
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-
-import { Image } from "@material-ui/icons";
 
 import AddIcon from "@material-ui/icons/Add";
 import CloseIcon from "@material-ui/icons/Close";
@@ -36,7 +29,7 @@ import DateFnsUtils from "@date-io/date-fns";
 import frLocale from "date-fns/locale/fr";
 import enLocale from "date-fns/locale/en-US";
 
-import { ModalMessage } from "../../lib";
+import { ModalMessage, ModalPhoto } from "../../lib";
 import PriceViewer from "./PriceViewer";
 import PriceEditor from "./PriceEditor";
 
@@ -44,7 +37,7 @@ import emptyImage from "../../empty-image.png";
 
 import { dictionnary } from "../Langs/langs";
 
-import { getValueOfOptionalString, imageHasPrefix } from "../Helpers/Helpers";
+import { getValueOfOptionalString } from "../Helpers/Helpers";
 
 export default class EventEditor extends React.Component {
   static propTypes = {
@@ -78,7 +71,8 @@ export default class EventEditor extends React.Component {
     errorMessage: "",
     errorTitle: "",
     errorType: null,
-    priceToEdit: {}
+    priceToEdit: null, // si vide {}, c'est la création d'un nouveau prix
+    priceToEditIndex: null
   };
 
   // l'index sera défini au moment où on voudra modifier
@@ -104,8 +98,8 @@ export default class EventEditor extends React.Component {
   checkValidity = () => {
     return (
       !_.isEmpty(this.state.name) &&
-      !_.isNull(this.state.date) /*&&
-      (this.state.price > 0)*/ // les prix seront vérifiés à part
+      !_.isNull(this.state.date) &&
+      !_.isEmpty(this.state.prices)
     );
   };
 
@@ -192,27 +186,39 @@ export default class EventEditor extends React.Component {
     );
   };
 
-  /*save = () => {
+  save = () => {
     if (!this.checkValidity()) {
       this.invalidForm();
       return;
     }
+
+    // mettre les champs vides à NULL
+    let formatVenue = () => {
+      let venue = this.state.venue;
+      _.forEach(venue, (value, key) => {
+        if (_.isEmpty(value)) {
+          venue[key] = null;
+        }
+      });
+      return venue;
+    };
+
     let params = {};
     params.name = this.state.name;
     params.date = this.state.date.format("YYYY-MM-DDTHH:mm:ss");
-    params.description = this.state.description;
-    params.price = this.state.price;
-    params.tags = _.filter(this.state.tags, tag => tag !== "");
-    params.venue = this.state.venue;
-    params.photo = this.state.photo;
-    params.codesMarchands = 
-      _.filter(this.state.codesMarchands, cm => !_.isEmpty(cm.operator) && !_.isEmpty(cm.numero));
+    params.prices = this.state.prices;
+    params.description = _.isEmpty(this.state.description) ? null : this.state.description;
+    
+    let t = _.filter(this.state.tags, tag => tag !== "");
+    params.tags = _.isEmpty(t) ? null : t;
+    params.venue = formatVenue();
+    params.photo = _.isEmpty(this.state.photo) ? null : this.state.photo;
 
+    // perform request here
     this.props.client.Event.create(
       this.props.jwt,
       params,
       result => {
-        // TODO : faire des retours utilisateurs
         if (this.props.onEdition) {
           this.props.onEdition();
         }
@@ -222,7 +228,7 @@ export default class EventEditor extends React.Component {
         this.handleError(error);
       }
     );
-  };*/
+  };
 
   invalidForm = () => {
     let lang = _.toUpper(this.props.lang);
@@ -236,11 +242,25 @@ export default class EventEditor extends React.Component {
     let lang = _.toUpper(this.props.lang);
 
     // Rendu de l'édition d'un prix
-    if (!_.isEmpty(this.state.priceToEdit)) {
+    if (!_.isNull(this.state.priceToEdit)) {
       return (
         <PriceEditor
           lang={this.props.lang}
           price={this.state.priceToEdit}
+          onCancel={() => this.setState({ priceToEdit: null, priceToEditIndex: null })}
+          onChange={price => {
+            let prices = this.state.prices;
+            if (_.isNull(this.state.priceToEditIndex)) { // nouveau prix
+              prices.push(price);
+            } else {
+              prices[this.state.priceToEditIndex] = price;
+            }
+            this.setState({
+              prices: prices,
+              priceToEdit: null,
+              priceToEditIndex: null
+            });
+          }}
         />
       )
     }
@@ -352,7 +372,7 @@ export default class EventEditor extends React.Component {
                   lang={this.props.lang}
                   edition={true}
                   price={price}
-                  onClickModification={price => this.setState({ priceToEdit: price })}
+                  onClickModification={price => this.setState({ priceToEdit: price, priceToEditIndex: index })}
                 />
               </Grid>
             )}
@@ -360,11 +380,7 @@ export default class EventEditor extends React.Component {
               <Card style={{ height: "100%"}}>
                 <CardContent style={{ textAlign: "center" }}>
                   <IconButton
-                    onClick={() => {
-                      //let tags = this.state.tags;
-                      //tags.push("");
-                      //this.setState({ tags: tags });
-                    }}
+                    onClick={() => this.setState({ priceToEdit: {}, priceToEditIndex: null })}
                   >
                     <AddIcon />
                   </IconButton>
@@ -519,7 +535,7 @@ export default class EventEditor extends React.Component {
                 size="large"
                 onClick={() => {
                   if (_.isEmpty(this.props.event)) {
-                    //this.save();
+                    this.save();
                   } else {
                     this.update();
                   }
@@ -585,135 +601,6 @@ export default class EventEditor extends React.Component {
             }
           }}
         />
-      </React.Fragment>
-    )
-  }
-}
-
-class ModalPhoto extends React.Component {
-  static defaultProps = {
-    lang: "fr"
-  };
-
-  state = {
-    photo: this.props.photo
-  };
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.photo !== prevProps.photo) {
-      this.setState({ photo: this.props.photo });
-    }
-  };
-
-  getBase64Image = file => {
-    let reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      //console.log(reader.result);
-      this.setState({ photo: reader.result });
-    };
-    reader.onerror = error => {
-      console.log("error " + error);
-    };
-  };
-
-  render() {
-    let lang = _.toUpper(this.props.lang);
-    return (
-      <React.Fragment>
-        <Dialog
-          open={this.props.open}
-          onClose={() => {
-            if (this.props.onClose) {
-              this.props.onClose();
-            }
-          }}
-        >
-          <MuiDialogTitle disableTypography={true}>
-            <Typography
-              variant="h6"
-              color="primary"
-            >
-              <strong>
-                {_.upperFirst(_.get(dictionnary, lang + ".image"))}
-              </strong>
-            </Typography>
-          </MuiDialogTitle>
-          <DialogContent dividers={true}>
-            <div
-              style={{ textAlign: "center" }}
-            >
-              <img
-                src={
-                  _.isEmpty(this.state.photo)
-                    ? emptyImage
-                    : imageHasPrefix(this.state.photo)
-                      ? this.state.photo
-                      : "data:image/png;base64," + this.state.photo
-                }
-                height="auto"
-                width="100%"
-                alt="Affiche"
-              />
-            </div>
-
-            <div style={{ marginTop: "10px", display: "flex", justifyContent: "center" }}>
-              <IconButton
-                onClick={() => {
-                  document.getElementById("file").click();
-                }}
-              >
-                <Image />
-              </IconButton>
-              <IconButton
-                onClick={() => this.setState({ photo: "" })}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </div>
-            <input
-              id="file"
-              type="file"
-              accept="image/*"
-              hidden={true}
-              onChange={e => {
-                if (_.get(e.target.files, "length") !== 0) {
-                  let file = _.get(e.target.files, "0");
-                  this.getBase64Image(file);
-                }
-              }}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              color="primary"
-              onClick={() => {
-                if (this.props.onClose) {
-                  this.props.onClose();
-                }
-              }}
-            >
-              <strong>
-                {_.upperFirst(_.get(dictionnary, lang + ".cancel"))}
-              </strong>
-            </Button>
-            <Button
-              color="primary"
-              onClick={() => {
-                if (this.props.onModify) {
-                  this.props.onModify(this.state.photo);
-                }
-                if (this.props.onClose) {
-                  this.props.onClose();
-                }
-              }}
-            >
-              <strong>
-                {_.upperFirst(_.get(dictionnary, lang + ".modify"))}
-              </strong>
-            </Button>
-          </DialogActions>
-        </Dialog>
       </React.Fragment>
     )
   }

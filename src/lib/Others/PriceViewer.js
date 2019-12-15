@@ -101,10 +101,6 @@ export default class PriceViewer extends React.Component {
                 </Typography>
               : null
             }
-            <Typography variant="subtitle1">
-              {_.upperFirst(_.get(dictionnary, lang + ".remainingPlaces"))}
-              &nbsp;:&nbsp;{this.props.price.remainingPlaces}
-            </Typography>
 
             {/* Autres devises */}
             {this.state.showAllCurrencies
@@ -117,7 +113,7 @@ export default class PriceViewer extends React.Component {
                           return null;
                         }
                         return (
-                          <TableRow>
+                          <TableRow key={index}>
                             <TableCell align="right">
                               {this.priceValuePrinting(value.value)}
                             </TableCell>

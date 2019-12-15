@@ -125,7 +125,6 @@ class Event extends React.Component {
                     aria-label="edit"
                     onClick={() => {
                       if (this.props.onEdit) {
-                        console.log(event);
                         this.props.onEdit(event);
                       }
                     }}

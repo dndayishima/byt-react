@@ -54,7 +54,7 @@ class Client {
   Event = {
     create: (jwt, params, success, errors) => {
       axios
-        .post(
+        .put(
           this.api + "/event/create",
           params,
           {headers: {"Authorization": `Bearer ${jwt}`} })
