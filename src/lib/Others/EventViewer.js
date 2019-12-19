@@ -12,10 +12,12 @@ import {
 } from "@material-ui/core";
 
 import {
+  Category,
   DateRange,
   Event,
   EventNote,
   PersonOutline,
+  Place
 } from "@material-ui/icons";
 
 import _ from "lodash";
@@ -37,6 +39,7 @@ export default class EventViewer extends React.Component {
   static propTypes = {
     lang: PropTypes.string,
     event: PropTypes.object,
+    user: PropTypes.object,
     onCancel: PropTypes.func
   };
   static defaultProps = {
@@ -44,7 +47,6 @@ export default class EventViewer extends React.Component {
   };
 
   render () {
-    console.log(this.props.event);
     const event = this.props.event;
     const lang = _.toUpper(this.props.lang);
     return (
@@ -171,10 +173,110 @@ export default class EventViewer extends React.Component {
                   lang={this.props.lang}
                   edition={false}
                   price={price}
+                  buy={event.seller !== this.props.user.code}
+                  onClickBuy={p => {
+                    if (_.isEmpty(p.id)) {
+                      return;
+                    }
+                    console.log(p);
+                  }}
                 />
               </Grid>
             )}
           </Grid>
+
+          {/* Adresse - Venue */}
+          {!_.isNull(event.venue)
+            ? <React.Fragment>
+                <Typography variant="h6" style={{ marginTop: "25px", marginBottom: "15px", textAlign: "center" }}>
+                  <strong>{_.upperFirst(_.get(dictionnary, lang + ".venue"))}</strong>
+                </Typography>
+                <Grid container={true}>
+                  <Grid item={true} xs={12}>
+                    <Card>
+                      <CardHeader 
+                        title={
+                          <Place 
+                            color="primary"
+                            style={{ fontSize: 25 }}
+                          />
+                        }
+                        titleTypographyProps={{ align: "center" }}
+                        style={styles.cardHeader}
+                      />
+                      <CardContent style={{ textAlign: "center" }}>
+                        <Typography variant="body1" color="textSecondary">
+                          {!_.isEmpty(event.venue.number)
+                            ? "N° " + event.venue.number + ", "
+                            : null
+                          }
+                          {!_.isEmpty(event.venue.road)
+                            ? event.venue.road
+                            : null
+                          }
+                        </Typography>
+                        {!_.isEmpty(event.venue.details)
+                          ? <Typography variant="body1" color="textSecondary">
+                              {event.venue.details}
+                            </Typography>
+                          : null
+                        }
+                        <Typography variant="body1" color="textSecondary">
+                          {!_.isEmpty(event.venue.city)
+                            ? _.toUpper(event.venue.city) + ", "
+                            : null
+                          }
+                          {!_.isEmpty(event.venue.country)
+                            ? _.toUpper(event.venue.country)
+                            : null
+                          }
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                </Grid>
+              </React.Fragment>
+            : null
+          }
+
+          {/* tags */}
+          {!_.isEmpty(event.tags)
+            ? <React.Fragment>
+                <Typography variant="h6" style={{ marginTop: "25px", marginBottom: "15px", textAlign: "center" }}>
+                  <strong>{_.upperFirst(_.get(dictionnary, lang + ".tag"))}</strong>
+                </Typography>
+                <Grid container={true}>
+                  <Grid item={true} xs={12}>
+                    <Card>
+                      <CardHeader 
+                        title={
+                          <Category 
+                            color="primary"
+                            style={{ fontSize: 25 }}
+                          />
+                        }
+                        titleTypographyProps={{ align: "center" }}
+                        style={styles.cardHeader}
+                      />
+                      <CardContent style={{ textAlign: "center" }}>
+                        <Typography variant="body1" color="textSecondary">
+                          {_.map(event.tags, (tag, index) => {
+                            let t = _.toUpper(tag);
+                            if (index === event.tags.length - 1) {
+                              return t;
+                            } else {
+                              return t + ", "
+                            }
+                          })}
+                        </Typography>
+                        
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                </Grid>
+              </React.Fragment>
+            : null
+          }
 
           {/* Button Annuler - Buy a ticket */}
           <Grid container={true} spacing={1} justify="center" style={{ marginTop: "30px" }}>

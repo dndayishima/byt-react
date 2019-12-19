@@ -16,9 +16,11 @@ import {
   Typography
 } from "@material-ui/core"
 
+import { AddShoppingCart } from "@material-ui/icons";
+
 import _ from "lodash";
 
-import { getCurrencySymbol } from "../Helpers/Helpers";
+import { getCurrencySymbol, priceValuePrinting } from "../Helpers/Helpers";
 import { dictionnary } from "../Langs/langs";
 
 
@@ -35,6 +37,8 @@ export default class PriceViewer extends React.Component {
     lang: PropTypes.string,
     edition: PropTypes.bool,
     price: PropTypes.object,
+    buy: PropTypes.bool,
+    onClickBuy: PropTypes.func,
     onClickModification: PropTypes.func
   };
 
@@ -46,18 +50,11 @@ export default class PriceViewer extends React.Component {
     showAllCurrencies: false
   };
 
-  priceValuePrinting = priceValue => {
-    if (this.props.lang === "en") {
-      return Number(priceValue).toLocaleString("en-EN");
-    }
-    return Number(priceValue).toLocaleString("fr-FR");
-  };
-
   render() {
     const principalPriceValue = (
       <Grid item={true} xs={8}>
         <Typography variant="h3" color="textPrimary">
-          {this.priceValuePrinting(this.props.price.values[0].value)}
+          {priceValuePrinting(this.props.price.values[0].value, this.props.lang)}
         </Typography>
       </Grid>
     );
@@ -115,7 +112,7 @@ export default class PriceViewer extends React.Component {
                         return (
                           <TableRow key={index}>
                             <TableCell align="right">
-                              {this.priceValuePrinting(value.value)}
+                              {priceValuePrinting(value.value, this.props.lang)}
                             </TableCell>
                             <TableCell align="left">
                               {getCurrencySymbol(value.currency)}
@@ -159,6 +156,24 @@ export default class PriceViewer extends React.Component {
                       }}
                     >
                       {_.upperFirst(_.get(dictionnary, lang + ".modify"))}
+                    </Button>
+                  </Grid>
+                : null
+              }
+              {this.props.buy
+                ? <Grid item={true} xs={12}>
+                    <Button
+                      fullWidth={true}
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        // faire quelque chose ici
+                        if (this.props.onClickBuy) {
+                          this.props.onClickBuy(this.props.price);
+                        }
+                      }}
+                    >
+                      <AddShoppingCart />
                     </Button>
                   </Grid>
                 : null

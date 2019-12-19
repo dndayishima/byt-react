@@ -207,7 +207,7 @@ export default class Main extends React.Component {
           }
 
           {/* Code */}
-          {(this.state.page === "code" && !_.isEmpty(this.state.user))
+          {(this.state.page === "code" && !_.isEmpty(this.props.user))
             ? <div>
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".code"))}

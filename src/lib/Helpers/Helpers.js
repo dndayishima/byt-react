@@ -24,15 +24,6 @@ const getAllCurrencies = () => {
   return currencies;
 };
 
-/*const currencyValidity = strCurrency => {
-  _.forEach(currencies, currency => {
-    if (currency.currency === strCurrency) {
-      return true;
-    }
-  });
-  return false;
-};*/
-
 const getCurrencySymbol = strCurrency => {
   for (let i = 0; i < currencies.length; i++) {
     if (currencies[i].currency === strCurrency) {
@@ -63,6 +54,13 @@ const displayTime = (date, lang) => {
   return moment.parseZone(date).format("HH:mm"); // attention à ce qui est retourné ici
 };
 
+const priceValuePrinting = (priceValue, lang) => {
+  if (lang === "en") {
+    return Number(priceValue).toLocaleString("en-EN");
+  }
+  return Number(priceValue).toLocaleString("fr-FR");
+};
+
 export {
   displayDate,
   displayTime,
@@ -71,6 +69,6 @@ export {
   truncateString,
   getAllCurrencies,
   getCurrencySymbol,
-  getValueOfOptionalString
-  //currencyValidity
+  getValueOfOptionalString,
+  priceValuePrinting
 };
