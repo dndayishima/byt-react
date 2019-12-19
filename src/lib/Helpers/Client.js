@@ -15,7 +15,7 @@ class Client {
     },
     register: (params, success, errors) => {
       axios
-        .post(this.auth + "/user/register", params)
+        .put(this.auth + "/user/register", params)
         .then(result => success(result))
         .catch(error => errors(error.response));
     },
@@ -37,9 +37,9 @@ class Client {
         .then(result => success(result))
         .catch(error => errors(error.response));
     },
-    update: (id, params, success, errors) => {
+    update: (params, success, errors) => {
       axios
-        .post(this.auth + "/user/update/" + id, params)
+        .post(this.auth + "/user/update/", params)
         .then(result => success(result))
         .catch(error => errors(error.response));
     },

@@ -3,12 +3,12 @@ import PropTypes from "prop-types";
 
 import {
   Button,
+  CircularProgress,
   Container,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
-  Divider,
   FormControlLabel,
   Grid,
   IconButton,
@@ -21,7 +21,6 @@ import MuiDialogTitle from "@material-ui/core/DialogTitle";
 
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
 
 import _ from "lodash";
@@ -29,19 +28,10 @@ import DateFnsUtils from "@date-io/date-fns";
 import frLocale from "date-fns/locale/fr";
 import enLocale from "date-fns/locale/en-US";
 
-import moment from "moment";
-
 import { ModalPhoto, Title } from "../../lib";
 import emptyImage from "../../empty-image.png";
 
 import { dictionnary } from "../Langs/langs";
-
-const styles = {
-  input: {
-    marginTop: "10px",
-    marginBottom: "10px"
-  }
-};
 
 export default class Register extends React.Component {
   static propTypes = {
@@ -49,8 +39,9 @@ export default class Register extends React.Component {
     lang: PropTypes.string,
     edition: PropTypes.bool,
     user: PropTypes.object,
-    onCancel: PropTypes.func
-    //onSuccess: PropTypes.func
+    onCancel: PropTypes.func,
+    onEdition: PropTypes.func,
+    onRegistration: PropTypes.func
   };
 
   static defaultProps = {
@@ -69,7 +60,12 @@ export default class Register extends React.Component {
     photo: _.get(this.props.user, "photo", ""),
     telephones: _.get(this.props.user, "telephones", []),
     changeLoginInformations: false,
-    modalPhoto: false
+    modalPhoto: false,
+    openSnackBar: false,
+    error: false,
+    errorMessage: "",
+    dialogType: null, // success en cas de succès et error dans le cas contraire
+    loading: false
   };
 
   emailValidity = () => {
@@ -100,8 +96,131 @@ export default class Register extends React.Component {
     );
   };
 
+  register = () => {
+    if (!this.checkValidity()) {
+      let lang = _.toUpper(this.props.lang);
+      let invalidForm = _.get(dictionnary, lang + ".invalidForm");
+      this.setState({ 
+        openSnackBar: true,
+        error: true, errorMessage: _.upperFirst(invalidForm),
+        loading: false
+      });
+      return;
+    }
+
+    let params = {};
+    params.login = this.state.login;
+    params.password = this.state.password;
+    params.lastname = this.state.lastname;
+    params.firstname = this.state.firstname;
+    params.birthday = this.state.birthday;
+    params.email = _.isEmpty(this.state.email) ? null : this.state.email;
+    params.photo = _.isEmpty(this.state.photo) ? null : this.state.photo;
+
+    let t = _.filter(this.state.telephones, tel => tel !== "");
+    params.telephones = _.isEmpty(t) ? null : t;
+
+    this.props.client.User.register(
+      params,
+      result => {
+        //console.log(result);
+        this.setState({ dialogType: 1, loading: false });
+      },
+      error => {
+        //console.log(error);
+        this.setState({ 
+          dialogType: _.isUndefined(error) ? 3 : 2, // 3 = Réseau
+          loading: false
+        });
+      }
+    );
+  };
+
+  // TODO : Gérer le lockRevision
+  save = () => {
+    let lang = _.toUpper(this.props.lang);
+    if (!this.checkValidity()) {
+      let invalidForm = _.get(dictionnary, lang + ".invalidForm");
+      this.setState({
+        openSnackBar: true,
+        error: true, errorMessage: _.upperFirst(invalidForm),
+        loading: false
+      });
+      return;
+    }
+
+    let params = {};
+    params.id = this.props.user.id
+    params.lastname = this.state.lastname;
+    params.firstname = this.state.firstname;
+    params.birthday = this.state.birthday;
+    params.email = _.isEmpty(this.state.email) ? null : this.state.email;
+    params.photo = _.isEmpty(this.state.photo) ? null : this.state.photo;
+
+    let t = _.filter(this.state.telephones, tel => tel !== "");
+    params.telephones = _.isEmpty(t) ? null : t;
+
+    if (!this.state.changeLoginInformations) {
+      this.props.client.User.update(
+        params,
+        result => {
+          //console.log(result);
+          if (this.props.onEdition) {
+            this.props.onEdition(result.data.jwt, result.data.user);
+          }
+        },
+        error => {
+          //console.log(error);
+          this.setState({
+            openSnackBar: true,
+            error: true,
+            errorMessage: _.upperFirst(_.get(dictionnary, lang + ".errorOccurredMessage")),
+            loading: false
+          });
+        }
+      );
+    } else {
+      // cas de changement des informations de connexion
+      this.props.client.User.login(
+        this.state.login,
+        this.state.oldPassword,
+        result => {
+          // faire la mise à jour de l'utilisateur alors
+          params.password = this.state.password;
+          this.props.client.User.update(
+            params,
+            result => {
+              if (this.props.onEdition) {
+                this.props.onEdition(result.data.jwt, result.data.user);
+              }
+            },
+            error => {
+              this.setState({
+                openSnackBar: true,
+                error: true,
+                errorMessage: _.upperFirst(_.get(dictionnary, lang + ".errorOccurredMessage")),
+                loading: false
+              });
+            }
+          );
+        },
+        error => {
+          //console.log(error);
+          // mettre ici un autre type d'erreur
+          this.setState({
+            openSnackBar: true,
+            error: true,
+            errorMessage: _.upperFirst(_.get(dictionnary, lang + ".oldPasswordWrong")),
+            loading: false
+          });
+        }
+      );
+    }
+  };
+
   render () {
     let lang = _.toUpper(this.props.lang);
+    
     return (
       <React.Fragment>
         <Container maxWidth="md" style={{ marginBottom: "15px", marginTop: "10px" }}>
@@ -336,6 +455,16 @@ export default class Register extends React.Component {
               </Grid>
           }
 
+          {/* Loader après l'appui sur Enregistrer - Modifier */}
+          {this.state.loading
+            ? <Grid container={true} spacing={2} justify="center">
+                <Grid item={true}>
+                  <CircularProgress />
+                </Grid>
+              </Grid>
+            : null
+          }
+
           {/* Buttons Annuler - Enregistrer - Modifier */}
           <Grid container={true} spacing={1} style={{ marginTop: "10px" }}>
             <Grid item={true} xs={12} md={6}>
@@ -359,11 +488,12 @@ export default class Register extends React.Component {
                 color="primary"
                 size="large"
                 onClick={() => {
-                  /*if (_.isEmpty(this.props.event)) {
+                  this.setState({ loading: true });
+                  if (this.props.edition) {
                     this.save();
                   } else {
-                    this.update();
-                  }*/
+                    this.register();
+                  }
                 }}
               >
                 {this.props.edition
@@ -383,314 +513,6 @@ export default class Register extends React.Component {
           onClose={() => this.setState({ modalPhoto: false })}
           onModify={photo => this.setState({ photo: photo })}
         />
-      </React.Fragment>
-    );
-  }
-}
-
-class Registerrrrr extends React.Component {
-  static propTypes = {
-    client: PropTypes.any.isRequired,
-    lang: PropTypes.string,
-    onSuccess: PropTypes.func
-  };
-  static defaultProps = {
-    lang: "fr"
-  };
-
-  state = {
-    login: "",
-    password: "",
-    confirmPassword: "",
-    firstname: "",
-    lastname: "",
-    birthday: null,
-    telephones: [],
-    email: "",
-    roles: ["USER"],
-    error: false,
-    errorMessage: "",
-    openSnackBar: false,
-    dialogType: null // success en cas de succès et error dans le cas contraire
-  };
-
-  // l'index sera défini au moment où on voudra modifier 
-  // le numéro de téléphone
-  handleChangeInput = (event, name, index) => {
-    if (!_.isUndefined(index)) { // on est sur les téléphones
-      let tel = this.state.telephones;
-      tel[index] = event.target.value;
-      this.setState({ telephones: tel });
-    } else {
-      let state = this.state;
-      _.set(state, name, event.target.value);
-      this.setState({...state});
-    }
-  };
-
-  changeSellerRole = () => {
-    let roles = this.state.roles;
-    let sellerIndex = _.findIndex(roles, role => role === "SELLER");
-    if (sellerIndex === -1) {
-      roles.push("SELLER");
-    } else {
-      roles.splice(sellerIndex, 1);
-    }
-    this.setState({ roles: roles });
-  };
-
-  emailValidity = () => {
-    let regex = /\S+@\S+\.\S+/;
-    return (_.isEmpty(this.state.email) || regex.test(this.state.email));
-  };
-
-  // numéros du burundi seulement
-  phoneValidity = phone => {
-    let regex = new RegExp("^(\\+|00|[0-9])[0-9]+$");
-    return (_.isEmpty(phone) || (phone.length >= 8 && phone.length <= 13 && regex.test(phone)));    
-  };
-
-  checkPhones = () => {
-    let bool = true;
-    _.forEach(this.state.telephones, tel => {
-      if (!this.phoneValidity(tel)) {
-        bool = false;
-      }
-    });
-    return bool;
-  };
-
-
-  checkValidity = () => {
-    return (
-      !_.isEmpty(this.state.lastname) &&
-      !_.isEmpty(this.state.firstname) &&
-      !_.isNull(this.state.birthday) &&
-      !_.isEmpty(this.state.login) &&
-      !_.isEmpty(this.state.password) &&
-      (this.state.password === this.state.confirmPassword) &&
-      this.emailValidity() &&
-      this.checkPhones()
-    );
-  };
-
-  register = () => {
-    if (!this.checkValidity()) {
-      let lang = _.toUpper(this.props.lang);
-      let invalidForm = _.get(dictionnary, lang + ".invalidForm");
-      this.setState({ openSnackBar: true, error: true, errorMessage: _.upperFirst(invalidForm) });
-      return;
-    }
-    let params = {
-      login: this.state.login,
-      password: this.state.password,
-      lastname: this.state.lastname,
-      firstname: this.state.firstname,
-      birthday: moment(this.state.birthday).format("YYYY-MM-DD"),
-      telephones: this.state.telephones,
-      email: this.state.email,
-      roles: this.state.roles
-    };
-    this.props.client.User.register(
-      params,
-      result => {
-        //console.log("success");
-        //console.log(result);
-        this.setState({ dialogType: 1 });
-      },
-      error => {
-        //console.log("error");
-        //console.log(error);
-        this.setState({ 
-          dialogType: _.isUndefined(error) ? 3 : 2 // 3 = Réseau
-        });
-      }
-    )
-  };
-
-  render() {
-    let lang = _.toUpper(this.props.lang);
-    let lastname = _.get(dictionnary, lang + ".lastname");
-    let firstname = _.get(dictionnary, lang + ".firstname");
-    let birthday = _.get(dictionnary, lang + ".birthday");
-    let email = _.get(dictionnary, lang + ".email");
-    let phone = _.get(dictionnary, lang + ".phone");
-    let login = _.get(dictionnary, lang + ".login");
-    let password = _.get(dictionnary, lang + ".password");
-    let confirmPassword = _.get(dictionnary, lang + ".confirmPassword");
-    let seller = _.get(dictionnary, lang + ".seller");
-    let createAccount = _.get(dictionnary, lang + ".createAccount");
-    let register = _.get(dictionnary, lang + ".register");
-    //console.log(_.isNull(this.state.birthday) ? "null" : moment(this.state.birthday).format("YYYY-MM-DD"));
-    //console.log(this.state.birthday.getDate());
-    return (
-      <React.Fragment>
-        <form noValidate={true} autoComplete="off">
-          <div style={styles.input}>
-            <TextField
-              autoFocus={true}
-              fullWidth={true}
-              label={_.upperFirst(lastname)}
-              name="lastname"
-              onChange={e => {
-                this.handleChangeInput(e, "lastname");
-              }}
-              value={this.state.lastname}
-              required={true}
-              variant="outlined"
-            />
-          </div>
-          <div style={styles.input}>
-            <TextField 
-              fullWidth={true}
-              label={_.upperFirst(firstname)}
-              name="firstname"
-              onChange={e => this.handleChangeInput(e, "firstname")}
-              value={this.state.firstname}
-              required={true}
-              variant="outlined"
-            />
-          </div>
-          <div style={styles.input}>
-            <MuiPickersUtilsProvider
-              locale={this.props.lang === "en" ? enLocale : frLocale}
-              utils={DateFnsUtils}
-            >
-              <KeyboardDatePicker
-                autoOk={true}
-                inputVariant="outlined"
-                format={this.props.lang === "en" ? "MM/dd/yyyy" : "dd/MM/yyyy"}
-                label={_.upperFirst(birthday)}
-                fullWidth={true}
-                value={this.state.birthday}
-                required={true}
-                onChange={date => {
-                  if (!_.isNull(date) && !_.isNaN(date.getDay())) {
-                    this.setState({ birthday: date });
-                  }
-                }}
-                invalidDateMessage=""
-              />
-            </MuiPickersUtilsProvider>
-          </div>
-          <div style={styles.input}>
-            <TextField
-              error={!this.emailValidity()}
-              fullWidth={true}
-              label={_.upperFirst(email)}
-              name="email"
-              value={this.state.email}
-              onChange={e => this.handleChangeInput(e, "email")}
-              variant="outlined"
-            />
-          </div>
-          {_.map(this.state.telephones, (tel, index) => 
-            <div style={styles.input} key={index}>
-              <div style={{ display: "flex" }}>
-                <TextField
-                  error={!this.phoneValidity(tel)}
-                  fullWidth={true}
-                  label={_.upperFirst(phone) + " " + (index + 1)}
-                  name="phone"
-                  onChange={e => {
-                    this.handleChangeInput(e, "telephones", index);
-                  }}
-                  value={this.state.telephones[index]}
-                  variant="outlined"
-                />
-                <IconButton
-                  style={{ marginLeft: "8px" }}
-                  onClick={() => {
-                    let tel = this.state.telephones;
-                    tel.splice(index, 1);
-                    this.setState({ telephones: tel });
-                  }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </div>
-            </div>  
-          )}
-          <div style={styles.input}>
-            <span style={{ textAlign: "center" }}>
-              <Typography variant="body1" gutterBottom={true}>
-                {_.upperFirst(phone)}
-                <IconButton
-                  style={{ marginLeft: "8px" }}
-                  onClick={() => {
-                    let tel = this.state.telephones;
-                    tel.push("");
-                    this.setState({ telephones: tel });
-                  }}
-                >
-                  <AddIcon />
-                </IconButton>
-              </Typography>
-            </span>
-          </div>
-          <Divider light={true} variant="middle" style={{ marginTop: "20px", marginBottom: "20px" }}/>
-          <div style={styles.input}>
-            <TextField 
-              fullWidth={true}
-              label={_.upperFirst(login)}
-              name="login"
-              onChange={e => this.handleChangeInput(e, "login")}
-              value={this.state.login}
-              variant="outlined"
-              required={true}
-            />
-          </div>
-          <div style={styles.input}>
-            <TextField 
-              fullWidth={true}
-              label={_.upperFirst(password)}
-              name="password"
-              onChange={e => this.handleChangeInput(e, "password")}
-              value={this.state.password}
-              variant="outlined"
-              required={true}
-              type="password"
-            />
-          </div>
-          <div style={styles.input}>
-            <TextField
-              error={
-                !_.isEmpty(this.state.confirmPassword) &&
-                this.state.confirmPassword !== this.state.password
-              }
-              fullWidth={true}
-              label={_.upperFirst(confirmPassword)}
-              name="confirmation"
-              onChange={e => this.handleChangeInput(e, "confirmPassword")}
-              value={this.state.confirmPassword}
-              variant="outlined"
-              required={true}
-              type="password"
-            />
-          </div>
-          <FormControlLabel 
-            control={
-              <Switch 
-                checked={_.includes(this.state.roles, "SELLER")}
-                color="primary"
-                onChange={() => this.changeSellerRole()}
-              />
-            }
-            label={_.upperFirst(seller)}
-            labelPlacement="end"
-          />
-          <div style={styles.input}>
-            <Button 
-              color="primary"
-              fullWidth={true}
-              onClick={this.register}
-              size="large"
-              variant="contained"
-            >
-              {_.upperFirst(createAccount)}
-            </Button>
-          </div>
-        </form>
 
         {/* message d'erreur */}
         <Snackbar 
@@ -725,7 +547,7 @@ class Registerrrrr extends React.Component {
                 : "error"
               }
             >
-              {_.upperFirst(register)}
+              {_.upperFirst(_.get(dictionnary, lang + ".register"))}
             </Typography>
           </MuiDialogTitle>
           <DialogContent>
@@ -745,8 +567,8 @@ class Registerrrrr extends React.Component {
               color={this.state.dialogType === 1 ? "primary" : "default"}
               onClick={() => {
                 if (this.state.dialogType === 1) {
-                  if (this.props.onSuccess) {
-                    this.props.onSuccess();
+                  if (this.props.onRegistration) {
+                    this.props.onRegistration();
                   }
                 } else {
                   this.setState({ dialogType: null });
@@ -758,7 +580,6 @@ class Registerrrrr extends React.Component {
           </DialogActions>
         </Dialog>
       </React.Fragment>
-    )
+    );
   }
 }
-

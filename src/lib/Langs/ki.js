@@ -56,6 +56,7 @@ const KI = {
   noUserFound: "nta muntu n'umwe dushobora gutora afise ibi birangwa",
   numero: "nomero",
   oldPassword: "igiharuro kabanga cakera",
+  oldPasswordWrong: "igiharuro kabanga cakera sico",
   operator: "umuhora",
   password: "igiharuro kabanga",
   phone: "nomero ya terefone",

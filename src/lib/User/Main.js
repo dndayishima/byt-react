@@ -53,6 +53,7 @@ export default class Main extends React.Component {
     jwt: PropTypes.string,
     lang: PropTypes.string,
     onChangeLanguage: PropTypes.func,
+    onRelogin: PropTypes.func,
     user: PropTypes.object
   };
   static defaultProps = {
@@ -70,6 +71,13 @@ export default class Main extends React.Component {
     selectedEvent: {}
   };
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.jwt !== this.props.jwt) {
+      // il y a eu une reconnexion
+      this.setState({ page: "events" });
+    }
+  };
+
   signOut = () => {
     localStorage.setItem("jwt", "");
     localStorage.setItem("userCode", "");
@@ -79,7 +87,6 @@ export default class Main extends React.Component {
 
   render() {
     let lang = _.toUpper(this.props.lang);
-    console.log(this.props.user);
     const menuAccount = (
       <Menu
         anchorEl={this.state.anchorEl}
@@ -270,6 +277,7 @@ export default class Main extends React.Component {
                 edition={true}
                 user={this.props.user}
                 onCancel={() => this.setState({ page: "events" })}
+                onEdition={(jwt, user) => this.props.onRelogin(jwt, user)}
               />
             : null
           }

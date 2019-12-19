@@ -1,4 +1,5 @@
 import _ from "lodash";
+import moment from "moment";
 import { currencies } from "./Settings";
 
 const getJWTPayload = jwt => { // gérer les cas d'erreurs
@@ -48,7 +49,23 @@ const getValueOfOptionalString = str => {
   return str;
 };
 
+const displayDate = (date, lang) => {
+  if (lang === "en") {
+    return moment(date).format("MM/DD/YYYY");
+  }
+  return moment(date).format("DD/MM/YYYY")
+};
+
+const displayTime = (date, lang) => {
+  if (lang === "en") {
+    return moment.parseZone(date).format("LT");
+  }
+  return moment.parseZone(date).format("HH:mm"); // attention à ce qui est retourné ici
+};
+
 export {
+  displayDate,
+  displayTime,
   getJWTPayload,
   imageHasPrefix,
   truncateString,

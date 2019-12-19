@@ -102,6 +102,7 @@ export default class App extends React.Component {
                     edition={false}
                     user={this.state.user}
                     onCancel={() => this.setState({ page: "connexion" })}
+                    onRegistration={() => this.setState({ page: "connexion" })}
                   />
                 </React.Fragment>
               : null
@@ -111,6 +112,11 @@ export default class App extends React.Component {
               user={this.state.user}
               lang={this.state.lang}
               onChangeLanguage={lang => this.onChangeLanguage(lang)}
+              onRelogin={(jwt, user) => {
+                localStorage.setItem("jwt", jwt);
+                localStorage.setItem("userCode", user.code);
+                this.setState({ jwt: jwt, user: user });
+              }}
             />
         }
       </React.Fragment>

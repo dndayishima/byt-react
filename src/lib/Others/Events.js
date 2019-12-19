@@ -19,6 +19,7 @@ import EventsList from "./EventsList";
 
 import { ModalMessage } from "../../lib";
 import EventEditor from "./EventEditor";
+import EventViewer from "./EventViewer";
 
 import { dictionnary } from "../Langs/langs";
 
@@ -153,6 +154,7 @@ export default class Events extends React.Component {
               }
             }}
             onEdit={event => this.setState({ edit: true, selectedEvent: event })}
+            onView={event => this.setState({ selectedEvent: event })}
           />
         </div>
 
@@ -181,7 +183,16 @@ export default class Events extends React.Component {
           : <div>
               {this.state.edit
                 ? editor
-                : events
+                : !_.isEmpty(this.state.selectedEvent)
+                  ? <EventViewer 
+                      lang={this.props.lang}
+                      event={this.state.selectedEvent}
+                      onCancel={() => {
+                        this.setState({ edit: false, selectedEvent: {}, loading: true });
+                        this.reload(this.state.reloadParams);
+                      }}
+                    />
+                  : events
               }
             </div>
         }

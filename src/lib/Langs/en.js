@@ -56,6 +56,7 @@ const EN = {
   noUserFound: "no users matching this search",
   numero: "number",
   oldPassword: "old password",
+  oldPasswordWrong: "the old password is wrong",
   operator: "operator",
   password: "password",
   phone: "phone",

@@ -56,6 +56,7 @@ const FR = {
   noUserFound: "aucun utilisateur correspondant à cette recherche", 
   numero: "numéro",
   oldPassword: "ancien mot de passe",
+  oldPasswordWrong: "ancien mot de passe incorrect",
   operator: "opérateur",
   password: "mot de passe",
   phone: "téléphone",
