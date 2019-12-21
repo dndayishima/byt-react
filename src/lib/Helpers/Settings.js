@@ -10,4 +10,43 @@ const currencies = [
   { currency: "USD", symbol: "$"}
 ];
 
-export { authUrl, apiUrl, currencies };
+// codes marchands disponibles (pour le test)
+const codesMarchands = [
+  { 
+    operator: "Econet-Leo (Ecocash)",
+    codeMarchand: "55034",
+    currency: "BIF",
+    country: "Burundi",
+    idPhoto: 0
+  },
+  {
+    operator: "Limitel (Lumicash)",
+    codeMarchand: "27049",
+    currency: "BIF",
+    country: "Burundi",
+    idPhoto: 1
+  },
+  {
+    operator: "Smart (Smart Pesa)",
+    codeMarchand: "34015",
+    currency: "BIF",
+    country: "Burundi",
+    idPhoto: 2
+  },
+  {
+    operator: "Finbank (Pesa Flash)",
+    codeMarchand: "44863",
+    currency: "BIF",
+    country: "Burundi",
+    idPhoto: 3
+  },
+  {
+    operator: "Bancobu (mcash)",
+    codeMarchand: "16782",
+    currency: "BIF",
+    country: "Burundi",
+    idPhoto: 4
+  }
+];
+
+export { authUrl, apiUrl, currencies, codesMarchands };

@@ -191,7 +191,9 @@ export default class Events extends React.Component {
                         this.setState({ edit: false, selectedEvent: {}, loading: true });
                         this.reload(this.state.reloadParams);
                       }}
+                      jwt={this.props.jwt}
                       user={this.props.user}
+                      client={this.props.client}
                     />
                   : events
               }

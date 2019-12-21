@@ -32,6 +32,8 @@ import MuiDialogTitle from "@material-ui/core/DialogTitle";
 
 import _ from "lodash";
 
+import CodeSearch from "./CodeSearch";
+
 import { dictionnary } from "../Langs/langs";
 import { getAllCurrencies, priceValuePrinting } from "../Helpers/Helpers";
 
@@ -46,7 +48,8 @@ export default class Code extends React.Component {
     client: PropTypes.any.isRequired,
     jwt: PropTypes.string,
     lang: PropTypes.string,
-    user: PropTypes.object
+    user: PropTypes.object,
+    onSignOut: PropTypes.func
   };
 
   static defaultProps = {
@@ -192,7 +195,17 @@ export default class Code extends React.Component {
           {/* contenu */}
           {this.state.tab === "add"
             ? create
-            : null
+            : <CodeSearch 
+                client={this.props.client}
+                jwt={this.props.jwt}
+                lang={this.props.lang}
+                user={this.props.user}
+                onSignOut={() => {
+                  if (this.props.onSignOut) {
+                    this.props.onSignOut();
+                  }
+                }}
+              />
           }
         </Container>
 
@@ -243,9 +256,9 @@ export default class Code extends React.Component {
               onClick={() => {
                 if (this.state.errorType === 2) {
                   // déconnexion
-                  localStorage.setItem("jwt", "");
-                  localStorage.setItem("userCode", "");
-                  window.location.reload();
+                  if (this.props.onSignOut) {
+                    this.props.onSignOut();
+                  }
                 } else {
                   this.setState({
                     errorMessage: "",

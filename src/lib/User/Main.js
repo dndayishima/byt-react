@@ -19,7 +19,7 @@ import _ from "lodash";
 
 import {
   Administration,
-  BuyTicket,
+  //BuyTicket,
   Code,
   Events,
   MenuDrawer,
@@ -27,12 +27,13 @@ import {
   SettingsView,
   Scanner,
   Title,
-  TicketsList
+  //TicketsList
 } from "../../lib";
 import { dictionnary } from "../Langs/langs";
 
 //import minimized from "../../minimized_brand.png";
 import bytWhite from "../../byt-white.png";
+import { signOut } from "../Helpers/Helpers";
 
 const styles = {
   container: {
@@ -78,13 +79,6 @@ export default class Main extends React.Component {
     }
   };
 
-  signOut = () => {
-    localStorage.setItem("jwt", "");
-    localStorage.setItem("userCode", "");
-    // ici il faudra gérer le changement d'URL si besoin
-    window.location.reload();
-  };
-
   render() {
     let lang = _.toUpper(this.props.lang);
     const menuAccount = (
@@ -107,7 +101,7 @@ export default class Main extends React.Component {
             primary={_.upperFirst(_.get(dictionnary, lang + ".profile"))}
           />
         </MenuItem>
-        <MenuItem onClick={this.signOut}>
+        <MenuItem onClick={() => signOut()}>
           <ListItemIcon><PowerSettingsNew /></ListItemIcon>
           <ListItemText
             primary={_.upperFirst(_.get(dictionnary, lang + ".signOut"))}
@@ -177,7 +171,7 @@ export default class Main extends React.Component {
                   jwt={this.props.jwt}
                   user={this.props.user}
                   lang={this.props.lang}
-                  onSignOut={this.signOut}
+                  onSignOut={() => signOut()}
                   onSelection={event => {
                     this.setState({
                       page: "buyticket",
@@ -216,6 +210,8 @@ export default class Main extends React.Component {
                   client={this.props.client}
                   jwt={this.props.jwt}
                   lang={this.props.lang}
+                  user={this.props.user}
+                  onSignOut={() => signOut()}
                 />
               </div>
             : null

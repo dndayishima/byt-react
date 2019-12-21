@@ -27,7 +27,7 @@ import {
 } from "@material-ui/icons";
 
 
-import emptyIcon from "../../empty-events.png";
+import bytImage from "../../favicon_byt.jpg";
 
 import _ from "lodash";
 
@@ -55,7 +55,7 @@ export default class EventsList extends React.Component {
       <React.Fragment>
         {_.isEmpty(this.props.events)
           ? <div style={{ textAlign: "center", marginTop: "40px", marginBottom: "40px" }}>
-              <img src={emptyIcon} alt="no events" height="80" width="auto" />
+              <img src={bytImage} alt="no events" /*height="80" width="auto"*/ />
             </div>
           : <Container maxWidth="lg">
               <Grid container={true} spacing={1}>

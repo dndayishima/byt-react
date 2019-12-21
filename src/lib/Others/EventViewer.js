@@ -22,6 +22,7 @@ import {
 
 import _ from "lodash";
 
+import BuyTicket from "./BuyTicket";
 import PriceViewer from "./PriceViewer";
 
 import { dictionnary } from "../Langs/langs";
@@ -30,13 +31,12 @@ import { displayDate, displayTime } from "../Helpers/Helpers";
 const styles = {
   cardHeader: {
     backgroundColor: "#EEEEEE"
-  },
-  cardContent: {
-    textAlign: "center"
   }
 }
 export default class EventViewer extends React.Component {
   static propTypes = {
+    client: PropTypes.any.isRequired,
+    jwt: PropTypes.string,
     lang: PropTypes.string,
     event: PropTypes.object,
     user: PropTypes.object,
@@ -46,9 +46,32 @@ export default class EventViewer extends React.Component {
     lang: "fr"
   };
 
+  state = {
+    buyTicket: false,
+    selectedPrice: {}
+  };
+
   render () {
     const event = this.props.event;
     const lang = _.toUpper(this.props.lang);
+    
+    if (this.state.buyTicket) {
+      return (
+        <React.Fragment>
+          <BuyTicket
+            client={this.props.client}
+            jwt={this.props.jwt}
+            lang={this.props.lang}
+            event={this.props.event}
+            price={this.state.selectedPrice}
+            onCancel={() => {
+              this.setState({ buyTicket: false, selectedPrice: {} });
+            }}
+          />
+        </React.Fragment>
+      )
+    }
+
     return (
       <React.Fragment>
         <Container maxWidth="md" style={{ marginBottom: "25px" }}>
@@ -151,9 +174,9 @@ export default class EventViewer extends React.Component {
               ? <Grid item={true} xs={12}>
                   <Card>
                     <CardContent>
-                    <Typography variant="body1" color="textSecondary">
-                      {event.description}
-                    </Typography>
+                      <Typography variant="body1" color="textSecondary">
+                        {event.description}
+                      </Typography>
                     </CardContent>
                   </Card>
                 </Grid>
@@ -179,6 +202,10 @@ export default class EventViewer extends React.Component {
                       return;
                     }
                     console.log(p);
+                    this.setState({
+                      buyTicket: true,
+                      selectedPrice: p
+                    });
                   }}
                 />
               </Grid>
@@ -278,7 +305,7 @@ export default class EventViewer extends React.Component {
             : null
           }
 
-          {/* Button Annuler - Buy a ticket */}
+          {/* Button Annuler */}
           <Grid container={true} spacing={1} justify="center" style={{ marginTop: "30px" }}>
             <Grid item={true} xs={12} md={6}>
               <Button 

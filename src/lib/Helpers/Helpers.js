@@ -1,6 +1,6 @@
 import _ from "lodash";
 import moment from "moment";
-import { currencies } from "./Settings";
+import { currencies, codesMarchands } from "./Settings";
 
 const getJWTPayload = jwt => { // gérer les cas d'erreurs
   let userBase64 = jwt.split(".")[1];
@@ -61,14 +61,27 @@ const priceValuePrinting = (priceValue, lang) => {
   return Number(priceValue).toLocaleString("fr-FR");
 };
 
+const signOut = () => {
+  localStorage.setItem("jwt", "");
+  localStorage.setItem("userCode", "");
+  // ici il faudra gérer le changement d'URL si besoin
+  window.location.reload();
+};
+
+const getAllCodesMarchands = () => {
+  return codesMarchands;
+};
+
 export {
   displayDate,
   displayTime,
   getJWTPayload,
   imageHasPrefix,
   truncateString,
+  getAllCodesMarchands,
   getAllCurrencies,
   getCurrencySymbol,
   getValueOfOptionalString,
-  priceValuePrinting
+  priceValuePrinting,
+  signOut
 };
