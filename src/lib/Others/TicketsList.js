@@ -2,17 +2,42 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import {
+  Avatar,
   Badge,
   Button,
   Card,
   CardContent,
+  CardHeader,
   CircularProgress,
+  Container,
   Dialog,
   DialogContent,
   DialogActions,
+  ExpansionPanel,
+  ExpansionPanelDetails,
+  ExpansionPanelSummary,
   Grid,
+  Tab,
+  Tabs,
+  TextField,
   Typography
 } from "@material-ui/core";
+
+import {
+  CenterFocusStrong,
+  EventNote,
+  ExpandMore,
+  Search
+} from "@material-ui/icons";
+
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from "@material-ui/pickers";
+
+import DateFnsUtils from "@date-io/date-fns";
+import frLocale from "date-fns/locale/fr";
+import enLocale from "date-fns/locale/en-US";
 
 import _ from "lodash";
 import moment from "moment";
@@ -22,10 +47,243 @@ import { ModalMessage } from "../../lib";
 import QRCode from "qrcode.react";
 
 import emptyIcon from "../../empty-events.png";
+import bytImage from "../../favicon_byt.jpg";
 
 import { dictionnary } from "../Langs/langs";
+import { displayDate, displayTime, priceValuePrinting } from "../Helpers/Helpers";
 
 export default class TicketsList extends React.Component {
+  static propTypes = {
+    client: PropTypes.any.isRequired,
+    jwt: PropTypes.string,
+    lang: PropTypes.string,
+    user: PropTypes.object
+  };
+
+  static defaultProps = {
+    lang: "fr"
+  };
+
+  state = {
+    eventCode: "",
+    seller: "",
+    user: this.props.user.code,
+    createdAt: null,
+    loading: false,
+    tickets: [],
+    selectedTicket: {},
+    // sections
+    tab: "all"
+  };
+
+  componentDidMount() {
+    let params = {};
+    params.eventCode = this.state.eventCode;
+    params.seller = this.state.seller;
+    params.user = this.state.user;
+    params.createdAt = this.state.createdAt;
+    this.search(params);
+  };
+
+  search = params => {
+    // perform the request here
+    let p = params;
+    p.eventCode = _.isEmpty(params.eventCode) ? null : params.eventCode;
+    p.seller = _.isEmpty(params.seller) ? null : params.seller;
+    p.user = _.isEmpty(params.user) ? null : params.user;
+    p.createdAt = _.isNull(params.createdAt) ? null : moment(params.createdAt).format("YYYY-MM-DD");
+    
+    this.setState({ loading: true });
+    this.props.client.Ticket.readAll(
+      this.props.jwt,
+      p,
+      result => {
+        console.log(result);
+        this.setState({
+          loading: false,
+          tickets: result.data.results.content
+        });
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  };
+
+  render () {
+    let lang = _.toUpper(this.props.lang);
+    let customSearch =
+      _.includes(this.props.user.roles, "TECH") || _.includes(this.props.user.roles, "ADMIN");
+    
+    const listTickets = (
+      <React.Fragment>
+        {_.isEmpty(this.state.tickets)
+          ? <Grid container={true} style={{ marginTop: "25px", marginBottom: "25px" }}>
+              <Grid item={true} xs={12} style={{ textAlign: "center" }}>
+                <img src={bytImage} alt="no codes" />
+              </Grid>
+            </Grid>
+          : <Grid container={true} style={{ marginTop: "25px", marginBottom: "25px" }} spacing={2}>
+              {_.map(this.state.tickets, (ticket, index) => 
+                <Grid item={true} xs={12} sm={4} key={index}>
+                  <TicketSimpleView 
+                    ticket={ticket}
+                    lang={this.props.lang}
+                    onSelection={selectedTicket => {
+                      this.setState({
+                        selectedTicket: selectedTicket,
+                        tab: "read"
+                      })
+                    }}
+                  />
+                </Grid>     
+              )}
+            </Grid>
+        }
+      </React.Fragment>
+    );
+    return (
+      <React.Fragment>
+        <Container maxWidth="md">
+          {customSearch
+            ? <ExpansionPanel square={true}>
+                <ExpansionPanelSummary
+                  expandIcon={<ExpandMore />}
+                >
+                  <Typography variant="body1" color="textSecondary">
+                    {_.upperFirst(_.get(dictionnary, lang + ".search"))}
+                  </Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                  <Grid container={true} spacing={1}>
+                    <Grid item={true} xs={12} sm={6}>
+                      <TextField 
+                        fullWidth={true}
+                        label="Event code"
+                        value={this.state.eventCode}
+                        onChange={e => this.setState({ eventCode: e.target.value })}
+                      />
+                    </Grid>
+                    <Grid item={true} xs={12} sm={6}>
+                      <TextField 
+                        fullWidth={true}
+                        label="Seller"
+                        value={this.state.seller}
+                        onChange={e => this.setState({ seller: e.target.value })}
+                      />
+                    </Grid>
+                    <Grid item={true} xs={12} sm={6}>
+                      <TextField 
+                        fullWidth={true}
+                        label="User"
+                        value={this.state.user}
+                        onChange={e => this.setState({ user: e.target.value })}
+                      />
+                    </Grid>
+
+                    {/* Created at */}
+                    <MuiPickersUtilsProvider
+                      utils={DateFnsUtils}
+                      locale={this.props.lang === "en" ? enLocale : frLocale}
+                    >
+                      <Grid item={true} xs={12} sm={6}>
+                        <KeyboardDatePicker 
+                          fullWidth={true}
+                          autoOk={true}
+                          format={this.props.lang === "en" ? "MM/dd/yyyy" : "dd/MM/yyyy"}
+                          label={_.upperFirst(_.get(dictionnary, lang + ".createdAt")) + " >="}
+                          value={_.isNull(this.state.createdAt) ? null : this.state.createdAt.toDate()}
+                          onChange={date => {
+                            if (!_.isNull(date) && !_.isNaN(date.getDay())) {
+                              let selectedDay = moment(date);
+                              this.setState({ createdAt: selectedDay });
+                            }
+                          }}
+                        />
+                      </Grid>
+                    </MuiPickersUtilsProvider>
+
+                    {/* Button search */}
+                    <Grid item={true} xs={12}>
+                      <Button
+                        variant="contained"
+                        fullWidth={true}
+                        color="primary"
+                        size="large"
+                        onClick={() => {
+                          let p = {};
+                          p.eventCode = this.state.eventCode;
+                          p.seller = this.state.seller;
+                          p.user = this.state.user;
+                          p.createdAt = this.state.createdAt;
+                          this.search(p);
+                        }}
+                      >
+                        <Search />
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+            : null
+          }
+
+          {/* sections */}
+          <Tabs
+            value={this.state.tab}
+            onChange={(e, tab) => {
+              let p = {};
+              p.eventCode = this.state.eventCode;
+              p.seller = this.state.seller;
+              p.user = this.state.user;
+              p.createdAt = this.state.createdAt;
+              this.setState({ tab: tab, selectedTicket: {} });
+              this.search(p);
+            }}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="fullWidth"
+            style={{ marginBottom: "10px" }}
+          >
+            <Tab 
+              label={<EventNote />}
+              value="all"
+            />
+            <Tab 
+              label={<CenterFocusStrong />}
+              value="read"
+              disabled={true}
+            />
+          </Tabs>
+
+          {/* listing des tickets */}
+          {this.state.loading
+            ? <Grid container={true} style={{ marginTop: "25px", marginBottom: "25px" }}>
+                <Grid item={true} xs={12} style={{ textAlign: "center" }}>
+                  <CircularProgress
+                    size={25}
+                  />
+                </Grid>
+              </Grid>
+            : null
+          }
+
+          {this.state.tab === "all"
+            ? listTickets
+            : !_.isEmpty(this.state.selectedTicket)
+              ? <TicketExpandedView 
+                  ticket={this.state.selectedTicket}
+                  lang={this.props.lang}
+                />
+              : null
+          }          
+        </Container>
+      </React.Fragment>
+    );
+  }
+}
+
+class TicketsListttt extends React.Component {
   static propTypes = {
     client: PropTypes.any.isRequired,
     lang: PropTypes.string,
@@ -177,6 +435,85 @@ class Ticket extends React.Component {
             </Typography>
           </CardContent>
         </Card>
+      </React.Fragment>
+    )
+  }
+}
+
+class TicketSimpleView extends React.Component {
+  render () {
+    return (
+      <React.Fragment>
+        <Card
+          onClick={() => this.props.onSelection(this.props.ticket)}
+        >
+          <CardHeader 
+            avatar={
+              <Avatar 
+                aria-label="ticket"
+                variant="square"
+              >
+                <CenterFocusStrong
+                  color={this.props.ticket.valide ? "inherit" : "error" }
+                />
+              </Avatar>
+            }
+            title={this.props.ticket.ticketNumber}
+            subheader={
+              <React.Fragment>
+                <Typography variant="body2" color="textSecondary">
+                  {displayDate(this.props.ticket.createdAt, this.props.lang) + " - " +
+                    displayTime(this.props.ticket.createdAt, this.props.lang) 
+                  }
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  {priceValuePrinting(this.props.ticket.price.value, this.props.lang) + " " + this.props.ticket.price.currency}
+                </Typography>
+              </React.Fragment>
+            }
+          />
+          <CardContent style={{ textAlign: "center" }}>
+            <QRCode 
+              value={JSON.stringify(this.props.ticket)}
+              size={200}
+            />
+          </CardContent>
+        </Card>
+      </React.Fragment>
+    );
+  }
+}
+
+class TicketExpandedView extends React.Component {
+  state = {
+    event: {}
+  };
+  render() {
+    return (
+      <React.Fragment>
+        <Container>
+          {/* chargement */}
+          {_.isEmpty(this.state.event)
+            ? <Grid container={true} style={{ marginTop: "25px", marginBottom: "25px" }}>
+                <Grid item={true} xs={12} style={{ textAlign: "center" }}>
+                  <CircularProgress
+                    size={25}
+                  />
+                </Grid>
+              </Grid>
+            : null
+          }
+
+          {/* QRCode */}
+          <Grid container={true} style={{ marginBottom: "30px" }}>
+            <Grid item={true} xs={12} style={{ textAlign: "center" }}>
+              <QRCode 
+                value={JSON.stringify(this.props.ticket)}
+                size={260}
+              />
+            </Grid>
+          </Grid>
+        </Container>
       </React.Fragment>
     )
   }

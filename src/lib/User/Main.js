@@ -19,7 +19,6 @@ import _ from "lodash";
 
 import {
   Administration,
-  //BuyTicket,
   Code,
   Events,
   MenuDrawer,
@@ -27,7 +26,7 @@ import {
   SettingsView,
   Scanner,
   Title,
-  //TicketsList
+  TicketsList
 } from "../../lib";
 import { dictionnary } from "../Langs/langs";
 
@@ -184,18 +183,18 @@ export default class Main extends React.Component {
           }
 
           {/* Tickets */}
-          {(this.state.page === "tickets" && !_.isEmpty(this.state.user))
+          {(this.state.page === "tickets" && !_.isEmpty(this.props.user))
             ? <div>
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".tickets"))}
                 />
-                {/*<TicketsList 
+                <TicketsList 
                   client={this.props.client}
-                  user={this.state.user}
+                  user={this.props.user}
                   jwt={this.props.jwt}
                   lang={this.props.lang}
-                  onError={() => this.setState({ page: "events" })}
-                />*/}
+                  //onError={() => this.setState({ page: "events" })}
+                />
               </div>
             : null
           }
@@ -213,23 +212,6 @@ export default class Main extends React.Component {
                   user={this.props.user}
                   onSignOut={() => signOut()}
                 />
-              </div>
-            : null
-          }
-
-          {/* Achat d'un ticket */}
-          {this.state.page === "buyticket"
-            ? <div>
-                <Title 
-                  title={_.upperFirst(_.get(dictionnary, lang + ".buyTicket"))}
-                />
-                {/*<BuyTicket
-                  client={this.props.client}
-                  jwt={this.props.jwt}
-                  lang={this.props.lang}
-                  event={this.state.selectedEvent}
-                  user={this.state.user}
-                />*/}
               </div>
             : null
           }
