@@ -217,7 +217,7 @@ export default class Main extends React.Component {
           }
 
           {/* Scan de tickets */}
-          {this.state.page === "scan" && !_.isEmpty(this.state.user)
+          {this.state.page === "scan" && !_.isEmpty(this.props.user)
             ? <div>
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".scan"))}
@@ -226,7 +226,7 @@ export default class Main extends React.Component {
                   client={this.props.client}
                   jwt={this.props.jwt}
                   lang={this.props.lang}
-                  user={this.state.user}
+                  user={this.props.user}
                 />
               </div>
             : null

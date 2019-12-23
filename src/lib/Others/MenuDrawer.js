@@ -15,7 +15,7 @@ import {
   Event,
   Security,
   Settings, 
-  Timeline, 
+  //Timeline, 
   VpnKey 
 } from "@material-ui/icons";
 
@@ -91,7 +91,7 @@ export default class MenuDrawer extends React.Component {
             _.includes(this.props.roles, "TECH") ||
             _.includes(this.props.roles, "ADMIN")
             ? <React.Fragment>
-                <ListItem
+                {/*<ListItem
                   button={true}
                   onClick={() => {
                     alert("Not available");
@@ -103,7 +103,7 @@ export default class MenuDrawer extends React.Component {
                   <ListItemText
                     primary={_.upperFirst(_.get(dictionnary, lang + ".statistics"))}
                   />
-                </ListItem>
+                </ListItem>*/}
       
                 <ListItem
                   button={true}

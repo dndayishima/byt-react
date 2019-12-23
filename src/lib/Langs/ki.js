@@ -86,6 +86,7 @@ const KI = {
   totalPlaces: "ibibanza vyose",
   usedAt: "yakoreshejwe ryari",
   usedBy: "uwayikoresheje",
+  userCode: "code y'umuntu",
   userSearch: "kurondera umuntu",
   userUpdateSuccess: "muhejeje guhindura ibirangwa vy'uyo muntu.",
   validate: "kwemeza",

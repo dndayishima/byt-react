@@ -69,6 +69,14 @@ class Client {
         .then(result => success(result))
         .catch(error => errors(error.response))
     },
+    readByCode: (jwt, code, success, errors) => {
+      axios
+        .get(
+          this.api + "/event/readByCode/" + code,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response))
+    },
     delete: (jwt, id, success, errors) => {
       axios
         .delete(
@@ -158,10 +166,10 @@ class Client {
         .then(result => success(result))
         .catch(error => errors(error.response));
     },
-    validation: (jwt, id, success, errors) => {
+    validation: (jwt, ticketNumber, success, errors) => {
       axios
         .get(
-          this.api + "/ticket/validation/" + id,
+          this.api + "/ticket/validation/" + ticketNumber,
           {headers: {"Authorization": `Bearer ${jwt}`} })
         .then(result => success(result))
         .catch(error => errors(error.response));

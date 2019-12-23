@@ -22,8 +22,10 @@ export default class SettingsView extends React.Component {
     lang: this.props.lang
   };
 
-  componentWillReceiveProps(next) {
-    this.setState({ lang: next.lang });
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.lang !== this.props.lang) {
+      this.setState({ lang: this.props.lang });
+    }
   };
 
   

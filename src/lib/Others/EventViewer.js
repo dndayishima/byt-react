@@ -201,7 +201,6 @@ export default class EventViewer extends React.Component {
                     if (_.isEmpty(p.id)) {
                       return;
                     }
-                    console.log(p);
                     this.setState({
                       buyTicket: true,
                       selectedPrice: p

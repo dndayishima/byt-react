@@ -3,16 +3,16 @@ import PropTypes from "prop-types";
 
 import {
   Avatar,
-  Badge,
+  //Badge,
   Button,
   Card,
   CardContent,
   CardHeader,
   CircularProgress,
   Container,
-  Dialog,
-  DialogContent,
-  DialogActions,
+  //Dialog,
+  //DialogContent,
+  //DialogActions,
   ExpansionPanel,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
@@ -25,8 +25,11 @@ import {
 
 import {
   CenterFocusStrong,
+  DateRange,
   EventNote,
+  EventSeat,
   ExpandMore,
+  Place,
   Search
 } from "@material-ui/icons";
 
@@ -46,11 +49,16 @@ import { ModalMessage } from "../../lib";
 
 import QRCode from "qrcode.react";
 
-import emptyIcon from "../../empty-events.png";
 import bytImage from "../../favicon_byt.jpg";
 
 import { dictionnary } from "../Langs/langs";
-import { displayDate, displayTime, priceValuePrinting } from "../Helpers/Helpers";
+import { displayDate, displayTime, priceValuePrinting, signOut } from "../Helpers/Helpers";
+
+const styles = {
+  cardHeader: {
+    backgroundColor: "#EEEEEE"
+  }
+};
 
 export default class TicketsList extends React.Component {
   static propTypes = {
@@ -73,7 +81,10 @@ export default class TicketsList extends React.Component {
     tickets: [],
     selectedTicket: {},
     // sections
-    tab: "all"
+    tab: "all",
+    // gestion d'erreurs
+    errorStatus: null,
+    errorMessage: ""
   };
 
   componentDidMount() {
@@ -98,7 +109,7 @@ export default class TicketsList extends React.Component {
       this.props.jwt,
       p,
       result => {
-        console.log(result);
+        //console.log(result);
         this.setState({
           loading: false,
           tickets: result.data.results.content
@@ -106,6 +117,20 @@ export default class TicketsList extends React.Component {
       },
       error => {
         console.log(error);
+        // Gestion d'erreurs
+        let lang = _.toUpper(this.props.lang);
+        this.setState({
+          tickets: [],
+          loading: false,
+          errorStatus: _.isUndefined(error)
+            ? 1
+            : error.status,
+          errorMessage: _.isUndefined(error)
+            ? _.upperFirst(_.get(dictionnary, lang + ".errorMessageNetwork"))
+            : error.status === 401
+              ? _.upperFirst(_.get(dictionnary, lang + ".errorMessageAuthentication"))
+              : _.upperFirst(_.get(dictionnary, lang + ".errorOccurredMessage"))
+        });
       }
     );
   };
@@ -159,7 +184,7 @@ export default class TicketsList extends React.Component {
                     <Grid item={true} xs={12} sm={6}>
                       <TextField 
                         fullWidth={true}
-                        label="Event code"
+                        label={_.upperFirst(_.get(dictionnary, lang + ".eventCode"))}
                         value={this.state.eventCode}
                         onChange={e => this.setState({ eventCode: e.target.value })}
                       />
@@ -167,7 +192,7 @@ export default class TicketsList extends React.Component {
                     <Grid item={true} xs={12} sm={6}>
                       <TextField 
                         fullWidth={true}
-                        label="Seller"
+                        label={_.upperFirst(_.get(dictionnary, lang + ".seller"))}
                         value={this.state.seller}
                         onChange={e => this.setState({ seller: e.target.value })}
                       />
@@ -175,7 +200,7 @@ export default class TicketsList extends React.Component {
                     <Grid item={true} xs={12} sm={6}>
                       <TextField 
                         fullWidth={true}
-                        label="User"
+                        label={_.upperFirst(_.get(dictionnary, lang + ".userCode"))}
                         value={this.state.user}
                         onChange={e => this.setState({ user: e.target.value })}
                       />
@@ -271,172 +296,36 @@ export default class TicketsList extends React.Component {
           {this.state.tab === "all"
             ? listTickets
             : !_.isEmpty(this.state.selectedTicket)
-              ? <TicketExpandedView 
+              ? <TicketExpandedView
+                  client={this.props.client}
+                  jwt={this.props.jwt}
                   ticket={this.state.selectedTicket}
                   lang={this.props.lang}
                 />
               : null
           }          
         </Container>
+
+        {/* Modal Message Erreur */}
+        <ModalMessage 
+          open={!_.isNull(this.state.errorStatus)}
+          title={_.upperFirst(_.get(dictionnary, lang + ".tickets"))}
+          message={this.state.errorMessage}
+          type="error"
+          onAction={() => {
+            if (this.state.errorStatus === 401) {
+              // déconnexion
+              signOut();
+            } else {
+              this.setState({
+                errorMessage: "",
+                errorStatus: null
+              })
+            }
+          }}
+        />
       </React.Fragment>
     );
-  }
-}
-
-class TicketsListttt extends React.Component {
-  static propTypes = {
-    client: PropTypes.any.isRequired,
-    lang: PropTypes.string,
-    user: PropTypes.object,
-    jwt: PropTypes.string
-  };
-
-  static defaultProps = {
-    lang: "fr"
-  };
-
-  state = {
-    tickets: [],
-    loading: true,
-    selectedTicket: {},
-    errorStatus: null,
-    errorMessage: ""
-  };
-
-  reload = () => {
-    this.props.client.Ticket.readAll(
-      this.props.jwt,
-      { user: this.props.user.login },
-      result => {
-        //console.log(result);
-        this.setState({
-          tickets: result.data.data,
-          loading: false,
-          selectedTicket: {}
-        });
-      },
-      error => {
-        //console.log(error);
-        let lang = _.toUpper(this.props.lang);
-        this.setState({
-          loading: false,
-          errorStatus: _.isUndefined(error)
-            ? 1
-            : error.status,
-          errorMessage: _.isUndefined(error)
-            ? _.upperFirst(_.get(dictionnary, lang + ".errorMessageNetwork"))
-            : error.status === 401
-              ? _.upperFirst(_.get(dictionnary, lang + ".errorMessageAuthentication"))
-              : _.upperFirst(_.get(dictionnary, lang + ".errorOccurredMessage"))
-        });
-      }
-    );
-  }
-
-  componentDidMount() {
-    this.reload();
-  }
-
-  render() {
-    let lang = _.toUpper(this.props.lang);
-    let tickets = (
-      <Grid
-        container={true}
-        justify="space-between"
-      >
-        {_.map(this.state.tickets, (ticket, index) =>
-          <div 
-            key={index} 
-            style={{ 
-              marginTop: "10px", 
-              marginBottom: "10px",
-              marginRight: "3px",
-              marginLeft: "3px"
-            }}
-          >
-            <Ticket 
-              ticket={ticket}
-              onSelection={ticket => this.setState({ selectedTicket: ticket })}
-              lang={this.props.lang}
-            />
-          </div>
-        )}
-      </Grid>
-    );
-
-    return(
-      <React.Fragment>
-        {this.state.loading && _.isNull(this.state.errorStatus)
-          ? <div style={{ textAlign: "center", marginTop: "40px" }}>
-              <CircularProgress />
-            </div>
-          : _.isEmpty(this.state.tickets)
-            ? <div style={{ textAlign: "center", marginTop: "40px", marginBottom: "40px" }}>
-                <img src={emptyIcon} alt="no events" height="80" width="auto" />
-              </div>
-            : _.isEmpty(this.state.selectedTicket)
-              ? tickets
-              : <TicketView
-                  ticket={this.state.selectedTicket}
-                  lang={this.props.lang}
-                  client={this.props.client}
-                  jwt={this.props.jwt}
-                  onCancel={this.reload}
-                />
-        }
-
-        {/* Message d'erreur */}
-        {!_.isNull(this.state.errorStatus)
-          ? <ModalMessage 
-              open={true}
-              title={_.upperFirst(_.get(dictionnary, lang + ".tickets"))}
-              type="error"
-              message={this.state.errorMessage}
-              onAction={() => {
-                if (this.state.errorStatus === 401) {
-                  // déconnexion
-                  localStorage.setItem("jwt", "");
-                  window.location.reload();
-                } else {
-                  this.props.onError();
-                }
-              }}
-            />
-          : null
-        }       
-      </React.Fragment>
-    )
-  }
-}
-
-class Ticket extends React.Component {
-  render () {
-    let lang = _.toUpper(this.props.lang);
-    return (
-      <React.Fragment>
-        <Card
-          raised={true}
-          onClick={() => this.props.onSelection(this.props.ticket)}
-        >
-          <CardContent style={{ textAlign: "center" }}>
-            <Badge
-              color="error"
-              badgeContent={_.upperFirst(_.get(dictionnary, lang + ".ticketUsed"))}
-              invisible={this.props.ticket.valide}
-              style={{ marginRight: "7px", marginBottom: "5px" }}
-            >
-              <QRCode 
-                value={JSON.stringify(this.props.ticket)}
-                size={200}
-              />
-            </Badge>
-            <Typography color="textSecondary">
-              <strong>N° : {this.props.ticket.numero}</strong>
-            </Typography>
-          </CardContent>
-        </Card>
-      </React.Fragment>
-    )
   }
 }
 
@@ -486,14 +375,37 @@ class TicketSimpleView extends React.Component {
 
 class TicketExpandedView extends React.Component {
   state = {
-    event: {}
+    event: {},
+    loading: true
   };
+
+  componentDidMount() {
+    this.props.client.Event.readByCode(
+      this.props.jwt,
+      this.props.ticket.eventCode,
+      result => {
+        //console.log(result);
+        this.setState({
+          loading: false,
+          event: result.data.event
+        });
+      },
+      error => {
+        //console.log(error);
+        // TODO Gérer les erreurs à ce niveau
+        this.setState({
+          loading: false
+        });
+      }
+    );
+  }
+
   render() {
     return (
       <React.Fragment>
-        <Container>
+        <Container style={{ marginBottom: "25px" }}>
           {/* chargement */}
-          {_.isEmpty(this.state.event)
+          {this.state.loading
             ? <Grid container={true} style={{ marginTop: "25px", marginBottom: "25px" }}>
                 <Grid item={true} xs={12} style={{ textAlign: "center" }}>
                   <CircularProgress
@@ -513,216 +425,140 @@ class TicketExpandedView extends React.Component {
               />
             </Grid>
           </Grid>
-        </Container>
-      </React.Fragment>
-    )
-  }
-}
 
-class TicketView extends React.Component {
-  static defaultProps = {
-    lang: "fr"
-  };
-
-  state = {
-    loading: true,
-    event: {},
-    openModalQRCode: false,
-    errorStatus: null,
-    errorMessage: ""
-  };
-
-  componentDidMount() {
-    this.reload();
-  };
-
-  reload = () => {
-    this.props.client.Event.readAll(
-      this.props.jwt,
-      { code: this.props.ticket.event },
-      result => {
-        //console.log(result);
-        this.setState({
-          event: _.isEmpty(result.data.data) ? {} : result.data.data[0],
-          loading: false
-        });
-      },
-      error => {
-        //console.log(error);
-        let lang = _.toUpper(this.props.lang);
-        this.setState({
-          errorStatus: _.isUndefined(error)
-            ? 1
-            : error.status,
-          errorMessage: _.isUndefined(error)
-            ? _.upperFirst(_.get(dictionnary, lang + ".errorMessageNetwork"))
-            : error.status === 401
-              ? _.upperFirst(_.get(dictionnary, lang + ".errorMessageAuthentication"))
-              : _.upperFirst(_.get(dictionnary, lang + ".errorOccurredMessage")),
-          loading: false
-        });
-      }
-    );
-  };
-
-  render() {
-    //console.log(this.props.ticket);
-    let lang = _.toUpper(this.props.lang);
-    return (
-      <React.Fragment>
-        {this.state.loading
-          ? <div style={{ textAlign: "center", marginTop: "40px" }}>
-              <CircularProgress />
-            </div>
-          : _.isEmpty(this.state.event)
-            ? <Typography variant="h4" color="error">
-                <strong>{_.upperFirst(_.get(dictionnary, lang + ".noTicketEventFound"))}</strong>
-              </Typography>
-            : <div>
-                <Typography variant="h5" color="primary" gutterBottom={true}>
-                  <strong>{_.upperFirst(_.get(dictionnary, lang + ".eventDetail"))}</strong>
-                </Typography>
-                
-                {!_.isEmpty(this.state.event.photo)
-                  ? <div style={{ marginBottom: "15px" }}>
-                      <img 
-                        src={"data:image/png;base64," + this.state.event.photo}
-                        alt="Affiche"
-                        height="150" 
-                        width="auto"
+          {/* Affichage de quelques informations de l'événement */}
+          {!_.isEmpty(this.state.event)
+            ? <React.Fragment>
+                <Grid container={true} spacing={2}>
+                  <Grid item={true} xs={12}>
+                    <Card>
+                      <CardHeader 
+                        title={
+                          <EventNote 
+                            color="primary"
+                            style={{ fontSize: 25 }}
+                          />
+                        }
+                        titleTypographyProps={{ align: "center" }}
+                        style={styles.cardHeader}
                       />
-                    </div>
+                      <CardContent style={{ textAlign: "center" }}>
+                        <Typography variant="body1" color="textSecondary">
+                          {this.state.event.name}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+
+                  <Grid item={true} xs={12} sm={6}>
+                    <Card>
+                      <CardHeader 
+                        title={
+                          <DateRange 
+                            color="primary"
+                            style={{ fontSize: 25 }}
+                          />
+                        }
+                        titleTypographyProps={{ align: "center" }}
+                        style={styles.cardHeader}
+                      />
+                      <CardContent style={{ textAlign: "center" }}>
+                        <Typography variant="body1" color="textSecondary">
+                          {displayDate(this.state.event.date, this.props.lang) + " - " + displayTime(this.state.event.date, this.props.lang)}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+
+                  <Grid item={true} xs={12} sm={6}>
+                    <Card>
+                      <CardHeader 
+                        title={
+                          <EventSeat 
+                            color="primary"
+                            style={{ fontSize: 25 }}
+                          />
+                        }
+                        titleTypographyProps={{ align: "center" }}
+                        style={styles.cardHeader}
+                      />
+                      <CardContent style={{ textAlign: "center" }}>
+                        <Typography variant="body1" color="textSecondary">
+                          {priceValuePrinting(this.props.ticket.price.value, this.props.lang) + " " + this.props.ticket.price.currency}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+
+                  {/* description */}
+                  {!_.isEmpty(this.state.event.description)
+                    ? <Grid item={true} xs={12}>
+                        <Card>
+                          <CardContent>
+                            <Typography variant="body1" color="textSecondary">
+                              {this.state.event.description}
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    : null
+                  }
+                </Grid>
+
+                {/* Adresse - Venue */}
+                {!_.isNull(this.state.event.venue)
+                  ? <React.Fragment>
+                      <Grid container={true} style={{ marginTop: "10px" }}>
+                        <Grid item={true} xs={12}>
+                          <Card>
+                            <CardHeader 
+                              title={
+                                <Place 
+                                  color="primary"
+                                  style={{ fontSize: 25 }}
+                                />
+                              }
+                              titleTypographyProps={{ align: "center" }}
+                              style={styles.cardHeader}
+                            />
+                            <CardContent style={{ textAlign: "center" }}>
+                              <Typography variant="body1" color="textSecondary">
+                                {!_.isEmpty(this.state.event.venue.number)
+                                  ? "N° " + this.state.event.venue.number + ", "
+                                  : null
+                                }
+                                {!_.isEmpty(this.state.event.venue.road)
+                                  ? this.state.event.venue.road
+                                  : null
+                                }
+                              </Typography>
+                              {!_.isEmpty(this.state.event.venue.details)
+                                ? <Typography variant="body1" color="textSecondary">
+                                    {this.state.event.venue.details}
+                                  </Typography>
+                                : null
+                              }
+                              <Typography variant="body1" color="textSecondary">
+                                {!_.isEmpty(this.state.event.venue.city)
+                                  ? _.toUpper(this.state.event.venue.city) + ", "
+                                  : null
+                                }
+                                {!_.isEmpty(this.state.event.venue.country)
+                                  ? _.toUpper(this.state.event.venue.country)
+                                  : null
+                                }
+                              </Typography>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                      </Grid>
+                    </React.Fragment>
                   : null
                 }
-                
-                <Typography variant="body1" color="textSecondary" gutterBottom={true}>
-                  <strong>{_.toUpper(this.state.event.name)}</strong>
-                </Typography>
-                <Typography variant="body1" color="textSecondary" gutterBottom={true}>
-                  <strong>{this.state.event.code}</strong>
-                </Typography>
-                {!_.isEmpty(this.state.event.description)
-                  ? <Typography variant="body1" color="textSecondary">
-                      {this.state.event.description}
-                    </Typography>
-                  : null
-                }
-                <Typography variant="body1" color="textSecondary" gutterBottom={true}>
-                  <strong>
-                    {_.upperFirst(_.get(dictionnary, lang + ".price"))}
-                  </strong> : 
-                  {this.props.lang === "en"
-                    ? Number(this.state.event.price).toLocaleString("en-EN")
-                    : Number(this.state.event.price).toLocaleString("fr-FR")
-                  }
-                </Typography>
-                <Typography variant="body1" color="textSecondary" gutterBottom={true}>
-                  <strong>{_.upperFirst(_.get(dictionnary, lang + ".date"))}</strong> :&nbsp;
-                  {this.props.lang === "en"
-                    ? moment(this.state.event.date).format("MM/DD/YYYY")
-                    : moment(this.state.event.date).format("DD/MM/YYYY")
-                  }
-                </Typography>
-                <Typography variant="body1" color="textSecondary" gutterBottom={true}>
-                  <strong>{_.upperFirst(_.get(dictionnary, lang + ".time"))}</strong> :&nbsp;
-                  {this.props.lang === "en"
-                    ? moment(this.state.event.date).format("LT")
-                    : moment(this.state.event.date).format("HH:mm")
-                  }
-                </Typography>
-                {!_.isEmpty(this.state.event.venue)
-                  ? <Typography variant="body1" color="textSecondary" gutterBottom={true}>
-                      <strong>{_.upperFirst(_.get(dictionnary, lang + ".venue"))}</strong> :&nbsp;
-                      {this.state.event.venue}
-                    </Typography>
-                  : null
-                }
-              </div>
-        }
-        <div
-          style={{
-            textAlign: "center",
-            marginTop: "10px",
-            marginBottom: "10px"
-          }}
-          onClick={() => this.setState({ openModalQRCode: true })}
-        >
-          <Badge
-              color="error"
-              badgeContent={_.upperFirst(_.get(dictionnary, lang + ".ticketUsed"))}
-              invisible={this.props.ticket.valide}
-              style={{ marginRight: "7px", marginBottom: "5px" }}
-            >
-              <QRCode 
-                value={JSON.stringify(this.props.ticket)}
-                size={220}
-              />
-            </Badge>
-        </div>
-
-        <div style={{ textAlign: "center" }}>
-          <Button
-            variant="contained"
-            onClick={() => {
-              this.props.onCancel();
-            }}
-          >
-            {_.get(dictionnary, lang + ".cancel")}
-          </Button>
-        </div>
-
-        {/* Modal QRCode */}
-        <Dialog open={this.state.openModalQRCode}>
-          <DialogContent>
-            <Badge
-              color="error"
-              badgeContent={_.upperFirst(_.get(dictionnary, lang + ".ticketUsed"))}
-              invisible={this.props.ticket.valide}
-              style={{ marginRight: "7px" }}
-            >
-              <QRCode 
-                value={JSON.stringify(this.props.ticket)}
-                size={200}
-              />
-            </Badge>
-          </DialogContent>
-          <DialogActions>
-            {/*<Button
-              style={{ color: "white", backgroundColor: "red" }}
-            >
-              {_.get(dictionnary, lang + ".delete")}
-            </Button>*/}
-            <Button 
-              color="primary"
-              onClick={() => {
-                this.setState({ openModalQRCode: false });
-              }}
-              variant="contained"
-            >
-              OK
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        {/* Modal Message Erreur */}
-        <ModalMessage 
-          open={!_.isNull(this.state.errorStatus)}
-          title={_.upperFirst(_.get(dictionnary, lang + ".tickets"))}
-          message={this.state.errorMessage}
-          type="error"
-          onAction={() => {
-            if (this.state.errorStatus === 401) {
-              // déconnexion
-              localStorage.setItem("jwt", "");
-              window.location.reload();
-            } else {
-              this.setState({
-                errorMessage: "",
-                errorStatus: null
-              })
-            }
-          }}
-        />
+              </React.Fragment>
+            : null
+          }
+        </Container>
       </React.Fragment>
     )
   }

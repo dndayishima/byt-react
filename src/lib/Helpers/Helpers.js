@@ -42,7 +42,7 @@ const getValueOfOptionalString = str => {
 
 const displayDate = (date, lang) => {
   if (lang === "en") {
-    return moment(date).format("MM/DD/YYYY");
+    return moment(date).format("YYYY-MM-DD");
   }
   return moment(date).format("DD/MM/YYYY")
 };
