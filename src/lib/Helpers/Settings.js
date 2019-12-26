@@ -7,8 +7,8 @@
 //const apiUrl = "http://localhost:8081";
 
 // de mode production
-const authUrl = "https://demo2.auth.bytpayment.com";
-const apiUrl = "https://demo2.services.bytpayment.com";
+const authUrl = "https://demoauth2.bytpayment.com";
+const apiUrl = "https://demoservices2.bytpayment.com";
 // devises disponibles
 const currencies = [
   { currency: "BIF", symbol: "BIF" },
