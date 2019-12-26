@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "f2a166a006f35a4f27594d14da64ecca",
+    "revision": "89d549ae78e63c62618686242b5b1cd8",
     "url": "/byt-react/index.html"
   },
   {
-    "revision": "e4419e0359faf881a11e",
+    "revision": "8de95e0a1a178a2fbc92",
     "url": "/byt-react/static/css/main.34de6062.chunk.css"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/byt-react/static/js/2.08375116.chunk.js"
   },
   {
-    "revision": "e4419e0359faf881a11e",
-    "url": "/byt-react/static/js/main.c812f136.chunk.js"
+    "revision": "8de95e0a1a178a2fbc92",
+    "url": "/byt-react/static/js/main.9951b2e7.chunk.js"
   },
   {
     "revision": "3d0229b3aaa2fde556c9",
