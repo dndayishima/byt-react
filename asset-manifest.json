@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/byt-react/static/css/main.34de6062.chunk.css",
-    "main.js": "/byt-react/static/js/main.fb7f26e8.chunk.js",
-    "main.js.map": "/byt-react/static/js/main.fb7f26e8.chunk.js.map",
+    "main.js": "/byt-react/static/js/main.11a1f2f6.chunk.js",
+    "main.js.map": "/byt-react/static/js/main.11a1f2f6.chunk.js.map",
     "runtime-main.js": "/byt-react/static/js/runtime-main.3dc89232.js",
     "runtime-main.js.map": "/byt-react/static/js/runtime-main.3dc89232.js.map",
-    "static/js/2.08375116.chunk.js": "/byt-react/static/js/2.08375116.chunk.js",
-    "static/js/2.08375116.chunk.js.map": "/byt-react/static/js/2.08375116.chunk.js.map",
+    "static/js/2.4878464c.chunk.js": "/byt-react/static/js/2.4878464c.chunk.js",
+    "static/js/2.4878464c.chunk.js.map": "/byt-react/static/js/2.4878464c.chunk.js.map",
     "index.html": "/byt-react/index.html",
-    "precache-manifest.8ca711402197e8c08c50c12b06e84027.js": "/byt-react/precache-manifest.8ca711402197e8c08c50c12b06e84027.js",
+    "precache-manifest.1edd696c8141748b8c4e94c98949067c.js": "/byt-react/precache-manifest.1edd696c8141748b8c4e94c98949067c.js",
     "service-worker.js": "/byt-react/service-worker.js",
     "static/css/main.34de6062.chunk.css.map": "/byt-react/static/css/main.34de6062.chunk.css.map",
     "static/media/bancobu.jpg": "/byt-react/static/media/bancobu.62895e24.jpg",
@@ -22,8 +22,8 @@
   },
   "entrypoints": [
     "static/js/runtime-main.3dc89232.js",
-    "static/js/2.08375116.chunk.js",
+    "static/js/2.4878464c.chunk.js",
     "static/css/main.34de6062.chunk.css",
-    "static/js/main.fb7f26e8.chunk.js"
+    "static/js/main.11a1f2f6.chunk.js"
   ]
 }
