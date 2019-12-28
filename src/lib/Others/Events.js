@@ -13,7 +13,6 @@ import {
 import AddIcon from "@material-ui/icons/Add";
 
 import _ from "lodash";
-import moment from "moment";
 
 import EventsList from "./EventsList";
 
@@ -29,8 +28,9 @@ export default class Events extends React.Component {
     jwt: PropTypes.string,
     lang: PropTypes.string,
     onSignOut: PropTypes.func,
-    onSelection: PropTypes.func,
-    user: PropTypes.object
+    user: PropTypes.object,
+    cache: PropTypes.array,
+    onCacheReload: PropTypes.func
   };
 
   static defaultProps = {
@@ -38,19 +38,34 @@ export default class Events extends React.Component {
   };
 
   state = {
-    edit: false, // new
-    selectedEvent: {}, // new
+    edit: false,
+    selectedEvent: {},
     events: [],
     errorType: null, // 1 : session expirée - 2 : connexion
     errorTitle: "",
     errorMessage: "",
     loading: true,
     switch: "all",
-    reloadParams: {}
+    reloadParams: { sortBy: "date" }, // le plus proche apparaît avant
+    // gestion des relecture | cache
+    totalEvents: 0,
+    totalLoadedEvents: 0
   };
 
+  // si le composant est démonté avant que toutes les promesses soient
+  // résolues, celle qui font un setState, provoqueront une erreur dans le 
+  // sens où il y aura un setState sur un composant qui n'est pas monté.
+  // sur ce genre de promesses, avant de faire un setState, vérifier que le 
+  // composant est monté.
+  mounted = false;
+
   componentDidMount() {
+    this.mounted = true;
     this.reload(this.state.reloadParams);
+  };
+
+  componentWillUnmount() {
+    this.mounted = false;
   };
 
   onSwitch = value => {
@@ -60,27 +75,69 @@ export default class Events extends React.Component {
     } else {
       _.unset(params, "seller");
     }
-    this.setState({ switch: value, loading: true, reloadParams: params });
+    this.setState({
+      switch: value,
+      loading: true,
+      reloadParams: params,
+      totalLoadedEvents: 0
+    });
     this.reload(params);
   };
 
+  // chercher les événements, en demandant des informations assez simplifiées
   reload = params => {
-    this.props.client.Event.readAll(
+    this.props.client.Event.simpleEvents(
       this.props.jwt,
       params,
       result => {
-        let res = result.results.content.sort((e1, e2) => {
-          if (moment(e1.date).isBefore(moment(e2.date))) {
-            return -1;
-          } else if (moment(e1.date).isAfter(moment(e2.date))) {
-            return 1;
-          } else {
-            return 0;
-          }
-        });
         this.setState({
-          events: res,
-          loading: false
+          events: result.results.content,
+        });
+        this.setState({ totalEvents: result.results.numberOfElements });
+        _.forEach(result.results.content, event => {
+          // event in cache
+          let eic = _.filter(this.props.cache, e => e.id === event.id)[0];
+          if (!eic || eic.lockRevision !== event.lockRevision) {
+            this.props.client.Event.read(
+              this.props.jwt,
+              event.id,
+              result => {
+                // no perform any setState if component
+                // is unmounted
+                if (!this.mounted) {
+                  return;
+                }
+                let indexToChange = _.findIndex(this.state.events, ev => ev.id === event.id);
+                let events = this.state.events;
+                events[indexToChange] = result.data.event;
+                if (this.state.totalEvents === (this.state.totalLoadedEvents + 1)) {
+                  // recharger dans le cache
+                  this.props.onCacheReload(events);
+                }
+                this.setState({
+                  totalLoadedEvents: this.state.totalLoadedEvents + 1,
+                  events: events,
+                  loading: this.state.totalEvents !== (this.state.totalLoadedEvents + 1)
+                });
+              },
+              error => {
+                console.log(error);
+              }
+            )
+          } else {
+            let indexToChange = _.findIndex(this.state.events, ev => ev.id === event.id);
+            let events = this.state.events;
+            events[indexToChange] = eic; // event venant du cash
+            if (this.state.totalEvents === (this.state.totalLoadedEvents + 1)) {
+              // recharger dans le cache
+              this.props.onCacheReload(events);
+            }
+            this.setState({
+              totalLoadedEvents: this.state.totalLoadedEvents + 1,
+              events: events,
+              loading: this.state.totalEvents !== (this.state.totalLoadedEvents + 1)
+            });
+          }
         });
       },
       error => {
@@ -115,11 +172,21 @@ export default class Events extends React.Component {
         event={this.state.selectedEvent}
         lang={this.props.lang}
         onEdition={() => {
-          this.setState({ edit: false, selectedEvent: {}, loading: true });
+          this.setState({
+            edit: false,
+            selectedEvent: {},
+            loading: true,
+            totalLoadedEvents: 0
+          });
           this.reload(this.state.reloadParams);
         }}
         onCancel={() => {
-          this.setState({ edit: false, selectedEvent: {}, loading: true });
+          this.setState({
+            edit: false,
+            selectedEvent: {},
+            loading: true,
+            totalLoadedEvents: 0
+          });
           this.reload(this.state.reloadParams);
         }}
         onSignOut={() => {
@@ -148,11 +215,6 @@ export default class Events extends React.Component {
             lang={this.props.lang}
             events={this.state.events}
             user={this.props.user}
-            onSelection={event => {
-              if (this.props.onSelection) {
-                this.props.onSelection(event);
-              }
-            }}
             onEdit={event => this.setState({ edit: true, selectedEvent: event })}
             onView={event => this.setState({ selectedEvent: event })}
           />
@@ -175,29 +237,35 @@ export default class Events extends React.Component {
     
     return (
       <React.Fragment>
-        {/* Loader */}
         {this.state.loading
-          ? <div style={{ textAlign: "center", marginTop: "40px" }}>
-              <CircularProgress />
+          ? <div style={{ textAlign: "center", marginTop: "15px" }}>
+              <CircularProgress
+                size={25}
+              />
             </div>
-          : <div>
-              {this.state.edit
-                ? editor
-                : !_.isEmpty(this.state.selectedEvent)
-                  ? <EventViewer 
-                      lang={this.props.lang}
-                      event={this.state.selectedEvent}
-                      onCancel={() => {
-                        this.setState({ edit: false, selectedEvent: {}, loading: true });
-                        this.reload(this.state.reloadParams);
-                      }}
-                      jwt={this.props.jwt}
-                      user={this.props.user}
-                      client={this.props.client}
-                    />
-                  : events
-              }
-            </div>
+          : null
+        }
+
+        {this.state.edit
+          ? editor
+          : !_.isEmpty(this.state.selectedEvent)
+            ? <EventViewer 
+                lang={this.props.lang}
+                event={this.state.selectedEvent}
+                onCancel={() => {
+                  this.setState({
+                    edit: false,
+                    selectedEvent: {},
+                    loading: true,
+                    totalLoadedEvents: 0
+                  });
+                  this.reload(this.state.reloadParams);
+                }}
+                jwt={this.props.jwt}
+                user={this.props.user}
+                client={this.props.client}
+              />
+            : events
         }
 
         {/* Modal Session expired */}

@@ -104,6 +104,17 @@ class Client {
           {headers: {"Authorization": `Bearer ${jwt}`} })
         .then(result => success(result.data))
         .catch(error => errors(error.response))
+    },
+    // chargement des événements d'une manière très simplifiée.
+    // que les id + lockRevision
+    simpleEvents: (jwt, params, success, errors) => {
+      axios
+        .post(
+          this.api + "/event/simpleEvents",
+          params,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result.data))
+        .catch(error => errors(error))
     }
   };
 

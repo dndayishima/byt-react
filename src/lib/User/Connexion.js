@@ -3,7 +3,11 @@ import PropTypes from "prop-types";
 
 import {
   Button,
+  CircularProgress,
+  Container,
+  Grid,
   IconButton,
+  Paper,
   Snackbar,
   TextField
 } from "@material-ui/core";
@@ -12,13 +16,15 @@ import CloseIcon from "@material-ui/icons/Close";
 
 import _ from "lodash";
 
+import logo from "../../byt-logo.jpg";
 import { dictionnary } from "../Langs/langs";
 
 export default class Connexion extends React.Component {
   static propTypes = {
     client: PropTypes.any.isRequired,
     lang: PropTypes.string,
-    onSuccess: PropTypes.func
+    onSuccess: PropTypes.func,
+    onClickRegister: PropTypes.func
   }
 
   static defaultProps = {
@@ -30,13 +36,8 @@ export default class Connexion extends React.Component {
     password: "",
     error: false,
     errorMessage: "",
-    openSnackBar: false
-  };
-
-  handleChangeInput = (event, name) => {
-    let state = this.state;
-    _.set(state, name, event.target.value);
-    this.setState({...state});
+    openSnackBar: false,
+    loading: false
   };
 
   valideForm = () => {
@@ -44,13 +45,15 @@ export default class Connexion extends React.Component {
   };
 
   connexion = () => {
+    let lang = _.toUpper(this.props.lang);
+    this.setState({ loading: true });
     if (!this.valideForm()) {
-      let lang = _.toUpper(this.props.lang);
       let errorMessage = _.get(dictionnary, lang + ".errorMessageLogin");
       this.setState({
         error: true,
         errorMessage: _.upperFirst(errorMessage),
-        openSnackBar: true
+        openSnackBar: true,
+        loading: false
       });
       return;
     }
@@ -64,72 +67,107 @@ export default class Connexion extends React.Component {
         }
       },
       error => {
-        let lang = _.toUpper(this.props.lang);
         this.setState({
           error: true,
           errorMessage: _.isUndefined(error)
             ? _.upperFirst(_.get(dictionnary, lang + ".errorMessageLogin3"))
             : _.upperFirst(_.get(dictionnary, lang + ".errorMessageLogin2")),
-          openSnackBar: true
+          openSnackBar: true,
+          loading: false
         });
       }
     );
   };
 
-  render() {
-    let lang = _.toUpper(this.props.lang);
-    let login = _.get(dictionnary, lang + ".login");
-    let password = _.get(dictionnary, lang + ".password");
-    let signIn = _.get(dictionnary, lang + ".signIn");
+  render () {
+    const lang = _.toUpper(this.props.lang);
     return (
       <React.Fragment>
-        <form
-          noValidate={true}
-          autoComplete="off"
+        <Container
+          justify="center"
+          maxWidth="sm"
+          style={{ marginTop: "70px" }}
         >
-          <div>
-            <TextField
-              autoFocus={true}
-              error={this.state.error}
-              fullWidth={true}
-              label={_.upperFirst(login)}
-              margin="normal"
-              name="login"
-              onChange={e => this.handleChangeInput(e, "login")}
-              required={true}
-              value={this.state.login}
-              variant="outlined"
-            />
-          </div>
-          <div>
-            <TextField
-              error={this.state.error}
-              fullWidth={true}
-              label={_.upperFirst(password)}
-              margin="normal"
-              name="password"
-              onChange={e => this.handleChangeInput(e, "password")}
-              required={true}
-              type="password"
-              value={this.state.password}
-              variant="outlined"
-            />
-          </div>
-        </form>
-        <div>
-          <div>
-            <Button
-              style={{ marginTop: "20px" }}
-              color="primary"
-              fullWidth={true}
-              onClick={this.connexion}
-              size="large"
-              variant="contained"
-            >
-              {_.upperFirst(signIn)}
-            </Button>
-          </div>
-        </div>
+          <Paper
+            elevation={2}
+            style={{ paddingLeft: "7px", paddingRight: "7px", paddingBottom: "20px" }}
+          >
+            <Grid container={true}>
+              <Grid item={true} xs={12} style={{ textAlign: "center" }}>
+                <img src={logo} height={90} width="auto" alt="logo" />
+              </Grid>
+            </Grid>
+            <Grid container={true} spacing={2}>
+              <Grid item={true} xs={12}>
+                <TextField
+                  autoFocus={true}
+                  error={this.state.error}
+                  fullWidth={true}
+                  label={_.upperFirst(_.get(dictionnary, lang + ".login"))}
+                  name="login"
+                  onChange={e => this.setState({ login: e.target.value })}
+                  required={true}
+                  value={this.state.login}
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid item={true} xs={12}>
+                <TextField
+                  error={this.state.error}
+                  fullWidth={true}
+                  label={_.upperFirst(_.get(dictionnary, lang + ".password"))}
+                  name="password"
+                  onChange={e => this.setState({ password: e.target.value })}
+                  required={true}
+                  type="password"
+                  value={this.state.password}
+                  variant="outlined"
+                />
+              </Grid>
+            </Grid>
+
+            {/* loader */}
+            {this.state.loading
+              ? <Grid container={true} style={{ marginTop: "7px" }}>
+                  <Grid item={true} xs={12} style={{ textAlign: "center" }}>
+                    <CircularProgress
+                      size={25}
+                    />
+                  </Grid>
+                </Grid>
+              : null
+            }
+
+            {/* boutons */}
+            <Grid container={true} spacing={1} style={{ marginTop: "15px" }}>
+              <Grid item={true} xs={12}>
+                <Button
+                  color="primary"
+                  fullWidth={true}
+                  onClick={() => this.connexion()}
+                  size="large"
+                  variant="contained"
+                >
+                  {_.upperFirst(_.get(dictionnary, lang + ".signIn"))}
+                </Button>
+              </Grid>
+              <Grid item={true} xs={12}>
+                <Button
+                  fullWidth={true}
+                  onClick={() => {
+                    if (this.props.onClickRegister) {
+                      this.props.onClickRegister();
+                    }
+                  }}
+                  size="large"
+                  variant="contained"
+                >
+                  {_.upperFirst(_.get(dictionnary, lang + ".createAccount"))}
+                </Button>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Container>
 
         <Snackbar 
           anchorOrigin={{
@@ -153,6 +191,6 @@ export default class Connexion extends React.Component {
           }
         />
       </React.Fragment>
-    );
+    )
   }
 }

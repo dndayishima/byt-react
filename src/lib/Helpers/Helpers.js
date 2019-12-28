@@ -8,10 +8,24 @@ const getJWTPayload = jwt => { // gérer les cas d'erreurs
   return u;
 }; // n'est plus utilisé
 
+/*const imageIsBase64 = image => {
+  let regex = /^(data:image\/[a-z]+;base64,)/;
+  return (regex.test(image));
+};*/
+
 const imageHasPrefix = base64 => {
   let regex = /^(data:image\/[a-z]+;base64,)/;
   return (regex.test(base64));
 };
+
+/*const arrayBufferEmpty = arrayBuffer => {
+  return _.isNull(arrayBuffer) || arrayBuffer.byteLength === 0;
+};
+
+const arrayBufferToBlob = arrayBuffer => {
+  let blob = new Blob([arrayBuffer], { type: "image/png" });
+  return URL.createObjectURL(blob);
+};*/
 
 const truncateString = (str, num) => {
   if (str.length <= num) {

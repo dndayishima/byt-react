@@ -16,7 +16,7 @@ import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import { Image } from "@material-ui/icons";
 import DeleteIcon from "@material-ui/icons/Delete";
 
-import { imageHasPrefix } from "../Helpers/Helpers";
+//import { arrayBufferEmpty, arrayBufferToBlob, imageHasPrefix, imageIsBase64 } from "../Helpers/Helpers";
 import { dictionnary } from "../Langs/langs";
 import emptyImage from "../../empty-image.png";
 
@@ -37,7 +37,7 @@ export default class ModalPhoto extends React.Component {
 
   getBase64Image = file => {
     let reader = new FileReader();
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(file); // base 64
     reader.onload = () => {
       //console.log(reader.result);
       this.setState({ photo: reader.result });
@@ -46,6 +46,24 @@ export default class ModalPhoto extends React.Component {
       console.log("error " + error);
     };
   };
+
+  /*fileToArrayBuffer = file => {
+    let reader = new FileReader();
+    reader.readAsArrayBuffer(file); // conversion en ArrayBuffer
+    reader.onerror = error => {
+      console.log("error " + error);
+    };
+    reader.onloadend = () => {
+      //console.log(reader.result);
+      this.setState({ photo: reader.result });
+    };
+  }*/
+
+  /*arrayBufferToBlob = arrayBuffer => {
+    let blob = new Blob([arrayBuffer], { type: "image/png" });
+    let url = URL.createObjectURL(blob);
+    return url;
+  };*/
 
   render() {
     let lang = _.toUpper(this.props.lang);
@@ -77,9 +95,7 @@ export default class ModalPhoto extends React.Component {
                 src={
                   _.isEmpty(this.state.photo)
                     ? emptyImage
-                    : imageHasPrefix(this.state.photo)
-                      ? this.state.photo
-                      : "data:image/png;base64," + this.state.photo
+                    : this.state.photo
                 }
                 height="auto"
                 width="100%"
@@ -96,7 +112,7 @@ export default class ModalPhoto extends React.Component {
                 <Image />
               </IconButton>
               <IconButton
-                onClick={() => this.setState({ photo: "" })}
+                onClick={() => this.setState({ photo: new Uint8Array() })}
               >
                 <DeleteIcon />
               </IconButton>
@@ -109,6 +125,11 @@ export default class ModalPhoto extends React.Component {
               onChange={e => {
                 if (_.get(e.target.files, "length") !== 0) {
                   let file = _.get(e.target.files, "0");
+                  // si taille supérieure à 1 mo -> refuser
+                  if (file.size / 1024 / 1024 > 1) {
+                    alert(_.upperFirst(_.get(dictionnary, lang + ".imageSizeTooLarge")));
+                    return;
+                  }
                   this.getBase64Image(file);
                 }
               }}

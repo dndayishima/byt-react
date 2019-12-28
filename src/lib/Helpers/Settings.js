@@ -6,7 +6,7 @@
 //const authUrl = "http://localhost:8080";
 //const apiUrl = "http://localhost:8081";
 
-// de mode production
+// de mode demonstation
 const authUrl = "https://demoauth2.bytpayment.com";
 const apiUrl = "https://demoservices2.bytpayment.com";
 // devises disponibles

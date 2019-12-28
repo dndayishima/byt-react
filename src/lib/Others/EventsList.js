@@ -8,22 +8,13 @@ import {
   CardHeader,
   CardMedia,
   Container,
-  //Divider,
-  //Fab,
   Grid,
-  //Paper,
   Typography,
   IconButton
 } from "@material-ui/core";
 
 import {
-  //AccessTime,
-  //Bookmarks,
-  //DateRange,
-  Edit,
-  //Place,
-  //Search,
-  //ShoppingCart
+  Edit
 } from "@material-ui/icons";
 
 
@@ -35,13 +26,13 @@ import imageEmpty from "../../image-empty.png";
 import avatarImage from "../../favicon_byt.jpg";
 
 import { displayDate, displayTime } from "../Helpers/Helpers";
+import { dictionnary } from "../Langs/langs";
 
 export default class EventsList extends React.Component {
   static propTypes = {
     events: PropTypes.array,
     lang: PropTypes.string,
     user: PropTypes.object,
-    onSelection: PropTypes.func,
     onEdit: PropTypes.func,
     onView: PropTypes.func
   };
@@ -65,11 +56,6 @@ export default class EventsList extends React.Component {
                     event={event}
                     lang={this.props.lang}
                     user={this.props.user}
-                    onSelection={event => {
-                      if (this.props.onSelection) {
-                        this.props.onSelection(event);
-                      }
-                    }}
                     onEdit={event => {
                       if (this.props.onEdit) {
                         this.props.onEdit(event);
@@ -127,13 +113,20 @@ class Event extends React.Component {
                 : null
             }
             title={event.name}
-            subheader={displayDate(event.date, this.props.lang) + " - " + displayTime(event.date, this.props.lang)}
+            subheader={
+              _.isNull(event.date)
+                ? _.get(dictionnary, _.toUpper(this.props.lang) + ".loading") + "..."
+                : displayDate(event.date, this.props.lang) + " - " + displayTime(event.date, this.props.lang)
+            }
           />
           <CardMedia 
             style={{ height: 0, paddingTop: "56.25%" }}
             image={_.isEmpty(event.photo) ? imageEmpty : event.photo}
             title={event.name}
             onClick={() => {
+              if (!event.code) {
+                return;
+              }
               if (this.props.onView) {
                 this.props.onView(event);
               }

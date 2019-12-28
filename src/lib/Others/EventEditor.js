@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   CardContent,
+  CircularProgress,
   Container,
   Grid,
   IconButton,
@@ -13,9 +14,11 @@ import {
   Typography
 } from "@material-ui/core";
 
-import AddIcon from "@material-ui/icons/Add";
-import CloseIcon from "@material-ui/icons/Close";
-import DeleteIcon from "@material-ui/icons/Delete";
+import {
+  Add,
+  Close,
+  Delete
+} from "@material-ui/icons";
 
 import {
   MuiPickersUtilsProvider,
@@ -72,7 +75,8 @@ export default class EventEditor extends React.Component {
     errorTitle: "",
     errorType: null,
     priceToEdit: null, // si vide {}, c'est la création d'un nouveau prix
-    priceToEditIndex: null
+    priceToEditIndex: null,
+    loading: false
   };
 
   // l'index sera défini au moment où on voudra modifier
@@ -123,6 +127,7 @@ export default class EventEditor extends React.Component {
   update = () => {
     if (!this.checkValidity()) {
       this.invalidForm();
+      this.setState({ loading: false });
       return;
     }
 
@@ -154,7 +159,7 @@ export default class EventEditor extends React.Component {
           params.tags = _.isEmpty(t) ? null : t;
           params.venue = formatVenue();
           params.photo = _.isEmpty(this.state.photo) ? null : this.state.photo;
-
+          
           this.props.client.Event.update(
             this.props.jwt,
             params,
@@ -189,6 +194,7 @@ export default class EventEditor extends React.Component {
   save = () => {
     if (!this.checkValidity()) {
       this.invalidForm();
+      this.setState({ loading: false });
       return;
     }
 
@@ -274,7 +280,7 @@ export default class EventEditor extends React.Component {
               <img
                 onClick={() => this.setState({ modalPhoto: true })}
                 src={
-                  _.isEmpty(this.state.photo) 
+                  _.isEmpty(this.state.photo)
                     ? emptyImage
                     : this.state.photo
                 } 
@@ -382,7 +388,7 @@ export default class EventEditor extends React.Component {
                   <IconButton
                     onClick={() => this.setState({ priceToEdit: {}, priceToEditIndex: null })}
                   >
-                    <AddIcon />
+                    <Add />
                   </IconButton>
                 </CardContent>
               </Card>
@@ -485,7 +491,7 @@ export default class EventEditor extends React.Component {
                       this.setState({ tags: tags });
                     }}
                   >
-                    <DeleteIcon />
+                    <Delete />
                   </IconButton>
                 </div>
               </Grid>  
@@ -505,11 +511,23 @@ export default class EventEditor extends React.Component {
                     this.setState({ tags: tags });
                   }}
                 >
-                  <AddIcon />
+                  <Add />
                 </IconButton>
               </Typography>
             </span>
           </Grid>
+
+          {/* loader */}
+          {this.state.loading
+            ? <Grid container={true} style={{ marginTop: "25px", marginBottom: "25px" }}>
+                <Grid item={true} xs={12} style={{ textAlign: "center" }}>
+                  <CircularProgress
+                    size={25}
+                  />
+                </Grid>
+              </Grid>
+            : null
+          }
 
           {/* Buttons Annuler - Enregistrer - Modifier */}
           <Grid container={true} spacing={1}>
@@ -534,6 +552,7 @@ export default class EventEditor extends React.Component {
                 color="primary"
                 size="large"
                 onClick={() => {
+                  this.setState({ loading: true });
                   if (_.isEmpty(this.props.event)) {
                     this.save();
                   } else {
@@ -578,7 +597,7 @@ export default class EventEditor extends React.Component {
               onClick={() => this.setState({ openSnackBar: false })}
               color="inherit"
             >
-              <CloseIcon />
+              <Close />
             </IconButton>
           }
         />

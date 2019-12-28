@@ -68,7 +68,8 @@ export default class Main extends React.Component {
     page: "events",
     openAccountMenu: false,
     openDrawerMenu: false,
-    selectedEvent: {}
+    // gestion du cache des événements
+    eventsCache: [],
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -150,7 +151,6 @@ export default class Main extends React.Component {
                 this.setState({ 
                   page: item, 
                   openDrawerMenu: false,
-                  selectedEvent: {}
                 });
               }}
               roles={this.props.user.roles}
@@ -171,12 +171,8 @@ export default class Main extends React.Component {
                   user={this.props.user}
                   lang={this.props.lang}
                   onSignOut={() => signOut()}
-                  onSelection={event => {
-                    this.setState({
-                      page: "buyticket",
-                      selectedEvent: event
-                    });
-                  }}
+                  cache={this.state.eventsCache} // new
+                  onCacheReload={events => this.setState({ eventsCache: events })}
                 />
               </div>
             : null
