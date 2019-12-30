@@ -9,6 +9,7 @@ import ModalMessage from "./ModalMessage";
 import ModalPhoto from "./ModalPhoto";
 import Scanner from "./Scanner";
 import TicketsList from "./TicketsList";
+import Statistics from "./Statistics";
 
 export {
   Administration,
@@ -21,5 +22,6 @@ export {
   SettingsView,
   Scanner,
   TicketsList,
-  Title
+  Title,
+  Statistics
 };

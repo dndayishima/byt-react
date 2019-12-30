@@ -136,10 +136,10 @@ export default class EventEditor extends React.Component {
       let venue = this.state.venue;
       _.forEach(venue, (value, key) => {
         if (_.isEmpty(value)) {
-          venue[key] = null;
+          _.unset(venue, key);
         }
       });
-      return venue;
+      return _.isEmpty(venue) ? null : venue;
     };
 
     this.props.client.Event.read(
@@ -319,7 +319,8 @@ export default class EventEditor extends React.Component {
                   fullWidth={true}
                   autoOk={true}
                   inputVariant="outlined"
-                  format={this.props.lang === "en" ? "MM/dd/yyyy" : "dd/MM/yyyy"}
+                  //format={this.props.lang === "en" ? "MM/dd/yyyy" : "dd/MM/yyyy"}
+                  format="dd/MM/yyyy"
                   label={_.upperFirst(_.get(dictionnary, lang + ".date"))}
                   required={true}
                   value={this.state.date.toDate()}
@@ -371,6 +372,9 @@ export default class EventEditor extends React.Component {
           </Grid>
 
           {/* Prix + Places */}
+          <Typography variant="h6" style={{ marginTop: "25px", marginBottom: "15px", textAlign: "center" }}>
+            <strong>{_.upperFirst(_.get(dictionnary, lang + ".price")) + " *"}</strong>
+          </Typography>
           <Grid container={true} spacing={2}>
             {_.map(this.state.prices, (price, index) => 
               <Grid item={true} key={index} xs={12} sm={6} md={4}>

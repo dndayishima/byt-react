@@ -77,6 +77,14 @@ class Client {
         .then(result => success(result))
         .catch(error => errors(error.response))
     },
+    readByCodeSimple: (jwt, code, success, errors) => {
+      axios
+        .get(
+          this.api + "/event/readByCodeSimple/" + code,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response))
+    },
     delete: (jwt, id, success, errors) => {
       axios
         .delete(
@@ -114,7 +122,7 @@ class Client {
           params,
           {headers: {"Authorization": `Bearer ${jwt}`} })
         .then(result => success(result.data))
-        .catch(error => errors(error))
+        .catch(error => errors(error.response))
     }
   };
 
@@ -173,6 +181,14 @@ class Client {
         .post(
           this.api + "/ticket/readAll",
           params,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response));
+    },
+    ticketsPerWeek: (jwt, eventCode, success, errors) => {
+      axios
+        .get(
+          this.api + "/ticket/ticketsPerWeek/" + eventCode,
           {headers: {"Authorization": `Bearer ${jwt}`} })
         .then(result => success(result))
         .catch(error => errors(error.response));

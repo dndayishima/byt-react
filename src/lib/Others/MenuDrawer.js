@@ -15,13 +15,14 @@ import {
   Event,
   Security,
   Settings, 
-  //Timeline, 
+  Timeline, 
   VpnKey 
 } from "@material-ui/icons";
 
 import _ from "lodash";
 
 import { dictionnary } from "../Langs/langs";
+import { userIsAdmin, userIsSeller, userIsTech } from "../Helpers/Helpers";
 
 import logo from "../../byt-logo.jpg";
 
@@ -87,15 +88,13 @@ export default class MenuDrawer extends React.Component {
           </ListItem>
 
           {
-            _.includes(this.props.roles, "SELLER") ||
-            _.includes(this.props.roles, "TECH") ||
-            _.includes(this.props.roles, "ADMIN")
+            userIsSeller(this.props.roles) ||
+            userIsTech(this.props.roles) ||
+            userIsAdmin(this.props.roles)
             ? <React.Fragment>
-                {/*<ListItem
+                <ListItem
                   button={true}
-                  onClick={() => {
-                    alert("Not available");
-                  }}
+                  onClick={() => this.onClick("statistics")}
                 >
                   <ListItemIcon>
                     <Timeline />
@@ -103,7 +102,7 @@ export default class MenuDrawer extends React.Component {
                   <ListItemText
                     primary={_.upperFirst(_.get(dictionnary, lang + ".statistics"))}
                   />
-                </ListItem>*/}
+                </ListItem>
       
                 <ListItem
                   button={true}
@@ -121,8 +120,8 @@ export default class MenuDrawer extends React.Component {
           }
 
           {
-            _.includes(this.props.roles, "TECH") ||
-            _.includes(this.props.roles, "ADMIN")
+            userIsTech(this.props.roles) ||
+            userIsAdmin(this.props.roles)
             ? <ListItem 
                 button={true}
                 onClick={() => this.onClick("code")}
@@ -137,7 +136,7 @@ export default class MenuDrawer extends React.Component {
             : null
           }
 
-          {_.includes(this.props.roles, "ADMIN")
+          {userIsAdmin(this.props.roles)
             ? <ListItem
                 button={true}
                 onClick={() => this.onClick("administration")}

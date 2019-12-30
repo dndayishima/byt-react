@@ -16,7 +16,8 @@ import {
   SettingsView, 
   Scanner,
   Title,
-  TicketsList
+  TicketsList,
+  Statistics
 } from "./Others";
 
 export {
@@ -34,5 +35,6 @@ export {
   SettingsView,
   Scanner,
   Title,
-  TicketsList
+  TicketsList,
+  Statistics
 };

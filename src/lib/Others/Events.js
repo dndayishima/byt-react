@@ -92,8 +92,8 @@ export default class Events extends React.Component {
       result => {
         this.setState({
           events: result.results.content,
+          totalEvents: result.results.numberOfElements
         });
-        this.setState({ totalEvents: result.results.numberOfElements });
         _.forEach(result.results.content, event => {
           // event in cache
           let eic = _.filter(this.props.cache, e => e.id === event.id)[0];

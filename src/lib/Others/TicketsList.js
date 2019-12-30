@@ -215,7 +215,8 @@ export default class TicketsList extends React.Component {
                         <KeyboardDatePicker 
                           fullWidth={true}
                           autoOk={true}
-                          format={this.props.lang === "en" ? "MM/dd/yyyy" : "dd/MM/yyyy"}
+                          //format={this.props.lang === "en" ? "MM/dd/yyyy" : "dd/MM/yyyy"}
+                          format="dd/MM/yyyy"
                           label={_.upperFirst(_.get(dictionnary, lang + ".createdAt")) + " >="}
                           value={_.isNull(this.state.createdAt) ? null : this.state.createdAt.toDate()}
                           onChange={date => {
@@ -380,7 +381,7 @@ class TicketExpandedView extends React.Component {
   };
 
   componentDidMount() {
-    this.props.client.Event.readByCode(
+    this.props.client.Event.readByCodeSimple(
       this.props.jwt,
       this.props.ticket.eventCode,
       result => {

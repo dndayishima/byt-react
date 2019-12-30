@@ -26,7 +26,8 @@ import {
   SettingsView,
   Scanner,
   Title,
-  TicketsList
+  TicketsList,
+  Statistics
 } from "../../lib";
 import { dictionnary } from "../Langs/langs";
 
@@ -161,7 +162,7 @@ export default class Main extends React.Component {
         <div style={styles.container}>
           {/* Events List */}
           {(this.state.page === "events" && !_.isEmpty(this.props.user))
-            ? <div>
+            ? <React.Fragment>
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".events"))}
                 />
@@ -174,13 +175,13 @@ export default class Main extends React.Component {
                   cache={this.state.eventsCache} // new
                   onCacheReload={events => this.setState({ eventsCache: events })}
                 />
-              </div>
+              </React.Fragment>
             : null
           }
 
           {/* Tickets */}
           {(this.state.page === "tickets" && !_.isEmpty(this.props.user))
-            ? <div>
+            ? <React.Fragment>
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".tickets"))}
                 />
@@ -189,15 +190,31 @@ export default class Main extends React.Component {
                   user={this.props.user}
                   jwt={this.props.jwt}
                   lang={this.props.lang}
-                  //onError={() => this.setState({ page: "events" })}
                 />
-              </div>
+              </React.Fragment>
+            : null
+          }
+
+          {/* Statistics */}
+          {this.state.page === "statistics" && !_.isEmpty(this.props.user)
+            ? <React.Fragment>
+                <Title 
+                  title={_.upperFirst(_.get(dictionnary, lang + ".statistics"))}
+                />
+                <Statistics 
+                  client={this.props.client}
+                  user={this.props.user}
+                  jwt={this.props.jwt}
+                  lang={this.props.lang}
+                  cache={this.state.eventsCache}
+                />
+              </React.Fragment>
             : null
           }
 
           {/* Code */}
           {(this.state.page === "code" && !_.isEmpty(this.props.user))
-            ? <div>
+            ? <React.Fragment>
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".code"))}
                 />
@@ -208,13 +225,13 @@ export default class Main extends React.Component {
                   user={this.props.user}
                   onSignOut={() => signOut()}
                 />
-              </div>
+              </React.Fragment>
             : null
           }
 
           {/* Scan de tickets */}
           {this.state.page === "scan" && !_.isEmpty(this.props.user)
-            ? <div>
+            ? <React.Fragment>
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".scan"))}
                 />
@@ -224,13 +241,13 @@ export default class Main extends React.Component {
                   lang={this.props.lang}
                   user={this.props.user}
                 />
-              </div>
+              </React.Fragment>
             : null
           }
 
           {/* administration */}
           {this.state.page === "administration"
-            ? <div>
+            ? <React.Fragment>
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".administration"))}
                 />
@@ -239,7 +256,7 @@ export default class Main extends React.Component {
                   client={this.props.client}
                   user={this.state.user}
                 />
-              </div>
+              </React.Fragment>
             : null
           }
 
@@ -258,7 +275,7 @@ export default class Main extends React.Component {
 
           {/* Mettre ici autre chose */}
           {this.state.page === "settings"
-            ? <div>
+            ? <React.Fragment>
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".settings"))}
                 />
@@ -270,7 +287,7 @@ export default class Main extends React.Component {
                     }
                   }}
                 />
-              </div>
+              </React.Fragment>
             : null
           }
         </div>

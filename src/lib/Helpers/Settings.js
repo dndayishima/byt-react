@@ -3,12 +3,12 @@
 //const apiUrl = "https://demoapi.bytpayment.com";
 
 // en mode développement
-//const authUrl = "http://localhost:8080";
-//const apiUrl = "http://localhost:8081";
+const authUrl = "http://localhost:8080";
+const apiUrl = "http://localhost:8081";
 
 // de mode demonstation
-const authUrl = "https://demoauth2.bytpayment.com";
-const apiUrl = "https://demoservices2.bytpayment.com";
+//const authUrl = "https://demoauth2.bytpayment.com";
+//const apiUrl = "https://demoservices2.bytpayment.com";
 // devises disponibles
 const currencies = [
   { currency: "BIF", symbol: "BIF" },

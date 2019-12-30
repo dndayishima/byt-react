@@ -71,7 +71,7 @@ export default class EventViewer extends React.Component {
         </React.Fragment>
       )
     }
-
+    
     return (
       <React.Fragment>
         <Container maxWidth="md" style={{ marginBottom: "25px" }}>

@@ -157,7 +157,8 @@ export default class CodeSearch extends React.Component {
                     <KeyboardDatePicker 
                       fullWidth={true}
                       autoOk={true}
-                      format={this.props.lang === "en" ? "MM/dd/yyyy" : "dd/MM/yyyy"}
+                      //format={this.props.lang === "en" ? "MM/dd/yyyy" : "dd/MM/yyyy"}
+                      format="dd/MM/yyyy"
                       label={_.upperFirst(_.get(dictionnary, lang + ".createdAt")) + " >="}
                       value={_.isNull(this.state.createdAt) ? null : this.state.createdAt.toDate()}
                       onChange={date => {
@@ -187,7 +188,8 @@ export default class CodeSearch extends React.Component {
                     <KeyboardDatePicker 
                       fullWidth={true}
                       autoOk={true}
-                      format={this.props.lang === "en" ? "MM/dd/yyyy" : "dd/MM/yyyy"}
+                      //format={this.props.lang === "en" ? "MM/dd/yyyy" : "dd/MM/yyyy"}
+                      format="dd/MM/yyyy"
                       label={_.upperFirst(_.get(dictionnary, lang + ".usedAt")) + " >="}
                       value={_.isNull(this.state.usedAt) ? null : this.state.usedAt.toDate()}
                       onChange={date => {

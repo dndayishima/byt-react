@@ -155,8 +155,10 @@ export default class Register extends React.Component {
     params.firstname = this.state.firstname;
     params.birthday = this.state.birthday;
     params.email = _.isEmpty(this.state.email) ? null : this.state.email;
-    params.photo = _.isEmpty(this.state.photo) ? null : this.state.photo;
 
+    // TODO sur le back end, permettre de mettre à jour quelques champs à null 
+    params.photo = _.isEmpty(this.state.photo) ? null : this.state.photo;
+    
     let t = _.filter(this.state.telephones, tel => tel !== "");
     params.telephones = _.isEmpty(t) ? null : t;
 
@@ -295,7 +297,8 @@ export default class Register extends React.Component {
                 <KeyboardDatePicker
                   autoOk={true}
                   inputVariant="outlined"
-                  format={this.props.lang === "en" ? "MM/dd/yyyy" : "dd/MM/yyyy"}
+                  //format={this.props.lang === "en" ? "MM/dd/yyyy" : "dd/MM/yyyy"}
+                  format="dd/MM/yyyy"
                   label={_.upperFirst(_.get(dictionnary, lang + ".birthday"))}
                   fullWidth={true}
                   value={this.state.birthday}

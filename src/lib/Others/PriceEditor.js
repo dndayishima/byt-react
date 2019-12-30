@@ -45,8 +45,12 @@ export default class PriceEditor extends React.Component {
     checkExceeding: _.get(this.props.price, "checkExceeding", false)
   };
 
-  validationPrices = prices => {
+  /*validationPrices = prices => {
     return false;
+  }*/
+
+  handleChangeNumber = number => {
+    return _.isEmpty(number) ? 0 : Number(number);
   }
 
   getNonUsedCurrency = prices => {
@@ -65,7 +69,7 @@ export default class PriceEditor extends React.Component {
   render() {
     let lang = _.toUpper(this.props.lang);
     //console.log(this.props.price);
-    //console.log(getAllCurrencies());
+    console.log(this.state.alreadyTakenPlaces);
     return(
       <React.Fragment>
         <Container maxWidth="md" style={{ marginBottom: "25px" }}>
@@ -85,7 +89,7 @@ export default class PriceEditor extends React.Component {
                 label={_.upperFirst(_.get(dictionnary, lang + ".totalPlaces"))}
                 variant="outlined"
                 type="number"
-                value={this.state.totalPlaces}
+                value={parseInt(this.state.totalPlaces)}
                 onChange={e => this.setState({ totalPlaces: e.target.value })}
               />
             </Grid>
@@ -244,7 +248,7 @@ export default class PriceEditor extends React.Component {
                   onClick={() => {
                     if (this.props.onChange) {
                       if (this.state.checkExceeding) {
-                        if (this.state.totalPlaces < this.state.alreadyTakenPlaces) {
+                        if (parseInt(this.state.totalPlaces) < parseInt(this.state.alreadyTakenPlaces)) {
                           return;
                         }
                       }
