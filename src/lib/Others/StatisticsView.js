@@ -92,7 +92,6 @@ export default class StatisticsView extends React.Component {
       ]
     };
 
-    console.log(this.props.event);
     return (
       <React.Fragment>
         <Container>
