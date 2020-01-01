@@ -91,6 +91,8 @@ export default class StatisticsView extends React.Component {
         }
       ]
     };
+
+    console.log(this.props.event);
     return (
       <React.Fragment>
         <Container>
@@ -113,7 +115,15 @@ export default class StatisticsView extends React.Component {
                 <Bar 
                   data={data}
                   height={400}
-                  options={{ maintainAspectRatio: false }}
+                  options={{
+                    maintainAspectRatio: false,
+                    scales: {
+                      yAxes: [{
+                        display: true,
+                        ticks: { beginAtZero: true }
+                      }]
+                    }
+                  }}
                 />
               </Grid>
           }
