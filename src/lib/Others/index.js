@@ -1,3 +1,4 @@
+import About from "./About";
 import Administration from "./Administration"
 import BuyTicket from "./BuyTicket";
 import Code from "./Code";
@@ -12,6 +13,7 @@ import TicketsList from "./TicketsList";
 import Statistics from "./Statistics";
 
 export {
+  About,
   Administration,
   BuyTicket,
   Code,

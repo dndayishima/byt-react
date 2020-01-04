@@ -18,6 +18,7 @@ import { AccountCircle, Person, PowerSettingsNew } from "@material-ui/icons";
 import _ from "lodash";
 
 import {
+  About,
   Administration,
   Code,
   Events,
@@ -286,6 +287,16 @@ export default class Main extends React.Component {
                       this.props.onChangeLanguage(lang);
                     }
                   }}
+                />
+              </React.Fragment>
+            : null
+          }
+
+          {/* section "about" */}
+          {this.state.page === "about"
+            ? <React.Fragment>
+                <About 
+                  lang={this.props.lang}
                 />
               </React.Fragment>
             : null

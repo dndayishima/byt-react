@@ -1,4 +1,5 @@
 const FR = {
+  about: "à propos",
   administration: "administration",
   allEvents: "tous les événements",
   alreadyTakenPlaces: "tickets vendus ailleurs",

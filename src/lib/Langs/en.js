@@ -1,4 +1,5 @@
 const EN = {
+  about: "about",
   administration: "administration",
   allEvents: "all events",
   alreadyTakenPlaces: "t. sold on other plateforms",

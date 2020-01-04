@@ -1,4 +1,5 @@
 const KI = {
+  about: "kumenya vyinshi",
   administration: "ubugenduzi",
   allEvents: "ibiteramo vyose",
   alreadyTakenPlaces: "tike zigurishijwe ahandi",

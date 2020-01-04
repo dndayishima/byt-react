@@ -13,6 +13,7 @@ import {
   Attachment,
   CenterFocusWeak, 
   Event,
+  InfoOutlined,
   Security,
   Settings, 
   Timeline, 
@@ -160,6 +161,18 @@ export default class MenuDrawer extends React.Component {
             </ListItemIcon>
             <ListItemText 
               primary={_.upperFirst(_.get(dictionnary, lang + ".settings"))}
+            />
+          </ListItem>
+
+          <ListItem
+            button={true}
+            onClick={() => this.onClick("about")}
+          >
+            <ListItemIcon>
+              <InfoOutlined />
+            </ListItemIcon>
+            <ListItemText
+              primary={_.upperFirst(_.get(dictionnary, lang + ".about"))}
             />
           </ListItem>
         </List>

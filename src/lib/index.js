@@ -6,6 +6,7 @@ import {
 } from "./User";
 
 import {
+  About,
   Administration,
   BuyTicket,
   Code, 
@@ -21,6 +22,7 @@ import {
 } from "./Others";
 
 export {
+  About,
   Administration,
   BuyTicket,
   Client,
