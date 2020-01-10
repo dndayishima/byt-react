@@ -19,12 +19,12 @@ const currencies = [
 const codesMarchands = [
   { 
     operator: "Econet-Leo (Ecocash)",
-    codeMarchand: "55034",
+    codeMarchand: "74296",
     currency: "BIF",
     country: "Burundi",
     idPhoto: 0
   },
-  {
+  /*{
     operator: "Limitel (Lumicash)",
     codeMarchand: "27049",
     currency: "BIF",
@@ -37,21 +37,21 @@ const codesMarchands = [
     currency: "BIF",
     country: "Burundi",
     idPhoto: 2
-  },
+  },*/
   {
     operator: "Finbank (Pesa Flash)",
-    codeMarchand: "44863",
+    codeMarchand: "11730",
     currency: "BIF",
     country: "Burundi",
     idPhoto: 3
-  },
+  }/*,
   {
     operator: "Bancobu (mcash)",
     codeMarchand: "16782",
     currency: "BIF",
     country: "Burundi",
     idPhoto: 4
-  }
+  }*/
 ];
 
 export { authUrl, apiUrl, currencies, codesMarchands };

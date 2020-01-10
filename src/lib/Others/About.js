@@ -80,7 +80,7 @@ export default class About extends React.Component {
         >
           <strong>
             {this.props.lang === "fr" || this.props.lang === "en"
-              ? "Contact"
+              ? "Contacts"
               : this.props.lang === "ki"
                 ? "Kuturondera"
                 : null
@@ -92,7 +92,16 @@ export default class About extends React.Component {
           color="textSecondary"
           variant="body2"
         >
-          <strong>Responsable Marketing et Relations Clients</strong>
+          <strong>
+            {this.props.lang === "fr"
+              ? "Responsable Marketing et Relations Clients"
+              : this.props.lang === "en"
+                ? "Marketing and Customer Relations Manager"
+                : this.props.lang === "ki"
+                  ? "Uwujejwe imigenderanire n'aba clients"
+                  : null
+            }
+          </strong>
         </Typography>
         <Typography
           color="textSecondary"
@@ -112,7 +121,12 @@ export default class About extends React.Component {
           color="textSecondary"
           variant="body2"
         >
-          <strong>Entreprise XINAPRO</strong>
+          <strong>
+            {this.props.lang === "fr"
+              ? "Entreprise XINAPRO"
+              : "XINAPRO Company"
+            }
+          </strong>
         </Typography>
         <Typography
           color="textSecondary"
@@ -180,7 +194,22 @@ export default class About extends React.Component {
             variant="body2"
             //gutterBottom={true}
           >
-            No translation available in this language
+            The {bytLink} is a plateform developed and maintained by {xinaproLink}, 
+            a software publisher based in Bujumbura, the economic capital of Burundi.
+          </Typography>
+          <Typography
+            color="textSecondary"
+            variant="body2"
+            gutterBottom={true}
+          >
+            We offer products/solutions with high profitability for our customers (Burundians or foreigners).
+          </Typography>
+          <Typography
+            color="textSecondary"
+            variant="body2"
+            gutterBottom={true}
+          >
+            Please, {contactLink} us to find out more about our services.
           </Typography>
         </Grid>
       </React.Fragment>
@@ -247,14 +276,31 @@ export default class About extends React.Component {
             variant="body1"
             gutterBottom={true}
           >
-            <strong>BYT - Payment in practice...</strong>
+            <strong>BYT - How it works...</strong>
           </Typography>
           <Typography
             color="textSecondary"
             variant="body2"
             //gutterBottom={true}
           >
-            No translation available in this language
+            {bytLink} is an online ticketing system that facilitates the sale 
+            and purchase of tickets for various events.
+          </Typography>
+          <Typography
+            color="textSecondary"
+            variant="body2"
+            gutterBottom={true}
+          >
+            {bytLink} is the first plateform in the Great Lakes region to offer a wide range 
+            of fuctionalities, making it easier to manage events (for event organizers) and 
+            acquire tickets (for buyers/clients).
+          </Typography>
+          <Typography
+            color="textSecondary"
+            variant="body2"
+            gutterBottom={true}
+          >
+            Interested in publishing on our plateform ? Do not hesitate to {contactLink} us.
           </Typography>
         </Grid>
       </React.Fragment>
