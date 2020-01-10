@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/byt-react/static/css/main.34de6062.chunk.css",
-    "main.js": "/byt-react/static/js/main.bee864b5.chunk.js",
-    "main.js.map": "/byt-react/static/js/main.bee864b5.chunk.js.map",
+    "main.js": "/byt-react/static/js/main.aa538b37.chunk.js",
+    "main.js.map": "/byt-react/static/js/main.aa538b37.chunk.js.map",
     "runtime-main.js": "/byt-react/static/js/runtime-main.3dc89232.js",
     "runtime-main.js.map": "/byt-react/static/js/runtime-main.3dc89232.js.map",
     "static/js/2.f35e0edb.chunk.js": "/byt-react/static/js/2.f35e0edb.chunk.js",
     "static/js/2.f35e0edb.chunk.js.map": "/byt-react/static/js/2.f35e0edb.chunk.js.map",
     "index.html": "/byt-react/index.html",
-    "precache-manifest.a71742c134dad0afc5e4e8613345caf1.js": "/byt-react/precache-manifest.a71742c134dad0afc5e4e8613345caf1.js",
+    "precache-manifest.f11859ab79c0c8438b105bbfac6a1ad3.js": "/byt-react/precache-manifest.f11859ab79c0c8438b105bbfac6a1ad3.js",
     "service-worker.js": "/byt-react/service-worker.js",
     "static/css/main.34de6062.chunk.css.map": "/byt-react/static/css/main.34de6062.chunk.css.map",
     "static/media/bancobu.jpg": "/byt-react/static/media/bancobu.62895e24.jpg",
@@ -25,6 +25,6 @@
     "static/js/runtime-main.3dc89232.js",
     "static/js/2.f35e0edb.chunk.js",
     "static/css/main.34de6062.chunk.css",
-    "static/js/main.bee864b5.chunk.js"
+    "static/js/main.aa538b37.chunk.js"
   ]
 }
