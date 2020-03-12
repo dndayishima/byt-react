@@ -21,3 +21,11 @@ npm start
 
 ## Déploiement
 [Documentation](https://facebook.github.io/create-react-app/docs/deployment)
+
+## Démonstration
+
+Une version de démonstration est déployé sur Github sur ce [lien](https://dndayishima.github.io/byt-react).
+
+## Production
+
+La version de l'application en production est accessible sur ce [lien](https://bytpayment.com).
