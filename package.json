@@ -2,7 +2,7 @@
   "name": "byt-react",
   "version": "2.0.0",
   "main": "dist/index.js",
-  "homepage": "https://dndayishima.github.io/byt-react",
+  "homepage": "https://bytpayment.com",
   "files": [
     "build",
     "README.md"
