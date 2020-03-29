@@ -1,29 +1,33 @@
 import React from "react";
-
+import PropTypes from "prop-types";
 import { Typography } from "@material-ui/core";
-
 import _ from "lodash";
 
-export default class Title extends React.Component {
-  static defaultProps = {
-    title: ""
-  };
-  render() {
-    return(
-      <React.Fragment>
-        {_.isEmpty(this.props.title)
-          ? null
-          : <div style={{ marginBottom: "15px" }}> 
-              <Typography 
-                color="primary"
-                //style={{ color: "red" }}
-                variant="h4"
-              >
-                <strong>{this.props.title}</strong>
-              </Typography>
-            </div>
-        }
-      </React.Fragment>
-    );
-  } 
-}
+const Title = ({ title }) => {
+  return(
+    <React.Fragment>
+      {_.isEmpty(title)
+        ? null
+        : <div style={{ marginBottom: "15px" }}> 
+            <Typography 
+              color="primary"
+              //style={{ color: "red" }}
+              variant="h4"
+            >
+              <strong>{title}</strong>
+            </Typography>
+          </div>
+      }
+    </React.Fragment>
+  );
+};
+
+Title.propTypes = {
+  title: PropTypes.string
+};
+
+Title.defaultProps = {
+  title: ""
+};
+
+export default Title;
