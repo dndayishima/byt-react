@@ -92,7 +92,8 @@ export default class Events extends React.Component {
       result => {
         this.setState({
           events: result.results.content,
-          totalEvents: result.results.numberOfElements
+          totalEvents: result.results.numberOfElements,
+          loading: _.isEmpty(result.results.content) ? false : this.state.loading
         });
         _.forEach(result.results.content, event => {
           // event in cache
