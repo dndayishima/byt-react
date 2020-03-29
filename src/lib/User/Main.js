@@ -21,7 +21,6 @@ import {
   About,
   Administration,
   Code,
-  Events,
   MenuDrawer,
   Register,
   SettingsView,
@@ -30,6 +29,7 @@ import {
   TicketsList,
   Statistics
 } from "../../lib";
+import { Events } from "../Event";
 import { dictionnary } from "../Langs/langs";
 
 //import minimized from "../../minimized_brand.png";

@@ -2,7 +2,6 @@ import About from "./About";
 import Administration from "./Administration"
 import BuyTicket from "./BuyTicket";
 import Code from "./Code";
-import Events from "./Events";
 import SettingsView from "./SettingsView";
 import Title from "./Title";
 import MenuDrawer from "./MenuDrawer";
@@ -17,7 +16,6 @@ export {
   Administration,
   BuyTicket,
   Code,
-  Events,
   MenuDrawer, 
   ModalMessage,
   ModalPhoto,
