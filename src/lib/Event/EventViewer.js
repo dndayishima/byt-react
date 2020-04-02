@@ -23,7 +23,7 @@ import {
 import _ from "lodash";
 
 import BuyTicket from "../Others/BuyTicket";
-import PriceViewer from "../Others/PriceViewer";
+import PriceViewer from "../Price/PriceViewer";
 
 import { dictionnary } from "../Langs/langs";
 import { displayDate, displayTime } from "../Helpers/Helpers";

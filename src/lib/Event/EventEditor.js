@@ -33,8 +33,8 @@ import frLocale from "date-fns/locale/fr";
 import enLocale from "date-fns/locale/en-US";
 
 import { ModalMessage, ModalPhoto } from "../../lib";
-import PriceViewer from "../Others/PriceViewer";
-import PriceEditor from "../Others/PriceEditor";
+import PriceViewer from "../Price/PriceViewer";
+import PriceEditor from "../Price/PriceEditor";
 
 import emptyImage from "../../empty-image.png";
 

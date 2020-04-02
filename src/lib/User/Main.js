@@ -8,13 +8,10 @@ import {
   ListItemText,
   Menu,
   MenuItem, 
-  Toolbar,
-  //Typography 
+  Toolbar, 
 } from "@material-ui/core";
-
 import MenuIcon from "@material-ui/icons/Menu";
 import { AccountCircle, Person, PowerSettingsNew } from "@material-ui/icons";
-
 import _ from "lodash";
 
 import {
