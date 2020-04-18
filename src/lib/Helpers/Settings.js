@@ -24,14 +24,14 @@ const codesMarchands = [
     country: "Burundi",
     idPhoto: 0
   },
-  /*{
+  {
     operator: "Limitel (Lumicash)",
-    codeMarchand: "27049",
+    codeMarchand: "88138",
     currency: "BIF",
     country: "Burundi",
     idPhoto: 1
   },
-  {
+  /*{
     operator: "Smart (Smart Pesa)",
     codeMarchand: "34015",
     currency: "BIF",
