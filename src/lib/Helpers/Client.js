@@ -200,6 +200,14 @@ class Client {
           {headers: {"Authorization": `Bearer ${jwt}`} })
         .then(result => success(result))
         .catch(error => errors(error.response));
+    },
+    pause: (jwt, ticketNumber, success, errors) => {
+      axios
+        .get(
+          this.api + "/ticket/pause/" + ticketNumber,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
+        .then(result => success(result))
+        .catch(error => errors(error.response));
     }
   }
 }

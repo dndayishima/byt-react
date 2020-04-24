@@ -90,34 +90,46 @@ export default class Scanner extends React.Component {
     }
   };
 
-  ticketValidation = () => {
-    this.setState({ lodaing: true });
+  ticketOperation = operation => {
+    let onSuccess = result => {
+      this.setState({
+        ticket: result.data.ticket,
+        loading: false
+      });
+    };
+
+    let onError = error => {
+      this.setState({
+        errorStatus: _.isUndefined(error)
+          ? 1
+          : error.status,
+        errorMessage: _.isUndefined(error)
+          ? _.upperFirst(_.get(dictionnary, lang + ".errorMessageNetwork"))
+          : error.status === 401
+            ? _.upperFirst(_.get(dictionnary, lang + ".errorMessageAuthentication"))
+            : _.upperFirst(_.get(dictionnary, lang + ".errorOccurredMessage")),
+        loading: false,
+      });
+    };
+
+    this.setState({ loading: true });
     let lang = _.toUpper(this.props.lang);
-    this.props.client.Ticket.validation(
-      this.props.jwt,
-      this.state.ticket.ticketNumber,
-      result => {
-        //console.log(result);
-        this.setState({
-          ticket: result.data.ticket,
-          loading: false
-        });
-      },
-      error => {
-        //console.log(error);
-        this.setState({
-          errorStatus: _.isUndefined(error)
-            ? 1
-            : error.status,
-          errorMessage: _.isUndefined(error)
-            ? _.upperFirst(_.get(dictionnary, lang + ".errorMessageNetwork"))
-            : error.status === 401
-              ? _.upperFirst(_.get(dictionnary, lang + ".errorMessageAuthentication"))
-              : _.upperFirst(_.get(dictionnary, lang + ".errorOccurredMessage")),
-          loading: false,
-        });
-      }
-    );
+
+    if (operation === "VALIDATION") {
+      this.props.client.Ticket.validation(
+        this.props.jwt,
+        this.state.ticket.ticketNumber,
+        result => onSuccess(result),
+        error => onError(error)
+      );
+    } else if (operation === "PAUSE") {
+      this.props.client.Ticket.pause(
+        this.props.jwt,
+        this.state.ticket.ticketNumber,
+        result => onSuccess(result),
+        error => onError(error)
+      );
+    }
   };
 
   render() {
@@ -198,7 +210,7 @@ export default class Scanner extends React.Component {
                       />
                       <CardContent style={{ textAlign: "center" }}>
                         <Typography variant="body2" color="textSecondary">
-                          {this.state.ticket.valide
+                          {this.state.ticket.valide && _.isNull(this.state.ticket.valideStatusChangedAt)
                             ? displayDate(this.state.ticket.createdAt, this.props.lang) +
                               " - " + displayTime(this.state.ticket.createdAt, this.props.lang)
                             : displayDate(this.state.ticket.valideStatusChangedAt, this.props.lang) +
@@ -234,19 +246,27 @@ export default class Scanner extends React.Component {
                     </Button>
                   </Grid>
 
-                  {this.state.ticket.valide
-                    ? <Grid item={true} xs={12} sm={6}>
-                        <Button
-                          color="primary"
-                          fullWidth={true}
-                          variant="contained"
-                          onClick={() => this.ticketValidation()}
-                        >
-                          {_.upperFirst(_.get(dictionnary, lang + ".validate"))}
-                        </Button>
-                      </Grid>
-                    : null
-                  }
+                  <Grid item={true} xs={12} sm={6}>
+                    <Button
+                      color="primary"
+                      fullWidth={true}
+                      variant="contained"
+                      onClick={() => {
+                        if (this.state.ticket.valide) {
+                          this.ticketOperation("VALIDATION");
+                        } else {
+                          this.ticketOperation("PAUSE");
+                        }
+                      }}
+                    >
+                      {this.state.ticket.valide
+                        ? _.isNull(this.state.ticket.valideStatusChangedAt)
+                          ? _.upperFirst(_.get(dictionnary, lang + ".validate"))
+                          : _.upperFirst(_.get(dictionnary, lang + ".revalidate"))
+                        : _.upperFirst(_.get(dictionnary, lang + ".ticketPause"))
+                      }
+                    </Button>
+                  </Grid>
                   
                 </Grid>
               </React.Fragment>

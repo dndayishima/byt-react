@@ -3,16 +3,12 @@ import PropTypes from "prop-types";
 
 import {
   Avatar,
-  //Badge,
   Button,
   Card,
   CardContent,
   CardHeader,
   CircularProgress,
   Container,
-  //Dialog,
-  //DialogContent,
-  //DialogActions,
   ExpansionPanel,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
@@ -140,6 +136,8 @@ export default class TicketsList extends React.Component {
     let customSearch =
       _.includes(this.props.user.roles, "TECH") || _.includes(this.props.user.roles, "ADMIN");
     
+    console.log(this.state.tickets);
+
     const listTickets = (
       <React.Fragment>
         {_.isEmpty(this.state.tickets)
@@ -344,7 +342,13 @@ class TicketSimpleView extends React.Component {
                 variant="square"
               >
                 <CenterFocusStrong
-                  color={this.props.ticket.valide ? "inherit" : "error" }
+                  color={
+                    this.props.ticket.valide && !this.props.ticket.valideStatusChangedAt
+                      ? "inherit"
+                      : this.props.ticket.valide && this.props.ticket.valideStatusChangedAt
+                        ? "primary"
+                        : "error"
+                  }
                 />
               </Avatar>
             }
