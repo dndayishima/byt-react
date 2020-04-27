@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import _ from "lodash";
-import logo from "../../byt-logo.jpg";
+import logo from "../../images/logo/byt-logo.jpg";
 import { dictionnary } from "../Langs/langs";
 
 const Connexion = props => {

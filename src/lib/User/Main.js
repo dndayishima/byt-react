@@ -29,8 +29,7 @@ import {
 import { Events } from "../Event";
 import { dictionnary } from "../Langs/langs";
 
-//import minimized from "../../minimized_brand.png";
-import bytWhite from "../../byt-white.png";
+import bytWhite from "../../images/logo/byt-white.png";
 import { signOut } from "../Helpers/Helpers";
 
 const styles = {

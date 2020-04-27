@@ -18,12 +18,12 @@ import {
 } from "@material-ui/icons";
 
 
-import bytImage from "../../favicon_byt.jpg";
+import bytImage from "../../images/favicon/favicon_byt.jpg";
 
 import _ from "lodash";
 
-import imageEmpty from "../../image-empty.png";
-import avatarImage from "../../favicon_byt.jpg";
+import imageEmpty from "../../images/others/image-empty.png";
+import avatarImage from "../../images/favicon/favicon_byt.jpg";
 
 import { displayDate, displayTime } from "../Helpers/Helpers";
 import { dictionnary } from "../Langs/langs";

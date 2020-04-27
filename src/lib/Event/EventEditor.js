@@ -36,7 +36,7 @@ import { ModalMessage, ModalPhoto } from "../../lib";
 import PriceViewer from "../Price/PriceViewer";
 import PriceEditor from "../Price/PriceEditor";
 
-import emptyImage from "../../empty-image.png";
+import emptyImage from "../../images/others/empty-image.png";
 
 import { dictionnary } from "../Langs/langs";
 

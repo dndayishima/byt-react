@@ -25,7 +25,7 @@ import _ from "lodash";
 import { dictionnary } from "../Langs/langs";
 import { userIsAdmin, userIsSeller, userIsTech } from "../Helpers/Helpers";
 
-import logo from "../../byt-logo.jpg";
+import logo from "../../images/logo/byt-logo.jpg";
 
 export default class MenuDrawer extends React.Component {
   static propTypes = {

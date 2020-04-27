@@ -33,12 +33,12 @@ import { ModalMessage } from "../../lib";
 import { dictionnary } from "../Langs/langs";
 import { getAllCodesMarchands, priceValuePrinting, signOut } from "../Helpers/Helpers";
 
-import econet from "../../econet.png";
-import lumitel from "../../lumitel.png";
-import smart from "../../smart.png";
-import finbank from "../../finbank.jpg";
-import bancobu from "../../bancobu.jpg";
-import bytImage from "../../favicon_byt.jpg"
+import econet from "../../images/operateurs/econet.png";
+import lumitel from "../../images/operateurs/lumitel.png";
+import smart from "../../images/operateurs/smart.png";
+import finbank from "../../images/operateurs/finbank.jpg";
+import bancobu from "../../images/operateurs/bancobu.jpg";
+import bytImage from "../../images/favicon/favicon_byt.jpg";
 
 export default class BuyTicket extends React.Component {
   static propTypes = {

@@ -11,7 +11,7 @@ import { Bar } from "react-chartjs-2";
 
 import _ from "lodash";
 
-import bytImage from "../../favicon_byt.jpg";
+import bytImage from "../../images/favicon/favicon_byt.jpg";
 import { dictionnary } from "../Langs/langs";
 
 export default class StatisticsView extends React.Component {

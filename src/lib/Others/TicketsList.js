@@ -45,7 +45,7 @@ import { ModalMessage } from "../../lib";
 
 import QRCode from "qrcode.react";
 
-import bytImage from "../../favicon_byt.jpg";
+import bytImage from "../../images/favicon/favicon_byt.jpg";
 
 import { dictionnary } from "../Langs/langs";
 import { displayDate, displayTime, priceValuePrinting, signOut } from "../Helpers/Helpers";
@@ -136,8 +136,6 @@ export default class TicketsList extends React.Component {
     let customSearch =
       _.includes(this.props.user.roles, "TECH") || _.includes(this.props.user.roles, "ADMIN");
     
-    console.log(this.state.tickets);
-
     const listTickets = (
       <React.Fragment>
         {_.isEmpty(this.state.tickets)

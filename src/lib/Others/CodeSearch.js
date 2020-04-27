@@ -28,7 +28,7 @@ import {
 
 import ModalMessage from "./ModalMessage";
 import CodeViewer from "./CodeViewer";
-import bytImage from "../../favicon_byt.jpg";
+import bytImage from "../../images/favicon/favicon_byt.jpg";
 
 import _ from "lodash";
 import moment from "moment";

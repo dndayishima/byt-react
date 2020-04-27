@@ -32,7 +32,7 @@ import {
   signOut
 } from "../Helpers/Helpers";
 import { dictionnary } from "../Langs/langs";
-import bytImage from "../../favicon_byt.jpg";
+import bytImage from "../../images/favicon/favicon_byt.jpg";
 
 export default class Statistics extends React.Component {
   static propTypes = {

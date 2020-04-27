@@ -29,7 +29,7 @@ import frLocale from "date-fns/locale/fr";
 import enLocale from "date-fns/locale/en-US";
 
 import { ModalPhoto, Title } from "../../lib";
-import emptyImage from "../../empty-image.png";
+import emptyImage from "../../images/others/empty-image.png";
 
 import { dictionnary } from "../Langs/langs";
 

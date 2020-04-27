@@ -16,11 +16,11 @@ import { dictionnary } from "../Langs/langs";
 
 import _ from "lodash";
 
-import teamIcon from "../../team_icon.png";
-import ticketsIcon from "../../tickets_icon.png";
-import afriqueIcon from "../../afrique_icon.png";
-import burundiIcon from "../../burundi_icon.png";
-import contactIcon from "../../contact_icon.png";
+import teamIcon from "../../images/others/team_icon.png";
+import ticketsIcon from "../../images/others/tickets_icon.png";
+import afriqueIcon from "../../images/others/afrique_icon.png";
+import burundiIcon from "../../images/others/burundi_icon.png";
+import contactIcon from "../../images/others/contact_icon.png";
 
 const About = ({ lang }) => {
 

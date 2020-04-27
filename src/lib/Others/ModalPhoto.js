@@ -13,7 +13,7 @@ import { Image, Delete } from "@material-ui/icons";
 import _ from "lodash";
 
 import { dictionnary } from "../Langs/langs";
-import emptyImage from "../../empty-image.png";
+import emptyImage from "../../images/others/empty-image.png";
 
 const ModalPhoto = props => {
   const [photo, setPhoto] = useState("");
