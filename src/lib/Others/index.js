@@ -9,7 +9,7 @@ import ModalMessage from "./ModalMessage";
 import ModalPhoto from "./ModalPhoto";
 import Scanner from "./Scanner";
 import TicketsList from "./TicketsList";
-import Statistics from "./Statistics";
+import Statistics from "../Statistic/Statistics";
 
 export {
   About,

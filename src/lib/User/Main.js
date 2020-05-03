@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import {
@@ -15,22 +15,30 @@ import { AccountCircle, Person, PowerSettingsNew } from "@material-ui/icons";
 import _ from "lodash";
 
 import {
+  Switch,
+  Route,
+  useHistory,
+  //useLocation,
+  useRouteMatch
+} from "react-router-dom";
+
+import {
   About,
-  Administration,
+  //Administration,
   Code,
   MenuDrawer,
   Register,
   SettingsView,
   Scanner,
   Title,
-  TicketsList,
-  Statistics
+  TicketsList
 } from "../../lib";
+import { Statistics } from "../Statistic";
 import { Events } from "../Event";
 import { dictionnary } from "../Langs/langs";
 
 import bytWhite from "../../images/logo/byt-white.png";
-import { signOut } from "../Helpers/Helpers";
+import { signOut, userIsAuthenticated } from "../Helpers/Helpers";
 
 const styles = {
   container: {
@@ -45,260 +53,298 @@ const styles = {
   }
 };
 
-export default class Main extends React.Component {
-  static propTypes = {
-    client: PropTypes.any.isRequired,
-    jwt: PropTypes.string,
-    lang: PropTypes.string,
-    onChangeLanguage: PropTypes.func,
-    onRelogin: PropTypes.func,
-    user: PropTypes.object
-  };
-  static defaultProps = {
-    lang: "fr"
-  };
+const Main = props => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  //const [errorType, setErrorType] = useState(null); // 1 : session expirée - 2 : connexion
+  //const [errorTitle, setErrorTitle] = useState("");
+  //const [errorMessage, setErrorMessage] = useState("");
+  //const [page, setPage] = useState("events");
+  const [openAccountMenu, setOpenAccountMenu] = useState(false);
+  const [openDrawerMenu, setOpenDrawerMenu] = useState(false);
+  const [eventsCache, setEventsCache] = useState([]); // gestion du cache des événements
 
-  state = {
-    anchorEl: null,
-    errorType: null, // 1 : session expirée - 2 : connexion
-    errorTitle: "",
-    errorMessage: "",
-    page: "events",
-    openAccountMenu: false,
-    openDrawerMenu: false,
-    // gestion du cache des événements
-    eventsCache: [],
-  };
-
-  componentDidUpdate(prevProps, prevState) {
+  /*componentDidUpdate(prevProps, prevState) {
     if (prevProps.jwt !== this.props.jwt) {
       // il y a eu une reconnexion
       this.setState({ page: "events" });
     }
-  };
+  };*/
 
-  render() {
-    let lang = _.toUpper(this.props.lang);
-    const menuAccount = (
-      <Menu
-        anchorEl={this.state.anchorEl}
-        open={this.state.openAccountMenu}
-        onClose={() => this.setState({ anchorEl: null, openAccountMenu: false })}
+  const { path } = useRouteMatch();
+  const history = useHistory();
+
+  useEffect(() => {
+    if (!userIsAuthenticated()) {
+      signOut();
+    }
+  }, []);  
+
+  const lang = _.toUpper(props.lang);
+
+  const menuAccount = (
+    <Menu
+      anchorEl={anchorEl}
+      open={openAccountMenu}
+      onClose={() => {
+        setAnchorEl(null);
+        setOpenAccountMenu(false);
+      }}
+    >
+      <MenuItem
+        onClick={() => {
+          setAnchorEl(null);
+          setOpenAccountMenu(false);
+          history.push("/plateform/profile");
+        }}
       >
-        <MenuItem
-          onClick={() => {
-            this.setState({
-              page: "profile",
-              anchorEl: null,
-              openAccountMenu: false
-            });
-          }}
-        >
-          <ListItemIcon><Person /></ListItemIcon>
-          <ListItemText
-            primary={_.upperFirst(_.get(dictionnary, lang + ".profile"))}
-          />
-        </MenuItem>
-        <MenuItem onClick={() => signOut()}>
-          <ListItemIcon><PowerSettingsNew /></ListItemIcon>
-          <ListItemText
-            primary={_.upperFirst(_.get(dictionnary, lang + ".signOut"))}
-          />
-        </MenuItem>
-      </Menu>
-    );
-    return (
-      <React.Fragment>
-        <AppBar position="sticky">
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              onClick={() => this.setState({ openDrawerMenu: true })}
-            >
-              <MenuIcon />
-            </IconButton>
-            <div style={{ marginTop: "4px", flexGrow: 1 }}>
-              <img
-                src={bytWhite} 
-                height="33"
-                width="auto"
-                alt="logo"
-                onClick={() => this.setState({ page: "events" })}
-              />
-            </div>
-            <div style={{ marginRight: "1%" }}>
-              <IconButton
-                edge="end"
-                color="inherit"
-                onClick={e => this.setState({ anchorEl: e.currentTarget, openAccountMenu: true })}
-              >
-                <AccountCircle />
-              </IconButton>
-            </div>
-          </Toolbar>
-        </AppBar>
-        {menuAccount}
-        
-        {/* Barre de Menu qui s'ouvre à gauche */}
-        {!_.isEmpty(this.props.user)
-          ? <MenuDrawer
-              lang={this.props.lang}
-              open={this.state.openDrawerMenu}
-              onClose={() => this.setState({ openDrawerMenu: false })}
-              onClickItem={item => {
-                this.setState({ 
-                  page: item, 
-                  openDrawerMenu: false,
-                });
-              }}
-              roles={this.props.user.roles}
+        <ListItemIcon><Person /></ListItemIcon>
+        <ListItemText
+          primary={_.upperFirst(_.get(dictionnary, lang + ".profile"))}
+        />
+      </MenuItem>
+      <MenuItem onClick={() => signOut()}>
+        <ListItemIcon><PowerSettingsNew /></ListItemIcon>
+        <ListItemText
+          primary={_.upperFirst(_.get(dictionnary, lang + ".signOut"))}
+        />
+      </MenuItem>
+    </Menu>
+  );
+
+  if (_.isEmpty(props.user)) {
+    return null;
+  }
+
+  return (
+    <React.Fragment>
+      <AppBar position="sticky">
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            onClick={() => setOpenDrawerMenu(true)}
+          >
+            <MenuIcon />
+          </IconButton>
+          <div style={{ marginTop: "4px", flexGrow: 1 }}>
+            <img
+              src={bytWhite} 
+              height="33"
+              width="auto"
+              alt="logo"
+              onClick={() => history.push("/plateform/events")}
             />
-          : null
-        }
+          </div>
+          <div style={{ marginRight: "1%" }}>
+            <IconButton
+              edge="end"
+              color="inherit"
+              onClick={e => {
+                setAnchorEl(e.currentTarget);
+                setOpenAccountMenu(true);
+              }}
+            >
+              <AccountCircle />
+            </IconButton>
+          </div>
+        </Toolbar>
+      </AppBar>
+      {menuAccount}
 
-        <div style={styles.container}>
-          {/* Events List */}
-          {(this.state.page === "events" && !_.isEmpty(this.props.user))
-            ? <React.Fragment>
-                <Title 
-                  title={_.upperFirst(_.get(dictionnary, lang + ".events"))}
-                />
-                <Events
-                  client={this.props.client}
-                  jwt={this.props.jwt}
-                  user={this.props.user}
-                  lang={this.props.lang}
-                  onSignOut={() => signOut()}
-                  cache={this.state.eventsCache} // new
-                  onCacheReload={events => this.setState({ eventsCache: events })}
-                />
-              </React.Fragment>
-            : null
-          }
+      {/* Barre de Menu qui s'ouvre à gauche */}
+      <MenuDrawer
+        lang={props.lang}
+        open={openDrawerMenu}
+        onClose={() => setOpenDrawerMenu(false)}
+        onClickItem={item => {
+          setOpenDrawerMenu(false);
+          history.push(`${path}/${item}`);
+        }}
+        roles={props.user.roles}
+      />
 
-          {/* Tickets */}
-          {(this.state.page === "tickets" && !_.isEmpty(this.props.user))
-            ? <React.Fragment>
-                <Title 
-                  title={_.upperFirst(_.get(dictionnary, lang + ".tickets"))}
-                />
-                <TicketsList 
-                  client={this.props.client}
-                  user={this.props.user}
-                  jwt={this.props.jwt}
-                  lang={this.props.lang}
-                />
-              </React.Fragment>
-            : null
-          }
+      <Switch>       
+        <Route path={`${path}/events`}>
+          <div style={styles.container}>
+            <React.Fragment>
+              <Title 
+                title={_.upperFirst(_.get(dictionnary, lang + ".events"))}
+              />
+              <Events
+                client={props.client}
+                jwt={props.jwt}
+                user={props.user}
+                lang={props.lang}
+                onSignOut={() => signOut()}
+                cache={eventsCache}
+                onCacheReload={events => setEventsCache(events)}
+              />
+            </React.Fragment>
+          </div>
+        </Route>
 
-          {/* Statistics */}
-          {this.state.page === "statistics" && !_.isEmpty(this.props.user)
-            ? <React.Fragment>
-                <Title 
-                  title={_.upperFirst(_.get(dictionnary, lang + ".statistics"))}
-                />
-                <Statistics 
-                  client={this.props.client}
-                  user={this.props.user}
-                  jwt={this.props.jwt}
-                  lang={this.props.lang}
-                  cache={this.state.eventsCache}
-                />
-              </React.Fragment>
-            : null
-          }
+        <Route path={`${path}/tickets`}>
+          <div style={styles.container}>
+            <React.Fragment>
+              <Title 
+                title={_.upperFirst(_.get(dictionnary, lang + ".tickets"))}
+              />
+              <TicketsList 
+                client={props.client}
+                user={props.user}
+                jwt={props.jwt}
+                lang={props.lang}
+              />
+            </React.Fragment>
+          </div>
+        </Route>
+
+        <Route exact={true} path={`${path}/statistics`}>
+          <div style={styles.container}>
+            <React.Fragment>
+              <Title 
+                title={_.upperFirst(_.get(dictionnary, lang + ".statistics"))}
+              />
+              <Statistics 
+                client={props.client}
+                user={props.user}
+                jwt={props.jwt}
+                lang={props.lang}
+                cache={eventsCache}
+              />
+            </React.Fragment>
+          </div>
+        </Route>
+
+        <Route path={`${path}/statistics/:eventCode`}>
+          <div style={styles.container}>
+            <React.Fragment>
+              <Title 
+                title={_.upperFirst(_.get(dictionnary, lang + ".statistics"))}
+              />
+              <Statistics 
+                client={props.client}
+                user={props.user}
+                jwt={props.jwt}
+                lang={props.lang}
+                cache={eventsCache}
+              />
+            </React.Fragment>
+          </div>
+        </Route>
+
+        <Route path={`${path}/profile`}>
+          <Register 
+            client={props.client}
+            lang={props.lang}
+            edition={true}
+            user={props.user}
+            onCancel={() => history.push("/plateform/events")}
+            onEdition={(jwt, user) => props.onRelogin(jwt, user)}
+          />
+        </Route>
+
+        <Route path={`${path}/code`}>
+          <div style={styles.container}>
+            <React.Fragment>
+              <Title 
+                title={_.upperFirst(_.get(dictionnary, lang + ".code"))}
+              />
+              <Code 
+                client={props.client}
+                jwt={props.jwt}
+                lang={props.lang}
+                user={props.user}
+                onSignOut={() => signOut()}
+              />
+            </React.Fragment>
+          </div>
+        </Route>
+
+        <Route path={`${path}/scanner`}>
+          <div style={styles.container}>
+            <React.Fragment>
+              <Title 
+                title={_.upperFirst(_.get(dictionnary, lang + ".scan"))}
+              />
+              <Scanner
+                client={props.client}
+                jwt={props.jwt}
+                lang={props.lang}
+                user={props.user}
+              />
+            </React.Fragment>
+          </div>
+        </Route>
+
+        <Route path={`${path}/settings`}>
+          <div style={styles.container}>
+            <Title 
+              title={_.upperFirst(_.get(dictionnary, lang + ".settings"))}
+            />
+            <SettingsView
+              lang={props.lang}
+              onChangeLanguage={lang => {
+                if (props.onChangeLanguage) {
+                  props.onChangeLanguage(lang);
+                }
+              }}
+            />
+          </div>
+        </Route>
+
+        <Route path={`${path}/about`}>
+          <About 
+            lang={props.lang}
+          />
+        </Route>
 
           {/* Code */}
-          {(this.state.page === "code" && !_.isEmpty(this.props.user))
+          {/*{(page === "code" && !_.isEmpty(props.user))
             ? <React.Fragment>
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".code"))}
                 />
                 <Code 
-                  client={this.props.client}
-                  jwt={this.props.jwt}
-                  lang={this.props.lang}
-                  user={this.props.user}
+                  client={props.client}
+                  jwt={props.jwt}
+                  lang={props.lang}
+                  user={props.user}
                   onSignOut={() => signOut()}
                 />
               </React.Fragment>
             : null
-          }
-
-          {/* Scan de tickets */}
-          {this.state.page === "scan" && !_.isEmpty(this.props.user)
-            ? <React.Fragment>
-                <Title 
-                  title={_.upperFirst(_.get(dictionnary, lang + ".scan"))}
-                />
-                <Scanner
-                  client={this.props.client}
-                  jwt={this.props.jwt}
-                  lang={this.props.lang}
-                  user={this.props.user}
-                />
-              </React.Fragment>
-            : null
-          }
+          }*/}
 
           {/* administration */}
-          {this.state.page === "administration"
+          {/*{page === "administration"
             ? <React.Fragment>
                 <Title 
                   title={_.upperFirst(_.get(dictionnary, lang + ".administration"))}
                 />
                 <Administration 
-                  lang={this.props.lang}
-                  client={this.props.client}
-                  user={this.state.user}
+                  lang={props.lang}
+                  client={props.client}
+                  user={props.user}
                 />
               </React.Fragment>
             : null
-          }
+          }*/}
+      </Switch>
+    </React.Fragment>
+  );
+};
 
-          {/* profile */}
-          {this.state.page === "profile"
-            ? <Register 
-                client={this.props.client}
-                lang={this.props.lang}
-                edition={true}
-                user={this.props.user}
-                onCancel={() => this.setState({ page: "events" })}
-                onEdition={(jwt, user) => this.props.onRelogin(jwt, user)}
-              />
-            : null
-          }
+Main.propTypes = {
+  client: PropTypes.any.isRequired,
+  jwt: PropTypes.string,
+  lang: PropTypes.string,
+  onChangeLanguage: PropTypes.func,
+  onRelogin: PropTypes.func,
+  user: PropTypes.object
+};
 
-          {/* Mettre ici autre chose */}
-          {this.state.page === "settings"
-            ? <React.Fragment>
-                <Title 
-                  title={_.upperFirst(_.get(dictionnary, lang + ".settings"))}
-                />
-                <SettingsView
-                  lang={this.props.lang}
-                  onChangeLanguage={lang => {
-                    if (this.props.onChangeLanguage) {
-                      this.props.onChangeLanguage(lang);
-                    }
-                  }}
-                />
-              </React.Fragment>
-            : null
-          }
+Main.defaultProps = {
+  lang: "fr"
+};
 
-          {/* section "about" */}
-          {this.state.page === "about"
-            ? <React.Fragment>
-                <About 
-                  lang={this.props.lang}
-                />
-              </React.Fragment>
-            : null
-          }
-        </div>
-      </React.Fragment>
-    );
-  }
-}
+export default Main;

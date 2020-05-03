@@ -321,7 +321,7 @@ const About = ({ lang }) => {
 
   return (
     <React.Fragment>
-      <Container maxWidth="md">
+      <Container maxWidth="md" style={{ marginTop: "25px" }}>
         <Grid container={true}>
           <Grid item={true} xs={12} style={{ textAlign: "center" }}>
             <Title 

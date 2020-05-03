@@ -1,26 +1,24 @@
-import React from 'react';
-
-import { Client, Connexion, Main, Register } from "./lib";
-
+import React, { useState, useEffect } from 'react';
+import {
+  Switch,
+  Route,
+  //useLocation,
+  useHistory
+} from "react-router-dom";
+import { About, Client, Connexion, Main, Register } from "./lib";
 import { authUrl, apiUrl } from "./lib/Helpers/Settings";
-
 import _ from "lodash";
 
 const client = new Client(authUrl, apiUrl);
 
-export default class App extends React.Component {
-  state = {
-    jwt: _.get(localStorage, "jwt", ""),
-    user: null,
-    page: "connexion",
-    lang: _.get(localStorage, "lang", "fr")
-  };
+const App = () => {
+  const [jwt, setJwt] = useState(_.get(localStorage, "jwt", ""));
+  const [user, setUser] = useState(null);
+  const [lang, setLang] = useState(_.get(localStorage, "lang", "fr"));
 
-  componentDidMount() {
-    this.reloadUser();
-  };
+  const history = useHistory();
 
-  reloadUser = () => {
+  useEffect(() => {
     let userCode = _.get(localStorage, "userCode", "");
     if (_.isEmpty(userCode)) {
       return;
@@ -28,62 +26,89 @@ export default class App extends React.Component {
     client.User.readByCode(
       userCode,
       result => {
-        this.setState({ user: result.data.user });
+        setUser(result.data.user);
       },
       error => {
-        this.setState({ user: null });
+        setUser(null);
       }
     );
-  };
+  }, []); // Did Mount
 
-  onChangeLanguage = lang => {
-    localStorage.setItem("lang", lang);
-    this.setState({ lang: lang });
-  };
+  /*const location = useLocation();
+  console.log(location);*/
 
-  render() {
-    return (
-      <React.Fragment>
-        {_.isEmpty(this.state.jwt)
-          ? this.state.page === "connexion"
-            ? <React.Fragment>
-                <Connexion 
-                  client={client}
-                  lang={this.state.lang}
-                  onSuccess={data => {
-                    localStorage.setItem("jwt", data.jwt);
-                    localStorage.setItem("userCode", data.user.code);
-                    this.setState({ jwt: data.jwt, user: data.user });
-                  }}
-                  onClickRegister={() => this.setState({ page: "register" })}
-                />
-              </React.Fragment>
-            : this.state.page === "register"
-              ? <React.Fragment>
-                  <Register 
-                    client={client}
-                    lang={this.state.lang}
-                    edition={false}
-                    user={this.state.user}
-                    onCancel={() => this.setState({ page: "connexion" })}
-                    onRegistration={() => this.setState({ page: "connexion" })}
-                  />
-                </React.Fragment>
-              : null
-          : <Main
-              client={client}
-              jwt={this.state.jwt}
-              user={this.state.user}
-              lang={this.state.lang}
-              onChangeLanguage={lang => this.onChangeLanguage(lang)}
-              onRelogin={(jwt, user) => {
-                localStorage.setItem("jwt", jwt);
-                localStorage.setItem("userCode", user.code);
-                this.setState({ jwt: jwt, user: user });
-              }}
-            />
-        }
-      </React.Fragment>
-    );
-  }
-}
+  return (
+    <React.Fragment>
+      <Switch>
+        <Route exact={true} path="/">
+          <Main
+            client={client}
+            jwt={jwt}
+            user={user}
+            lang={lang}
+            onChangeLanguage={lang => setLang(lang)}
+            onRelogin={(jwt, user) => {
+              localStorage.setItem("jwt", jwt);
+              localStorage.setItem("userCode", user.code);
+              setUser(user);
+              setJwt(jwt);
+            }}
+          />
+        </Route>
+
+        <Route path="/plateform">
+          <Main
+            client={client}
+            jwt={jwt}
+            user={user}
+            lang={lang}
+            onChangeLanguage={lang => setLang(lang)}
+            onRelogin={(jwt, user) => {
+              localStorage.setItem("jwt", jwt);
+              localStorage.setItem("userCode", user.code);
+              setUser(user);
+              setJwt(jwt);
+              history.push("/plateform/events");
+            }}
+          />
+        </Route>
+
+        <Route path="/login">
+          <Connexion 
+            client={client}
+            lang={lang}
+            onSuccess={data => {
+              localStorage.setItem("jwt", data.jwt);
+              localStorage.setItem("userCode", data.user.code);
+              setJwt(data.jwt);
+              setUser(data.user);
+              history.push("/plateform/events");
+            }}
+            onClickRegister={() => history.push("/register")}
+          />
+        </Route>
+
+        <Route path="/register">
+          <Register 
+            client={client}
+            lang={lang}
+            edition={false}
+            user={user}
+            onCancel={() => {
+              history.goBack();
+            }}
+            onRegistration={() => history.push("/login")}
+          />
+        </Route>
+
+        <Route path="/about">
+          <About 
+            lang="fr"
+          />
+        </Route>
+      </Switch>
+    </React.Fragment>
+  );
+};
+
+export default App;

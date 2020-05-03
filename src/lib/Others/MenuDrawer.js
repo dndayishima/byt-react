@@ -14,7 +14,7 @@ import {
   CenterFocusWeak, 
   Event,
   InfoOutlined,
-  Security,
+  //Security,
   Settings, 
   Timeline, 
   VpnKey 
@@ -107,7 +107,7 @@ export default class MenuDrawer extends React.Component {
       
                 <ListItem
                   button={true}
-                  onClick={() => this.onClick("scan")}
+                  onClick={() => this.onClick("scanner")}
                 >
                   <ListItemIcon>
                     <CenterFocusWeak />
@@ -137,7 +137,7 @@ export default class MenuDrawer extends React.Component {
             : null
           }
 
-          {userIsAdmin(this.props.roles)
+          {/*{userIsAdmin(this.props.roles)
             ? <ListItem
                 button={true}
                 onClick={() => this.onClick("administration")}
@@ -150,7 +150,7 @@ export default class MenuDrawer extends React.Component {
                 />
               </ListItem>
             : null
-          }
+          }*/}
           
           <ListItem 
             button={true}

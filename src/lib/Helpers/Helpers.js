@@ -7,12 +7,12 @@ const imageHasPrefix = base64 => {
   return (regex.test(base64));
 };
 
-const truncateString = (str, num) => {
+/*const truncateString = (str, num) => {
   if (str.length <= num) {
     return str
   }
   return str.slice(0, num) + "..."
-};
+};*/
 
 const getAllCurrencies = () => {
   return currencies;
@@ -55,11 +55,17 @@ const priceValuePrinting = (priceValue, lang) => {
   return Number(priceValue).toLocaleString("fr-FR");
 };
 
-const signOut = () => {
+const localStorageCleanInfosUser = () => {
   localStorage.setItem("jwt", "");
   localStorage.setItem("userCode", "");
+};
+
+const signOut = () => {
+  localStorageCleanInfosUser();
   // ici il faudra gérer le changement d'URL si besoin
-  window.location.reload();
+  let a = document.createElement("a");
+  a.href = "/login";
+  a.click();
 };
 
 const getAllCodesMarchands = () => {
@@ -76,20 +82,39 @@ const userIsSeller = arrayRoles => {
 
 const userIsTech = arrayRoles => {
   return _.includes(arrayRoles, "TECH");
-}
+};
+
+const userIsAuthenticated = () => {
+  if (
+    _.isEmpty(_.get(localStorage, "jwt", "")) ||
+    _.isEmpty(_.get(localStorage, "userCode", ""))
+  ) {
+    return false;
+  }
+  return true;
+};
+
+/*const changeLocationURL = location => {
+  let a = document.createElement("a");
+  a.href = location;
+  a.click();
+};*/
 
 export {
+  //changeLocationURL,
   displayDate,
   displayTime,
   imageHasPrefix,
-  truncateString,
+  //truncateString,
   getAllCodesMarchands,
   getAllCurrencies,
   getCurrencySymbol,
   getValueOfOptionalString,
+  localStorageCleanInfosUser,
   priceValuePrinting,
   signOut,
   userIsAdmin,
+  userIsAuthenticated,
   userIsSeller,
   userIsTech
 };

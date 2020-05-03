@@ -1,18 +1,17 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { FormControl, MenuItem, OutlinedInput, Select } from "@material-ui/core";
-
-//import _ from "lodash";
-//import { dictionnary } from "../Langs/langs";
+import {
+  FormControl,
+  MenuItem,
+  OutlinedInput,
+  Select
+} from "@material-ui/core";
 
 export default class SettingsView extends React.Component {
   static propTypes = {
     lang: PropTypes.string,
     onChangeLanguage: PropTypes.func
-    //client: PropTypes.any.isRequired,
-    //onSuccess: PropTypes.func,
-    //onError: PropTypes.func
   };
   static defaultProps = {
     lang: "fr"
@@ -30,9 +29,6 @@ export default class SettingsView extends React.Component {
 
   
   render () {
-    //let lang = _.toUpper(this.props.lang);
-    //let language = _.get(dictionnary, lang + ".language");
-
     return (
       <React.Fragment>
         <FormControl variant="outlined" fullWidth={true}>

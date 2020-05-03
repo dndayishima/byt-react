@@ -9,6 +9,8 @@ import teal from "@material-ui/core/colors/teal";
 import blueGrey from "@material-ui/core/colors/blueGrey";
 //import deepOrange from "@material-ui/core/colors/deepOrange";
 
+import { BrowserRouter } from "react-router-dom";
+
 const theme = createMuiTheme({
   palette: {
     primary: teal,
@@ -18,9 +20,11 @@ const theme = createMuiTheme({
 });
 
 ReactDOM.render(
-  <MuiThemeProvider theme={theme}>
-    <App />
-  </MuiThemeProvider>,
+  <BrowserRouter>
+    <MuiThemeProvider theme={theme}>
+      <App />
+    </MuiThemeProvider>
+  </BrowserRouter>,
   document.getElementById('root')
 );
 

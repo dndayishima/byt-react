@@ -28,117 +28,102 @@ import avatarImage from "../../images/favicon/favicon_byt.jpg";
 import { displayDate, displayTime } from "../Helpers/Helpers";
 import { dictionnary } from "../Langs/langs";
 
-export default class EventsList extends React.Component {
-  static propTypes = {
-    events: PropTypes.array,
-    lang: PropTypes.string,
-    user: PropTypes.object,
-    onEdit: PropTypes.func,
-    onView: PropTypes.func
-  };
-
-  static defaultProps = {
-    lang: "fr"
-  };
-
-  render() {
-    return (
-      <React.Fragment>
-        {_.isEmpty(this.props.events)
-          ? <div style={{ textAlign: "center", marginTop: "40px", marginBottom: "40px" }}>
-              <img src={bytImage} alt="no events" /*height="80" width="auto"*/ />
-            </div>
-          : <Container maxWidth="lg">
-              <Grid container={true} spacing={1}>
-                {_.map(this.props.events, (event, i) => 
-                  <Event
-                    key={i}
-                    event={event}
-                    lang={this.props.lang}
-                    user={this.props.user}
-                    onEdit={event => {
-                      if (this.props.onEdit) {
-                        this.props.onEdit(event);
-                      }
-                    }}
-                    onView={event => {
-                      if (this.props.onView) {
-                        this.props.onView(event);
-                      }
-                    }}
-                  />
-                )}
-              </Grid>
-            </Container>
-        }
-      </React.Fragment>
-    );
-  }
-}
-
-class Event extends React.Component {
-  tagsToString = array => {
-    let str = "";
-    _.forEach(array, (tag, i) => {
-      if (i === array.length - 1) {
-        str +=  _.upperFirst(tag);
-      } else {
-        str += _.upperFirst(tag) + " / ";
+const EventsList = props => {
+  return (
+    <React.Fragment>
+      {_.isEmpty(props.events)
+        ? <div style={{ textAlign: "center", marginTop: "40px", marginBottom: "40px" }}>
+            <img src={bytImage} alt="no events" />
+          </div>
+        : <Container maxWidth="lg">
+            <Grid container={true} spacing={1}>
+              {_.map(props.events, (event, i) => 
+                <Event
+                  key={i}
+                  event={event}
+                  lang={props.lang}
+                  user={props.user}
+                  onEdit={event => {
+                    if (props.onEdit) {
+                      props.onEdit(event.code);
+                    }
+                  }}
+                  onView={event => {
+                    if (props.onView) {
+                      props.onView(event.code);
+                    }
+                  }}
+                />
+              )}
+            </Grid>
+          </Container>
       }
-    });
-    return str;
-  };
+    </React.Fragment>
+  );
+};
 
-  render() {
-    let event = this.props.event;
-    return (
-      <Grid item xs={12} sm={6} md={4}>
-        <Card>
-          <CardHeader
-            avatar={
-              <Avatar aria-label="event" variant="square" src={avatarImage} />
+EventsList.propTypes = {
+  events: PropTypes.array,
+  lang: PropTypes.string,
+  user: PropTypes.object,
+  onEdit: PropTypes.func,
+  onView: PropTypes.func
+};
+
+EventsList.defaultProps = {
+  lang: "fr"
+};
+
+export default EventsList;
+
+const Event = props => {
+  return (
+    <Grid item xs={12} sm={6} md={4}>
+      <Card>
+        <CardHeader
+          avatar={
+            <Avatar aria-label="event" variant="square" src={avatarImage} />
+          }
+          action={
+            props.user.code === props.event.seller
+              ? <IconButton
+                  aria-label="edit"
+                  onClick={() => {
+                    if (props.onEdit) {
+                      props.onEdit(props.event);
+                    }
+                  }}
+                >
+                  <Edit />
+                </IconButton>
+              : null
+          }
+          title={props.event.name}
+          subheader={
+            _.isNull(props.event.date)
+              ? _.get(dictionnary, _.toUpper(props.lang) + ".loading") + "..."
+              : displayDate(props.event.date, props.lang) + " - " + displayTime(props.event.date, props.lang)
+          }
+        />
+        <CardMedia 
+          style={{ height: 0, paddingTop: "56.25%" }}
+          image={_.isEmpty(props.event.photo) ? imageEmpty : props.event.photo}
+          title={props.event.name}
+          onClick={() => {
+            if (!props.event.code) {
+              return;
             }
-            action={
-              this.props.user.code === event.seller
-                ? <IconButton
-                    aria-label="edit"
-                    onClick={() => {
-                      if (this.props.onEdit) {
-                        this.props.onEdit(event);
-                      }
-                    }}
-                  >
-                    <Edit />
-                  </IconButton>
-                : null
+            if (props.onView) {
+              props.onView(props.event);
             }
-            title={event.name}
-            subheader={
-              _.isNull(event.date)
-                ? _.get(dictionnary, _.toUpper(this.props.lang) + ".loading") + "..."
-                : displayDate(event.date, this.props.lang) + " - " + displayTime(event.date, this.props.lang)
-            }
-          />
-          <CardMedia 
-            style={{ height: 0, paddingTop: "56.25%" }}
-            image={_.isEmpty(event.photo) ? imageEmpty : event.photo}
-            title={event.name}
-            onClick={() => {
-              if (!event.code) {
-                return;
-              }
-              if (this.props.onView) {
-                this.props.onView(event);
-              }
-            }}
-          />
-          <CardContent style={{ paddingBottom: 10, textAlign: "center" }}>
-            <Typography variant="body2" color="textSecondary" component="p">
-              {event.code}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-    );
-  }
+          }}
+        />
+        <CardContent style={{ paddingBottom: 10, textAlign: "center" }}>
+          <Typography variant="body2" color="textSecondary" component="p">
+            {props.event.code}
+          </Typography>
+        </CardContent>
+      </Card>
+    </Grid>
+  );
 }
