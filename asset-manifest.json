@@ -1,16 +1,17 @@
 {
   "files": {
-    "main.css": "/byt-react/static/css/main.34de6062.chunk.css",
-    "main.js": "/byt-react/static/js/main.519468ed.chunk.js",
-    "main.js.map": "/byt-react/static/js/main.519468ed.chunk.js.map",
-    "runtime-main.js": "/byt-react/static/js/runtime-main.b2a4ffe4.js",
-    "runtime-main.js.map": "/byt-react/static/js/runtime-main.b2a4ffe4.js.map",
-    "static/js/2.dec40cb6.chunk.js": "/byt-react/static/js/2.dec40cb6.chunk.js",
-    "static/js/2.dec40cb6.chunk.js.map": "/byt-react/static/js/2.dec40cb6.chunk.js.map",
+    "main.css": "/byt-react/static/css/main.1f61c938.chunk.css",
+    "main.js": "/byt-react/static/js/main.c4bde367.chunk.js",
+    "main.js.map": "/byt-react/static/js/main.c4bde367.chunk.js.map",
+    "runtime-main.js": "/byt-react/static/js/runtime-main.3e71994a.js",
+    "runtime-main.js.map": "/byt-react/static/js/runtime-main.3e71994a.js.map",
+    "static/js/2.166c55a9.chunk.js": "/byt-react/static/js/2.166c55a9.chunk.js",
+    "static/js/2.166c55a9.chunk.js.map": "/byt-react/static/js/2.166c55a9.chunk.js.map",
     "index.html": "/byt-react/index.html",
-    "precache-manifest.8bdd8244de2b36a82f01f436bf2a7317.js": "/byt-react/precache-manifest.8bdd8244de2b36a82f01f436bf2a7317.js",
+    "precache-manifest.d0b5e947f173ab6cc8a4d288c965a3ee.js": "/byt-react/precache-manifest.d0b5e947f173ab6cc8a4d288c965a3ee.js",
     "service-worker.js": "/byt-react/service-worker.js",
-    "static/css/main.34de6062.chunk.css.map": "/byt-react/static/css/main.34de6062.chunk.css.map",
+    "static/css/main.1f61c938.chunk.css.map": "/byt-react/static/css/main.1f61c938.chunk.css.map",
+    "static/js/2.166c55a9.chunk.js.LICENSE.txt": "/byt-react/static/js/2.166c55a9.chunk.js.LICENSE.txt",
     "static/media/bancobu.jpg": "/byt-react/static/media/bancobu.62895e24.jpg",
     "static/media/byt-logo.jpg": "/byt-react/static/media/byt-logo.83e9ffb7.jpg",
     "static/media/byt-white.png": "/byt-react/static/media/byt-white.83843595.png",
@@ -22,9 +23,9 @@
     "static/media/tickets_icon.png": "/byt-react/static/media/tickets_icon.148ee0ce.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.b2a4ffe4.js",
-    "static/js/2.dec40cb6.chunk.js",
-    "static/css/main.34de6062.chunk.css",
-    "static/js/main.519468ed.chunk.js"
+    "static/js/runtime-main.3e71994a.js",
+    "static/js/2.166c55a9.chunk.js",
+    "static/css/main.1f61c938.chunk.css",
+    "static/js/main.c4bde367.chunk.js"
   ]
 }
