@@ -1,6 +1,6 @@
 import _ from "lodash";
 import moment from "moment";
-import { currencies, codesMarchands } from "./Settings";
+import { basename, currencies, codesMarchands } from "./Settings";
 
 const imageHasPrefix = base64 => {
   let regex = /^(data:image\/[a-z]+;base64,)/;
@@ -64,7 +64,7 @@ const signOut = () => {
   localStorageCleanInfosUser();
   // ici il faudra gérer le changement d'URL si besoin
   let a = document.createElement("a");
-  a.href = "/login";
+  a.href = `${basename}/#/login`;
   a.click();
 };
 

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   Switch,
   Route,
-  //useLocation,
   useHistory
 } from "react-router-dom";
 import { About, Client, Connexion, Main, Register } from "./lib";
@@ -33,9 +32,6 @@ const App = () => {
       }
     );
   }, []); // Did Mount
-
-  /*const location = useLocation();
-  console.log(location);*/
 
   return (
     <React.Fragment>

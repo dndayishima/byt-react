@@ -76,8 +76,11 @@ const Main = props => {
   useEffect(() => {
     if (!userIsAuthenticated()) {
       signOut();
+    } else {
+      history.push("/plateform/events");
     }
-  }, []);  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const lang = _.toUpper(props.lang);
 
@@ -297,23 +300,6 @@ const Main = props => {
             lang={props.lang}
           />
         </Route>
-
-          {/* Code */}
-          {/*{(page === "code" && !_.isEmpty(props.user))
-            ? <React.Fragment>
-                <Title 
-                  title={_.upperFirst(_.get(dictionnary, lang + ".code"))}
-                />
-                <Code 
-                  client={props.client}
-                  jwt={props.jwt}
-                  lang={props.lang}
-                  user={props.user}
-                  onSignOut={() => signOut()}
-                />
-              </React.Fragment>
-            : null
-          }*/}
 
           {/* administration */}
           {/*{page === "administration"

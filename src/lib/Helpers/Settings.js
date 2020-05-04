@@ -1,3 +1,6 @@
+// Basename de l'application (URL principale)
+const basename = process.env.PUBLIC_URL;
+
 // Paramètres généraux de l'application
 //const authUrl = "https://auth.bytpayment.com";
 //const apiUrl = "https://services.bytpayment.com";
@@ -54,4 +57,4 @@ const codesMarchands = [
   }*/
 ];
 
-export { authUrl, apiUrl, currencies, codesMarchands };
+export { authUrl, apiUrl, basename, currencies, codesMarchands };
