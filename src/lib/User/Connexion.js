@@ -6,15 +6,18 @@ import {
   Container,
   Grid,
   IconButton,
+  Link,
   Paper,
   Snackbar,
-  TextField
+  TextField,
+  Typography
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import _ from "lodash";
 import logo from "../../images/logo/byt-logo.jpg";
 import { dictionnary } from "../Langs/langs";
 import { localStorageCleanInfosUser } from "../Helpers/Helpers";
+import { basename } from "../Helpers/Settings";
 
 const Connexion = props => {
   const [login, setLogin] = useState("");
@@ -164,6 +167,20 @@ const Connexion = props => {
             </Grid>
           </Grid>
         </Paper>
+
+        <div style={{ position: "fixed", bottom: 30, left: 0, width: "100%", textAlign: "center" }}>
+          <Typography
+            color="textSecondary"
+            variant="body2"
+          >
+            <Link
+              href={`${basename}/#/about`}
+              variant="body2"
+            >
+              {_.upperFirst(_.get(dictionnary, lang + ".knowMoreAboutUs"))}
+            </Link>
+          </Typography>
+        </div>
       </Container>
 
       <Snackbar 

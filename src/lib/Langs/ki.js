@@ -50,6 +50,7 @@ const KI = {
   image: "isanamu",
   imageSizeTooLarge: "isanamu ni rinini cane (max 1 MB)",
   invalidForm: "hari ibisabwa mutujuje neza",
+  knowMoreAboutUs: "kumenya vyinshi",
   language: "ururimi",
   lastname: "izina",
   loading: "biriko biraronderwa",

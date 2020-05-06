@@ -298,6 +298,7 @@ const Main = props => {
         <Route path={`${path}/about`}>
           <About 
             lang={props.lang}
+            logged={true}
           />
         </Route>
 

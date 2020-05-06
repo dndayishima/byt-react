@@ -50,6 +50,7 @@ const FR = {
   image: "image",
   imageSizeTooLarge: "image trop grande (max 1 Mo)",
   invalidForm: "certains champs ne sont pas valides",
+  knowMoreAboutUs: "en savoir plus sur nous",
   language: "langue",
   lastname: "nom",
   loading: "chargement",

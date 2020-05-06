@@ -50,6 +50,7 @@ const EN = {
   image: "image",
   imageSizeTooLarge: "image size too large (max 1 MB)",
   invalidForm: "some fields are not valid",
+  knowMoreAboutUs: "know more about us",
   language: "language",
   lastname: "lastname",
   loading: "loading",

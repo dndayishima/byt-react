@@ -13,6 +13,7 @@ import {
 } from "../../lib";
 
 import { dictionnary } from "../Langs/langs";
+import { basename } from "../Helpers/Settings";
 
 import _ from "lodash";
 
@@ -21,15 +22,17 @@ import ticketsIcon from "../../images/others/tickets_icon.png";
 import afriqueIcon from "../../images/others/afrique_icon.png";
 import burundiIcon from "../../images/others/burundi_icon.png";
 import contactIcon from "../../images/others/contact_icon.png";
+import facebookIcon from "../../images/others/facebook_icon.png";
+import instagramIcon from "../../images/others/instagram_icon.png";
 
-const About = ({ lang }) => {
+const About = ({ lang, logged }) => {
 
   const bytLink = (
     <Link
       href="https://www.bytpayment.com"
       variant="body2"
-      target="_blank"
-      rel="noreferrer"
+      //target="_blank"
+      //rel="noreferrer"
     >
       BYT - Payment
     </Link>
@@ -321,7 +324,10 @@ const About = ({ lang }) => {
 
   return (
     <React.Fragment>
-      <Container maxWidth="md" style={{ marginTop: "25px" }}>
+      <Container
+        maxWidth="md"
+        style={{ marginTop: "25px", position: "relative", minHeight: "90vh" }}
+      >
         <Grid container={true}>
           <Grid item={true} xs={12} style={{ textAlign: "center" }}>
             <Title 
@@ -390,17 +396,88 @@ const About = ({ lang }) => {
             />
           </Grid>
         </Grid>
+
+        {/* liens de redirections */}
+        <Grid
+          container={true}
+          spacing={1}
+          style={{ position: "absolute", bottom: 0, width: "100%", height: "60px" }}
+        >
+          <Grid item={true} xs={12} style={{ textAlign: "center", marginTop: "40px", marginBottom: logged ? "25px" : "0px"  }}>
+            <Typography
+              color="textSecondary"
+              variant="body2"
+            >
+              <Link
+                href="https://www.facebook.com/bytpayment/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <img
+                  height={30}
+                  width={30}
+                  src={facebookIcon}
+                  alt="fb"
+                />
+              </Link>
+              <Link
+                href="https://www.instagram.com/byt.payment/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <img
+                  height={30}
+                  width={30}
+                  src={instagramIcon}
+                  alt="ig"
+                />
+              </Link>
+            </Typography>
+          </Grid>
+          {!logged
+            ? <Grid item={true} xs={12} style={{ textAlign: "center", marginBottom: "25px" }}>
+                <Typography
+                  color="textSecondary"
+                  variant="body2"
+                >
+                  <Link
+                    href={`${basename}/#/login`}
+                    variant="body2"
+                  >
+                    {_.upperFirst(_.get(dictionnary, _.toUpper(lang) + ".signIn"))}
+                  </Link>
+                  &nbsp;&nbsp;
+                  <Link
+                    href={`${basename}/#/register`}
+                    variant="body2"
+                  >
+                    {_.upperFirst(_.get(dictionnary, _.toUpper(lang) + ".register"))}
+                  </Link>
+                </Typography>
+              </Grid>
+            : null
+          }
+        </Grid>
+        {/*<div style={{ position: "absolute", bottom: 0, width: "100%", textAlign: "center", height: "60px" }}>
+          <div style={{ marginTop: "100px", marginBottom: "25px" }}>
+            coucou
+          </div>
+        </div>*/}
       </Container>
+
+      
     </React.Fragment>
   )
 }
 
 About.propTypes = {
-  lang: PropTypes.string
+  lang: PropTypes.string,
+  logged: PropTypes.bool
 }
 
 About.defaultProps = {
-  lang: "fr"
+  lang: "fr",
+  logged: false
 }
 
 export default About;

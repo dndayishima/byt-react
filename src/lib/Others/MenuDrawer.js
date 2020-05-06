@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import packageJson from "../../../package.json"
 
 import {
   Divider, 
@@ -7,7 +8,8 @@ import {
   List, 
   ListItem, 
   ListItemIcon, 
-  ListItemText 
+  ListItemText,
+  Typography
 } from "@material-ui/core";
 import {
   Attachment,
@@ -176,6 +178,16 @@ export default class MenuDrawer extends React.Component {
             />
           </ListItem>
         </List>
+
+        <Divider />
+        <Typography
+          color="textSecondary"
+          variant="body2"
+          align="center"
+          style={{ marginTop: "20px" }}
+        >
+          Version {packageJson.version}
+        </Typography>
       </Drawer>
     )
   }
