@@ -22,8 +22,6 @@ import ticketsIcon from "../../images/others/tickets_icon.png";
 import afriqueIcon from "../../images/others/afrique_icon.png";
 import burundiIcon from "../../images/others/burundi_icon.png";
 import contactIcon from "../../images/others/contact_icon.png";
-import facebookIcon from "../../images/others/facebook_icon.png";
-import instagramIcon from "../../images/others/instagram_icon.png";
 
 const About = ({ lang, logged }) => {
 
@@ -403,60 +401,49 @@ const About = ({ lang, logged }) => {
           spacing={1}
           style={{ position: "absolute", bottom: 0, width: "100%", height: "60px" }}
         >
-          <Grid item={true} xs={12} style={{ textAlign: "center", marginTop: "40px", marginBottom: logged ? "25px" : "0px"  }}>
+          <Grid item={true} xs={12} style={{ textAlign: "center", marginTop: "40px", marginBottom: "25px" }}>
             <Typography
               color="textSecondary"
               variant="body2"
             >
+              {!logged
+                ? <React.Fragment>
+                    <Link
+                      href={`${basename}/#/login`}
+                      variant="body2"
+                    >
+                      {_.upperFirst(_.get(dictionnary, _.toUpper(lang) + ".signIn"))}
+                    </Link>
+                    &nbsp;&nbsp;
+                    <Link
+                      href={`${basename}/#/register`}
+                      variant="body2"
+                    >
+                      {_.upperFirst(_.get(dictionnary, _.toUpper(lang) + ".register"))}
+                    </Link>
+                    &nbsp;&nbsp;
+                  </React.Fragment>
+                : null
+              }
               <Link
                 href="https://www.facebook.com/bytpayment/"
                 target="_blank"
                 rel="noreferrer"
+                variant="body2"
               >
-                <img
-                  height={30}
-                  width={30}
-                  src={facebookIcon}
-                  alt="fb"
-                />
+                Facebook
               </Link>
+              &nbsp;&nbsp;
               <Link
                 href="https://www.instagram.com/byt.payment/"
                 target="_blank"
                 rel="noreferrer"
+                variant="body2"
               >
-                <img
-                  height={30}
-                  width={30}
-                  src={instagramIcon}
-                  alt="ig"
-                />
+                Instagram
               </Link>
             </Typography>
           </Grid>
-          {!logged
-            ? <Grid item={true} xs={12} style={{ textAlign: "center", marginBottom: "25px" }}>
-                <Typography
-                  color="textSecondary"
-                  variant="body2"
-                >
-                  <Link
-                    href={`${basename}/#/login`}
-                    variant="body2"
-                  >
-                    {_.upperFirst(_.get(dictionnary, _.toUpper(lang) + ".signIn"))}
-                  </Link>
-                  &nbsp;&nbsp;
-                  <Link
-                    href={`${basename}/#/register`}
-                    variant="body2"
-                  >
-                    {_.upperFirst(_.get(dictionnary, _.toUpper(lang) + ".register"))}
-                  </Link>
-                </Typography>
-              </Grid>
-            : null
-          }
         </Grid>
         {/*<div style={{ position: "absolute", bottom: 0, width: "100%", textAlign: "center", height: "60px" }}>
           <div style={{ marginTop: "100px", marginBottom: "25px" }}>
