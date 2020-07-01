@@ -12,6 +12,11 @@ const basename = process.env.PUBLIC_URL;
 // de mode demonstation
 const authUrl = "https://demoauth2.bytpayment.com";
 const apiUrl = "https://demoservices2.bytpayment.com";
+
+// token de l'application, pour les utilisateurs
+// non authentifiés
+const appToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6bnVsbCwiaXNzIjoiQllUUEFZTUVOVF9LTk9XTl9DTElFTlQiLCJpZCI6bnVsbH0.gBhQArcs6WHQfTrqxBkyw7-ue7WU2a1DHyjdwIND_nU";
+
 // devises disponibles
 const currencies = [
   { currency: "BIF", symbol: "BIF" },
@@ -57,4 +62,4 @@ const codesMarchands = [
   }*/
 ];
 
-export { authUrl, apiUrl, basename, currencies, codesMarchands };
+export { appToken, authUrl, apiUrl, basename, currencies, codesMarchands };
