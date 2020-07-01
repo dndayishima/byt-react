@@ -17,7 +17,7 @@ import _ from "lodash";
 import logo from "../../images/logo/byt-logo.jpg";
 import { dictionnary } from "../Langs/langs";
 import { localStorageCleanInfosUser } from "../Helpers/Helpers";
-import { basename } from "../Helpers/Settings";
+import { appToken, basename } from "../Helpers/Settings";
 
 const Connexion = props => {
   const [login, setLogin] = useState("");
@@ -29,23 +29,12 @@ const Connexion = props => {
 
   useEffect(() => {
     localStorageCleanInfosUser();
-    /*document.addEventListener("keydown", connexionShortcut);
-    return () => {
-      document.removeEventListener("keydown", connexionShortcut);
-    }*/
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const valideForm = () => {
     return (!_.isEmpty(login) && !_.isEmpty(password));
   };
-
-  /*const connexionShortcut = event => {
-    // au clic sur ENTER
-    if (event.keyCode === 13) {
-      connexion();
-    }
-  };*/
 
   const connexion = () => {
     let lang = _.toUpper(props.lang);
@@ -60,6 +49,7 @@ const Connexion = props => {
     }
 
     props.client.User.login(
+      appToken,
       login,
       password,
       result => {

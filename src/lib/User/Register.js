@@ -32,6 +32,7 @@ import { ModalPhoto, Title } from "../../lib";
 import emptyImage from "../../images/others/empty-image.png";
 
 import { dictionnary } from "../Langs/langs";
+import { appToken } from "../Helpers/Settings";
 
 export default class Register extends React.Component {
   static propTypes = {
@@ -121,6 +122,7 @@ export default class Register extends React.Component {
     params.telephones = _.isEmpty(t) ? null : t;
 
     this.props.client.User.register(
+      appToken,
       params,
       result => {
         //console.log(result);

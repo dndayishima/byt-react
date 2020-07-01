@@ -85,17 +85,19 @@ const Event = props => {
             <Avatar aria-label="event" variant="square" src={avatarImage} />
           }
           action={
-            props.user.code === props.event.seller
-              ? <IconButton
-                  aria-label="edit"
-                  onClick={() => {
-                    if (props.onEdit) {
-                      props.onEdit(props.event);
-                    }
-                  }}
-                >
-                  <Edit />
-                </IconButton>
+            !_.isEmpty(props.user)
+              ? props.user.code === props.event.seller
+                ? <IconButton
+                    aria-label="edit"
+                    onClick={() => {
+                      if (props.onEdit) {
+                        props.onEdit(props.event);
+                      }
+                    }}
+                  >
+                    <Edit />
+                  </IconButton>
+                : null
               : null
           }
           title={props.event.name}

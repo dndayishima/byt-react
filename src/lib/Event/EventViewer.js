@@ -223,7 +223,11 @@ const EventViewer = props => {
                       lang={props.lang}
                       edition={false}
                       price={price}
-                      buy={userIsAdmin(props.user.roles) || event.seller !== props.user.code}
+                      buy={
+                        !_.isEmpty(props.user)
+                          ? userIsAdmin(props.user.roles) || event.seller !== props.user.code
+                          : false
+                      }
                       onClickBuy={p => {
                         if (_.isEmpty(p.id)) {
                           return;

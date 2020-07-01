@@ -111,6 +111,11 @@ const Events = props => {
     } else {
       _.unset(params, "seller");
     }
+    _.set(
+      params,
+      "exfields",
+      ["name", "description", "tags", "date", "venue", "seller", "photo"]
+    );
     setSwitcher(value);
     setLoading(true);
     setReloadParams(params);
@@ -118,14 +123,16 @@ const Events = props => {
   };
 
   const reload = () => {
-    props.client.Event.simpleEvents(
+    //console.log(props.jwt);
+    props.client.Event.readAll(
       props.jwt,
       reloadParams,
-      result => {        
+      result => {
         setEvents(result.results.content);
         setLoading(true);
       },
       error => {
+        console.log(error);
         if (_.isUndefined(error)) {
           authError(2);
         } else {
@@ -147,7 +154,7 @@ const Events = props => {
     setLoading(false);
   };
 
-  const isSeller = _.includes(props.user.roles, "SELLER");
+  const isSeller = _.includes(_.get(props.user, "roles", []), "SELLER");
 
   const editor = (
     <EventEditor

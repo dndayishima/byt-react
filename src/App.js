@@ -5,13 +5,13 @@ import {
   useHistory
 } from "react-router-dom";
 import { About, Client, Connexion, Main, Register } from "./lib";
-import { authUrl, apiUrl } from "./lib/Helpers/Settings";
+import { appToken, authUrl, apiUrl } from "./lib/Helpers/Settings";
 import _ from "lodash";
 
 const client = new Client(authUrl, apiUrl);
 
 const App = () => {
-  const [jwt, setJwt] = useState(_.get(localStorage, "jwt", ""));
+  const [jwt, setJwt] = useState(_.isEmpty(_.get(localStorage, "jwt", "")) ? appToken : localStorage.getItem("jwt"));
   const [user, setUser] = useState(null);
   const [lang, setLang] = useState(_.get(localStorage, "lang", "fr"));
 
@@ -19,24 +19,25 @@ const App = () => {
 
   useEffect(() => {
     let userCode = _.get(localStorage, "userCode", "");
-    if (_.isEmpty(userCode)) {
-      return;
+    if (!_.isEmpty(userCode)) {
+      client.User.readByCode(
+        jwt,
+        userCode,
+        result => {
+          setUser(result.data.user);
+        },
+        error => {
+          setUser(null);
+        }
+      );
     }
-    client.User.readByCode(
-      userCode,
-      result => {
-        setUser(result.data.user);
-      },
-      error => {
-        setUser(null);
-      }
-    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Did Mount
 
   return (
     <React.Fragment>
       <Switch>
-        <Route exact={true} path="/">
+        {/*<Route exact={true} path="/">
           <Main
             client={client}
             jwt={jwt}
@@ -50,7 +51,7 @@ const App = () => {
               setJwt(jwt);
             }}
           />
-        </Route>
+        </Route>*/}
 
         <Route path="/plateform">
           <Main
@@ -98,7 +99,8 @@ const App = () => {
         </Route>
 
         <Route path="/about">
-          <About 
+          <About
+            logged={false}
             lang="fr"
           />
         </Route>

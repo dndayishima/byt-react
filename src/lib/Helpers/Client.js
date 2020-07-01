@@ -7,15 +7,21 @@ class Client {
   }
 
   User = {
-    login: (login, password, success, errors) => {
+    login: (jwt, login, password, success, errors) => {
       axios
-        .post(this.auth + "/user/login", { login: login, password: password })
+        .post(
+          this.auth + "/user/login",
+          { login: login, password: password },
+          {headers: {"Authorization": `Bearer ${jwt}`} })
         .then(result => success(result))
         .catch(error => errors(error.response));
     },
-    register: (params, success, errors) => {
+    register: (jwt, params, success, errors) => {
       axios
-        .put(this.auth + "/user/register", params)
+        .put(
+          this.auth + "/user/register",
+          params,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
         .then(result => success(result))
         .catch(error => errors(error.response));
     },
@@ -25,9 +31,11 @@ class Client {
         .then(result => success(result))
         .catch(error => errors(error.response));
     },
-    readByCode: (code, success, errors) => {
+    readByCode: (jwt, code, success, errors) => {
       axios
-        .get(this.auth + "/user/readByCode/" + code)
+        .get(
+          this.auth + "/user/readByCode/" + code,
+          {headers: {"Authorization": `Bearer ${jwt}`} })
         .then(result => success(result))
         .catch(error => errors(error.response))
     },

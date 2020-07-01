@@ -38,7 +38,7 @@ import { Events } from "../Event";
 import { dictionnary } from "../Langs/langs";
 
 import bytWhite from "../../images/logo/byt-white.png";
-import { signOut, userIsAuthenticated } from "../Helpers/Helpers";
+import { signOut } from "../Helpers/Helpers";
 
 const styles = {
   container: {
@@ -63,22 +63,11 @@ const Main = props => {
   const [openDrawerMenu, setOpenDrawerMenu] = useState(false);
   const [eventsCache, setEventsCache] = useState([]); // gestion du cache des événements
 
-  /*componentDidUpdate(prevProps, prevState) {
-    if (prevProps.jwt !== this.props.jwt) {
-      // il y a eu une reconnexion
-      this.setState({ page: "events" });
-    }
-  };*/
-
   const { path } = useRouteMatch();
   const history = useHistory();
 
   useEffect(() => {
-    if (!userIsAuthenticated()) {
-      signOut();
-    } else {
-      history.push("/plateform/events");
-    }
+    history.push("/plateform/events");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -93,30 +82,42 @@ const Main = props => {
         setOpenAccountMenu(false);
       }}
     >
-      <MenuItem
-        onClick={() => {
-          setAnchorEl(null);
-          setOpenAccountMenu(false);
-          history.push("/plateform/profile");
-        }}
-      >
-        <ListItemIcon><Person /></ListItemIcon>
-        <ListItemText
-          primary={_.upperFirst(_.get(dictionnary, lang + ".profile"))}
-        />
-      </MenuItem>
-      <MenuItem onClick={() => signOut()}>
-        <ListItemIcon><PowerSettingsNew /></ListItemIcon>
-        <ListItemText
-          primary={_.upperFirst(_.get(dictionnary, lang + ".signOut"))}
-        />
-      </MenuItem>
+      {props.user
+        ? <MenuItem
+            onClick={() => {
+              setAnchorEl(null);
+              setOpenAccountMenu(false);
+              history.push("/plateform/profile");
+            }}
+          >
+            
+            <ListItemIcon><Person /></ListItemIcon>
+            <ListItemText
+              primary={_.upperFirst(_.get(dictionnary, lang + ".profile"))}
+            />
+          </MenuItem>
+        : null
+      }
+      {props.user
+        ? <MenuItem onClick={() => signOut()}>
+            <ListItemIcon><PowerSettingsNew /></ListItemIcon>
+            <ListItemText
+              primary={_.upperFirst(_.get(dictionnary, lang + ".signOut"))}
+            />
+          </MenuItem> 
+        : null
+      }
+      {!props.user
+        ? <MenuItem onClick={() => signOut()}>
+            <ListItemIcon><Person /></ListItemIcon>
+            <ListItemText
+              primary={_.upperFirst(_.get(dictionnary, lang + ".signIn"))}
+            />
+          </MenuItem>
+        : null
+      }       
     </Menu>
   );
-
-  if (_.isEmpty(props.user)) {
-    return null;
-  }
 
   return (
     <React.Fragment>
@@ -159,14 +160,23 @@ const Main = props => {
         open={openDrawerMenu}
         onClose={() => setOpenDrawerMenu(false)}
         onClickItem={item => {
-          setOpenDrawerMenu(false);
-          history.push(`${path}/${item}`);
+          let moveToLink = () => {
+            setOpenDrawerMenu(false);
+            history.push(`${path}/${item}`);
+          };
+          if (_.includes(["events", "about"], item)) {
+            moveToLink();
+          } else if (_.isEmpty(props.user)) {
+            signOut();
+          } else {
+            moveToLink()
+          }
         }}
-        roles={props.user.roles}
+        roles={_.get(props.user, "roles", [])}
       />
 
       <Switch>       
-        <Route path={`${path}/events`}>
+        <Route exact={true} path={`${path}/events`}>
           <div style={styles.container}>
             <React.Fragment>
               <Title 
@@ -298,7 +308,7 @@ const Main = props => {
         <Route path={`${path}/about`}>
           <About 
             lang={props.lang}
-            logged={true}
+            logged={!_.isEmpty(props.user)}
           />
         </Route>
 
