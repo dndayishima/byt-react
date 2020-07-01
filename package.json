@@ -1,6 +1,6 @@
 {
   "name": "byt-react",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "main": "dist/index.js",
   "homepage": "https://demo.bytpayment.com",
   "files": [
