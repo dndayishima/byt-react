@@ -34,40 +34,31 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Did Mount
 
+  const mainComponent = (
+    <Main
+      client={client}
+      jwt={jwt}
+      user={user}
+      lang={lang}
+      onChangeLanguage={lang => setLang(lang)}
+      onRelogin={(jwt, user) => {
+        localStorage.setItem("jwt", jwt);
+        localStorage.setItem("userCode", user.code);
+        setUser(user);
+        setJwt(jwt);
+        history.push("/plateform/events");
+      }}
+    />
+  );
+
   return (
     <React.Fragment>
       <Switch>
-        {/*<Route exact={true} path="/">
-          <Main
-            client={client}
-            jwt={jwt}
-            user={user}
-            lang={lang}
-            onChangeLanguage={lang => setLang(lang)}
-            onRelogin={(jwt, user) => {
-              localStorage.setItem("jwt", jwt);
-              localStorage.setItem("userCode", user.code);
-              setUser(user);
-              setJwt(jwt);
-            }}
-          />
-        </Route>*/}
-
+        <Route exact={true} path="/">
+          {mainComponent}
+        </Route>
         <Route path="/plateform">
-          <Main
-            client={client}
-            jwt={jwt}
-            user={user}
-            lang={lang}
-            onChangeLanguage={lang => setLang(lang)}
-            onRelogin={(jwt, user) => {
-              localStorage.setItem("jwt", jwt);
-              localStorage.setItem("userCode", user.code);
-              setUser(user);
-              setJwt(jwt);
-              history.push("/plateform/events");
-            }}
-          />
+          {mainComponent}
         </Route>
 
         <Route path="/login">

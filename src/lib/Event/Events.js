@@ -227,6 +227,12 @@ const Events = props => {
             {eventsComponent}
           </React.Fragment>
         </Route>
+        <Route exact={true} path={`${path}/editor`}>
+          {editor}
+        </Route>
+        <Route path={`${path}/editor/:eventCode`}>
+          {editor}
+        </Route>
         <Route path={`${path}/reader/:eventCode`}>
           <EventViewer 
             lang={props.lang}
@@ -234,12 +240,6 @@ const Events = props => {
             user={props.user}
             client={props.client}
           />
-        </Route>
-        <Route exact={true} path={`${path}/editor`}>
-          {editor}
-        </Route>
-        <Route path={`${path}/editor/:eventCode`}>
-          {editor}
         </Route>
       </Switch>
 

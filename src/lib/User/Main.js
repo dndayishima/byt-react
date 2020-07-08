@@ -67,7 +67,13 @@ const Main = props => {
   const history = useHistory();
 
   useEffect(() => {
-    history.push("/plateform/events");
+    //history.push("/plateform/events");
+    if (history.location.pathname === "/") {
+      history.push("/plateform/events");
+    } else {
+      history.push(history.location.pathname);
+    }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -176,7 +182,7 @@ const Main = props => {
       />
 
       <Switch>       
-        <Route exact={true} path={`${path}/events`}>
+        <Route path={`${path}/events`}>
           <div style={styles.container}>
             <React.Fragment>
               <Title 

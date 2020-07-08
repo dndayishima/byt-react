@@ -54,7 +54,6 @@ const EventViewer = props => {
       props.jwt,
       eventCode,
       result => {
-        //console.log(result);
         setEvent(result.data.event);
         setLoading(false);
       },
