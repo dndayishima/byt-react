@@ -42,7 +42,9 @@ const Statistics = props => {
   const { path } = useRouteMatch();
   
   useEffect(() => {
-    if (
+    if (_.isEmpty(props.user)) {
+      history.push("/plateform/events");
+    } else if (
       !userIsSeller(props.user.roles) &&
       !userIsTech(props.user.roles) &&
       !userIsAdmin(props.user.roles)
@@ -106,8 +108,9 @@ const Statistics = props => {
   const reloadEvents = () => {
     let params = reloadParams;
     _.set(params, "seller", props.user.code);
+    _.set(params, "exfields", ["name", "description", "tags", "date", "venue", "photo"])
     setReloadParams(params);
-    props.client.Event.simpleEvents(
+    props.client.Event.readAll(
       props.jwt,
       params,
       result => {
