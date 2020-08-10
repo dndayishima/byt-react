@@ -6,12 +6,12 @@ const basename = process.env.PUBLIC_URL;
 //const apiUrl = "https://services.bytpayment.com";
 
 // en mode développement
-//const authUrl = "http://localhost:8080";
-//const apiUrl = "http://localhost:8081";
+const authUrl = "http://localhost:8080";
+const apiUrl = "http://localhost:8081";
 
 // de mode demonstation
-const authUrl = "https://demoauth2.bytpayment.com";
-const apiUrl = "https://demoservices2.bytpayment.com";
+//const authUrl = "https://demoauth2.bytpayment.com";
+//const apiUrl = "https://demoservices2.bytpayment.com";
 
 // token de l'application, pour les utilisateurs
 // non authentifiés
