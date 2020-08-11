@@ -49,7 +49,7 @@ npm start
 
 Les sources JavaScript de ce projet se trouvent dans le répertoire [`./src/`](https://github.com/dndayishima/byt-react/tree/master/src) et les sources des composants `React` se trouvent dans [`./src/lib/`](https://github.com/dndayishima/byt-react/tree/master/src/lib).
 
-Ces composants sont groupés selon leurs utilités : par exemple dans le groupe [`./src/lib/Event`](https://github.com/dndayishima/byt-react/tree/master/src/lib/Event), nous retrouvons les différents composants permettant d'afficher ou manipuler les évènements.
+Ces composants sont groupés selon leurs utilités : par exemple dans le groupe [`./src/lib/Event`](https://github.com/dndayishima/byt-react/tree/master/src/lib/Event), nous retrouvons les différents composants graphiques permettant d'afficher ou manipuler les évènements.
 
 Le répertoire [`./src/lib/Helpers`](https://github.com/dndayishima/byt-react/tree/master/src/lib/Helpers) contient le paramétrage des requêtes AJAX (`Client.js`), la configuration du site (`Settings.js`) et quelques fonctions JavaScript utilisées un peu partout dans l'application (`Helpers.js`).
 
@@ -59,4 +59,4 @@ Le point d'entrée de l'application React est le fichier [`index.js`](https://gi
 
 ## Utilisation du localStorage JavaScript
 
-Certaines informations sont stockées dans le [`localStorage`](https://developer.mozilla.org/fr/docs/Web/API/Window/localStorage), par exemple la langue à utiliser, la clé [JWT](https://jwt.io/) d'un utilisateur authentifié.
+Certaines informations sont stockées dans le [`localStorage`](https://developer.mozilla.org/fr/docs/Web/API/Window/localStorage), par exemple la langue à utiliser et la clé [JWT](https://jwt.io/) d'un utilisateur authentifié.
